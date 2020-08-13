@@ -1,0 +1,129 @@
+.order {
+  overflow-y: auto;
+  height: 100%;
+  &__filter-tabs {
+    background: #f7f9fa;
+    .hairline("bottom");
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 10;
+    &--block {
+      height: 90px;
+    }
+  }
+  &__list {
+    padding: 30px;
+    .order__item {
+      background: @color-white-base;
+      border-radius: 10px;
+      &:not(:first-child) {
+        margin-top: 20px;
+      }
+      &-head {
+        position: relative;
+        padding: 30px;
+        .hairline("bottom");
+        border-bottom-style: dashed;
+        &-no {
+          font-size: 24px;
+          color: #999999;
+        }
+        &-status {
+          font-size: 24px;
+          color: #333333;
+          float: right;
+        }
+      }
+
+      &-goods {
+        padding: 30px;
+        position: relative;
+        .hairline("bottom");
+        border-bottom-style: dashed;
+        display: flex;
+        align-items: center;
+        &-img {
+          width: 100px;
+          height: 100px;
+        }
+        &-name {
+          width: 240px;
+          margin-left: 20px;
+          font-size: 30px;
+          color: #333333;
+          font-weight: bold;
+          &--type {
+            font-size: 20px;
+            line-height: 20px;
+            border-radius: 4px;
+            padding: 5px;
+            color: @color-white-base;
+            background: #04a9fe;
+            display: inline-block;
+            font-weight: normal;
+          }
+        }
+        &-other {
+          width: calc(100% - 448px);
+          display: inline-block;
+          margin-left: 88px;
+          font-size: 30px;
+          color: #333333;
+          .price {
+            float: right;
+          }
+        }
+      }
+      &-extra {
+        padding: 30px;
+        .hairline("bottom");
+        position: relative;
+        border-bottom-style: dashed;
+        &-item {
+          font-size: 24px;
+          color: #333333;
+          display: block;
+          &:not(:first-child) {
+            margin-top: 30px;
+          }
+        }
+      }
+      &-bottom {
+        min-height: 63px;
+        position: relative;
+        &::after {
+          .circle("right");
+        }
+        &::before {
+          .circle("left");
+        }
+      }
+    }
+  }
+}
+
+.circle(@direction) when(@direction = "right") {
+  content: " ";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #f7f9fa;
+  border-radius: 50%;
+  position: absolute;
+  right: -10px;
+  top: -10px;
+}
+
+.circle(@direction) when(@direction = "left") {
+  content: " ";
+  display: block;
+  width: 20px;
+  height: 20px;
+  background: #f7f9fa;
+  border-radius: 50%;
+  position: absolute;
+  left: -10px;
+  top: -10px;
+}

@@ -1,0 +1,50 @@
+.am-tab-bar-bar {
+  height: 98px;
+  border-top: none;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.1);
+  &::before {
+    content: none !important;
+  }
+  .am-tab-bar-tab-title {
+    font-size: 20px;
+  }
+}
+
+// .am-tabs-content-wrap {
+//   -webkit-overflow-scrolling: touch;
+// }
+.am-tabs-default-bar {
+  background-color: transparent !important;
+  &-tab {
+    font-size: 30px;
+    color: #999999;
+    font-weight: bold;
+    border-bottom: none !important;
+    &::after {
+      content: none !important;
+    }
+    &-active {
+      color: #2272fc;
+      font-size: 36px;
+    }
+  }
+  &-underline {
+    border-color: transparent;
+    text-align: center;
+    .line {
+      display: inline-block;
+      width: 40px;
+      background: linear-gradient(
+        90deg,
+        rgba(34, 114, 252, 1),
+        rgba(75, 141, 255, 1)
+      );
+      border-radius: 3px;
+      height: 6px;
+      position: absolute;
+      bottom: 0;
+      left: calc(50% - 20px);
+      z-index: 100;
+    }
+  }
+}
