@@ -1,5 +1,4 @@
 .order {
-  overflow-y: auto;
   height: 100%;
   &__filter-tabs {
     background: #f7f9fa;
@@ -14,7 +13,9 @@
     }
   }
   &__list {
-    padding: 30px;
+    margin-top: 30px;
+    height: calc(100% - 120px);
+    overflow: hidden;
     .order__item {
       background: @color-white-base;
       border-radius: 10px;
@@ -99,6 +100,25 @@
         &::before {
           .circle("left");
         }
+
+        &-btn {
+          padding: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          &--ghost {
+            color: #1a62dc;
+            border: 1px solid #1a62dc;
+            .btn-base();
+          }
+
+          &--primary {
+            background: #1a62dc;
+            color: @color-white-base;
+            margin-left: 30px;
+            .btn-base();
+          }
+        }
       }
     }
   }
@@ -126,4 +146,14 @@
   position: absolute;
   left: -10px;
   top: -10px;
+}
+
+.btn-base() {
+  display: inline-block;
+  width: 140px;
+  height: 44px;
+  border-radius: 22px;
+  font-size: 24px;
+  text-align: center;
+  line-height: 44px;
 }

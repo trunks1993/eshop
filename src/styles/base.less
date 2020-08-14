@@ -6,11 +6,17 @@
 @import "./user.less";
 @import "./order.less";
 @import "./item.less";
+@import "./card.less";
 @import "./lib/inputNumber.less";
 
 @font-face {
-  font-family: "myFamily";
-  src: url("./pf.ttf");
+  font-family: "pfb";
+  src: url("./font/PingFang\ Bold.ttf");
+}
+
+@font-face {
+  font-family: "pfm";
+  src: url("./font/PingFang\ Medium.ttf");
 }
 
 html,
@@ -19,7 +25,7 @@ body,
   height: 100%;
   background: @color-bg-base;
   overflow: hidden;
-  font-family: "myFamily";
+  font-family: "pfm";
 }
 
 ul {
