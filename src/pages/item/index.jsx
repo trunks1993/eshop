@@ -21,6 +21,9 @@ const list = [
   { title: "星巴克代金卷", price: 9.9, facePrice: 11.99 },
   { title: "星巴克中杯通兑卷", price: 9.9, facePrice: 11.99 },
   { title: "星巴克大杯通兑卷", price: 9.9, facePrice: 11.99 },
+  { title: "星巴克大杯通兑卷", price: 9.9, facePrice: 11.99 },
+  { title: "星巴克大杯通兑卷", price: 9.9, facePrice: 11.99 },
+  { title: "星巴克大杯通兑卷", price: 9.9, facePrice: 11.99 },
 ];
 
 const data = [
@@ -35,6 +38,7 @@ const data = [
 ];
 
 export default (props) => {
+  const { history } = props;
   const [active, setActive] = useState(0);
   const [goodsSelect, setGoodsSelect] = useState(0);
 
@@ -48,8 +52,7 @@ export default (props) => {
 
     new BScroll(".item__scroll-filter", {
       scrollX: true,
-      // bounce: false,
-      bounceTime: 0,
+      bounce: false,
       click: true,
     });
 
@@ -60,8 +63,7 @@ export default (props) => {
 
     new BScroll(".item__goods", {
       scrollX: true,
-      // bounce: false,
-      bounceTime: 0,
+      bounce: false,
       click: true,
     });
   }, []);
@@ -171,13 +173,17 @@ export default (props) => {
           </p>
         </div>
       </div>
+
       <div className="item__footer--block"></div>
       <div className="item__footer">
         <div className="item__footer-subtn">
           <img src={service} />
           <span className="item__footer-subtn-title">客服</span>
         </div>
-        <div className="item__footer-subtn line">
+        <div
+          className="item__footer-subtn line"
+          onClick={() => history.push("/order")}
+        >
           <img src={order} />
           <span className="item__footer-subtn-title">订单</span>
         </div>

@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-06-20 17:03:03
- * @LastEditTime: 2020-08-11 14:58:35
+ * @LastEditTime: 2020-08-14 10:50:09
  */
 import React from "react";
 import { routerRedux, Route, Switch, Redirect } from "dva/router";
@@ -11,6 +11,7 @@ const { ConnectedRouter } = routerRedux;
 import Layout from "@/layout";
 import Order from "@/pages/order";
 import Item from "@/pages/item";
+import Card from "@/pages/card";
 
 export default ({ history }) => {
   return (
@@ -18,6 +19,7 @@ export default ({ history }) => {
       <Switch>
         <Route exact path="/order" component={Order} />
         <Route exact path="/item" component={Item} />
+        <Route exact path="/card" component={Card} />
         <Route path="/" component={Layout} />
       </Switch>
     </ConnectedRouter>

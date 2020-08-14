@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-08-12 16:28:03
+ * @LastEditTime: 2020-08-13 10:30:25
  */
 
 import React, { useEffect, useState } from "react";
@@ -97,8 +97,8 @@ export default (props) => {
     setActiveTab(anchorName);
   };
 
-  const toItem = () => {
-    history.push("/item");
+  const toItem = (index) => {
+    history.push(index === 0 ? "/rechargeItem" : "/item");
   };
 
   return (
@@ -142,7 +142,7 @@ export default (props) => {
                       <li
                         className="home__card-brand-item"
                         key={index}
-                        onClick={() => toItem()}
+                        onClick={() => toItem(index)}
                       >
                         <img
                           className="home__card-brand-item-img"
