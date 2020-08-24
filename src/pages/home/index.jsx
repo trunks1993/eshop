@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-08-13 10:30:25
+ * @LastEditTime: 2020-08-24 16:44:47
  */
 
 import React, { useEffect, useState } from "react";
@@ -8,6 +8,9 @@ import BScroll from "@better-scroll/core";
 import icon from "@/assets/images/icon.png";
 import brand from "@/assets/images/brand.png";
 import { Tabs as TabsComp } from "@/components/lib";
+import { getList } from "@/services/app";
+import { getQueryVariable } from "@/utils";
+import { setToken } from "@/utils/auth";
 
 let myScroll;
 const data = Array(5)
@@ -74,10 +77,40 @@ export default (props) => {
   const [fix, setFix] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
 
+  const [data, setDataList] = useState([]);
+
+  useEffect(() => {
+    _getToken();
+    _getList();
+  }, []);
+
+  const _getList = async () => {
+    try {
+      const [err, data, msg] = await getList();
+      if (!err) {
+        setDataList(
+          data.map((item) => {
+            item.key = item.code;
+            item.title = item.name;
+            return item;
+          })
+        );
+      }
+    } catch (error) {
+      console.log("_getList -> error", error);
+    }
+  };
+
+  const _getToken = () => {
+    const token = getQueryVariable("token");
+    setToken(token);
+  };
+
   useEffect(() => {
     myScroll = new BScroll("#home", {
       // mouseWheel: true, // 开启鼠标滚轮支持
       //   scrollbars: "custom", // 开启滚动条支持
+      bounce: false,
       probeType: 3,
       click: true,
     });
@@ -85,7 +118,7 @@ export default (props) => {
     return () => {
       myScroll.off("scroll", eventScroll);
     };
-  }, []);
+  }, [data]);
 
   function eventScroll() {
     setFix(this.y < -170);
@@ -98,7 +131,7 @@ export default (props) => {
   };
 
   const toItem = (index) => {
-    history.push(index === 0 ? "/rechargeItem" : "/item");
+    history.push(index === 2 ? "/creditItem" : "/cardItem");
   };
 
   return (
@@ -134,22 +167,25 @@ export default (props) => {
                 <div className="home__card" key={index}>
                   <div id={index + ""} className="home__card-anchor"></div>
                   <div className="home__card-title">
-                    <img className="home__card-title-icon" src={item.icon} />
+                    <img
+                      className="home__card-title-icon"
+                      src={"/file" + item.iconUrl}
+                    />
                     <span className="home__card-title-text">{item.title}</span>
                   </div>
                   <ul className="home__card-brand">
-                    {_.map(item.list, (item, index) => (
+                    {_.map(item.brandList, (item, index) => (
                       <li
                         className="home__card-brand-item"
                         key={index}
-                        onClick={() => toItem(index)}
+                        onClick={() => toItem(item.bizType)}
                       >
                         <img
                           className="home__card-brand-item-img"
-                          src={item.icon}
+                          src={"/file" + item.iconUrl}
                         />
                         <span className="home__card-brand-item-name">
-                          {item.brandName}
+                          {item.name}
                         </span>
                       </li>
                     ))}

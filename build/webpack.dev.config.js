@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 14:31:03
- * @LastEditTime: 2020-08-07 11:20:24
+ * @LastEditTime: 2020-08-24 16:04:07
  */
 
 const webpackMerge = require("webpack-merge");
@@ -55,7 +55,7 @@ const config = webpackMerge(baseWebpackConfig, {
     proxy: {
       // 接口请求代理
       "/api": {
-        target: "http://101.132.39.136:9001/",
+        target: "http://192.168.28.61:9003/",
         changeOrigin: true,
         pathRewrite: { "^/api": "" },
       },
