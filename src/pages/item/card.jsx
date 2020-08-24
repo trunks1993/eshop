@@ -50,7 +50,7 @@ export default (props) => {
     document.querySelector("#brand").style.width =
       toFixed((sum / 750) * 100, 6) + "vw";
 
-    new BScroll(".item__scroll-filter", {
+    new BScroll(".card-item__scroll-filter", {
       scrollX: true,
       bounce: false,
       click: true,
@@ -61,7 +61,7 @@ export default (props) => {
     document.querySelector("#goods").style.width =
       toFixed((sum / 750) * 100, 6) + "vw";
 
-    new BScroll(".item__goods", {
+    new BScroll(".card-item__goods", {
       scrollX: true,
       bounce: false,
       click: true,
@@ -69,8 +69,8 @@ export default (props) => {
   }, []);
 
   return (
-    <div className="item">
-      <div className="item__scroll-filter">
+    <div className="card-item">
+      <div className="card-item__scroll-filter">
         <ul id="brand">
           {_.map(tabsData, (item, index) => (
             <li
@@ -85,7 +85,7 @@ export default (props) => {
         </ul>
       </div>
 
-      <div className="item__goods">
+      <div className="card-item__goods">
         <ul id="goods">
           {_.map(list, (item, index) => (
             <li
@@ -113,44 +113,44 @@ export default (props) => {
         </ul>
       </div>
 
-      <div className="item__count-box">
-        <div className="item__count-box-num">
+      <div className="card-item__count-box">
+        <div className="card-item__count-box-num">
           <span>
-            <span className="item__count-box-num-title">购买数量</span>
-            <span className="item__count-box-num-subtitle">
+            <span className="card-item__count-box-num-title">购买数量</span>
+            <span className="card-item__count-box-num-subtitle">
               最多可购买 10 张
             </span>
           </span>
           <InputNumber min={1} max={10} defaultValue={1} />
         </div>
 
-        <div className="item__count-box-suggestion">
+        <div className="card-item__count-box-suggestion">
           <span>
             使用有效期：<b>购买起24小时内</b>
           </span>
         </div>
       </div>
 
-      <ul className="item__view">
-        <li className="item__view-item line">
-          <span className="item__view-item-title">商品名称</span>
-          <span className="item__view-item-sub">星巴克代金卷</span>
+      <ul className="card-item__view">
+        <li className="card-item__view-item line">
+          <span className="card-item__view-item-title">商品名称</span>
+          <span className="card-item__view-item-sub">星巴克代金卷</span>
         </li>
-        <li className="item__view-item line">
-          <span className="item__view-item-title">应付金额</span>
-          <span className="item__view-item-price">
+        <li className="card-item__view-item line">
+          <span className="card-item__view-item-title">应付金额</span>
+          <span className="card-item__view-item-price">
             <b>￥</b>11.8
           </span>
         </li>
-        <li className="item__view-item">
-          <span className="item__view-item-title">商品标签</span>
-          <div className="item__view-item-block">
+        <li className="card-item__view-item">
+          <span className="card-item__view-item-title">商品标签</span>
+          <div className="card-item__view-item-block">
             <span>兑换码</span>
           </div>
         </li>
       </ul>
 
-      <div className="item__html">
+      <div className="card-item__html">
         <TabsComp
           // className="home__content-wrap-tabs"
           // activeTab={activeTab}
@@ -158,7 +158,7 @@ export default (props) => {
           data={data}
           page={4}
         />
-        <div className="item__html-content">
+        <div className="card-item__html-content">
           <p>
             1.
             收到的短链接就是星礼卡的电子兑换券，点击短链接即可生成二维码，到店初始
@@ -174,20 +174,20 @@ export default (props) => {
         </div>
       </div>
 
-      <div className="item__footer--block"></div>
-      <div className="item__footer">
-        <div className="item__footer-subtn">
+      <div className="card-item__footer--block"></div>
+      <div className="card-item__footer">
+        <div className="card-item__footer-subtn">
           <img src={service} />
-          <span className="item__footer-subtn-title">客服</span>
+          <span className="card-item__footer-subtn-title">客服</span>
         </div>
         <div
-          className="item__footer-subtn line"
+          className="card-item__footer-subtn line"
           onClick={() => history.push("/order")}
         >
           <img src={order} />
-          <span className="item__footer-subtn-title">订单</span>
+          <span className="card-item__footer-subtn-title">订单</span>
         </div>
-        <div className="item__footer-btn">立即购买</div>
+        <div className="card-item__footer-btn">立即购买</div>
       </div>
     </div>
   );
