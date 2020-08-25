@@ -1,71 +1,71 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-08-24 16:44:47
+ * @LastEditTime: 2020-08-24 17:22:14
  */
 
-import React, { useEffect, useState } from "react";
-import BScroll from "@better-scroll/core";
-import icon from "@/assets/images/icon.png";
-import brand from "@/assets/images/brand.png";
-import { Tabs as TabsComp } from "@/components/lib";
-import { getList } from "@/services/app";
-import { getQueryVariable } from "@/utils";
-import { setToken } from "@/utils/auth";
+import React, { useEffect, useState } from 'react';
+import BScroll from '@better-scroll/core';
+import icon from '@/assets/images/icon.png';
+import brand from '@/assets/images/brand.png';
+import { Tabs as TabsComp } from '@/components/lib';
+import { getList } from '@/services/app';
+import { getQueryVariable } from '@/utils';
+import { setToken } from '@/utils/auth';
 
 let myScroll;
 const data = Array(5)
-  .fill("")
+  .fill('')
   .map((item, index) => ({
     key: index,
-    title: "生活服务" + index,
+    title: '生活服务' + index,
     icon: icon,
     list: [
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
       {
-        brandName: "美团外卖",
+        brandName: '美团外卖',
         icon: brand,
       },
     ],
@@ -97,26 +97,26 @@ export default (props) => {
         );
       }
     } catch (error) {
-      console.log("_getList -> error", error);
+      console.log('_getList -> error', error);
     }
   };
 
   const _getToken = () => {
-    const token = getQueryVariable("token");
+    const token = getQueryVariable('token');
     setToken(token);
   };
 
   useEffect(() => {
-    myScroll = new BScroll("#home", {
+    myScroll = new BScroll('#home', {
       // mouseWheel: true, // 开启鼠标滚轮支持
       //   scrollbars: "custom", // 开启滚动条支持
       bounce: false,
       probeType: 3,
       click: true,
     });
-    myScroll.on("scroll", eventScroll);
+    myScroll.on('scroll', eventScroll);
     return () => {
-      myScroll.off("scroll", eventScroll);
+      myScroll.off('scroll', eventScroll);
     };
   }, [data]);
 
@@ -125,13 +125,18 @@ export default (props) => {
   }
 
   const scrollToAnchor = (tab, anchorName) => {
-    let anchorElement = document.getElementById(anchorName + "");
+    let anchorElement = document.getElementById(anchorName + '');
     myScroll.scrollToElement(anchorElement, 500);
     setActiveTab(anchorName);
   };
 
-  const toItem = (index) => {
-    history.push(index === 2 ? "/creditItem" : "/cardItem");
+  const toItem = (index, brandCode) => {
+    console.log(index, brandCode);
+    history.push(
+      index === 2
+        ? `/creditItem?brandCode=${brandCode}`
+        : `/cardItem?brandCode=${brandCode}`
+    );
   };
 
   return (
@@ -165,11 +170,11 @@ export default (props) => {
             <div className="home__content-wrap-list">
               {_.map(data, (item, index) => (
                 <div className="home__card" key={index}>
-                  <div id={index + ""} className="home__card-anchor"></div>
+                  <div id={index + ''} className="home__card-anchor"></div>
                   <div className="home__card-title">
                     <img
                       className="home__card-title-icon"
-                      src={"/file" + item.iconUrl}
+                      src={'/file' + item.iconUrl}
                     />
                     <span className="home__card-title-text">{item.title}</span>
                   </div>
@@ -178,11 +183,11 @@ export default (props) => {
                       <li
                         className="home__card-brand-item"
                         key={index}
-                        onClick={() => toItem(item.bizType)}
+                        onClick={() => toItem(item.bizType, item.code)}
                       >
                         <img
                           className="home__card-brand-item-img"
-                          src={"/file" + item.iconUrl}
+                          src={'/file' + item.iconUrl}
                         />
                         <span className="home__card-brand-item-name">
                           {item.name}
