@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-08-05 09:53:34
- * @LastEditTime: 2020-08-25 17:04:12
+ * @LastEditTime: 2020-08-28 09:46:54
  */
 export const ORDER_STATUS_1 = 1; // 待付款
 export const ORDER_STATUS_2 = 2; // 处理中
@@ -43,4 +43,14 @@ export const TRANSACTION_TYPE_2 = 2;
 export const TransactionTypes = {
   [TRANSACTION_TYPE_1]: '批采',
   [TRANSACTION_TYPE_2]: '直充',
+};
+
+export const KAMI_TYPE_1 = 1;
+export const KAMI_TYPE_2 = 2;
+export const KAMI_TYPE_3 = 3;
+
+export const KamiTypes = {
+  [KAMI_TYPE_1]: '有效',
+  [KAMI_TYPE_2]: '无效',
+  [KAMI_TYPE_3]: '已售出',
 };
