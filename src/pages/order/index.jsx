@@ -25,7 +25,7 @@ const data = [
   {
     key: 0,
     title: '全部',
-    value: '',
+    value: '0',
   },
   {
     key: 1,
@@ -94,7 +94,6 @@ export default (props) => {
   useEffect(() => {
     if (_.isEmpty(status)) return;
     dispatchInit();
-    setList([]);
   }, [status]);
 
   const pullingUpHandler = () => {
@@ -108,7 +107,7 @@ export default (props) => {
   const initList = async () => {
     try {
       const [err, data, msg] = await searchUserSubscribeOrderList({
-        statusArray: status,
+        statusArray: status === '0' ? undefined : status,
         currPage,
         pageSize,
       });
@@ -179,7 +178,7 @@ export default (props) => {
             </div>
             <div
               className="order__item-bottom-btn--primary"
-              onClick={() => history.push('/card')}
+              onClick={() => history.push(`/card?orderId=${item.orderId}`)}
             >
               查看卡券
             </div>
@@ -206,6 +205,7 @@ export default (props) => {
         className="order__filter-tabs"
         activeTab={activeTab}
         onTabClick={(tab, index) => {
+          setList([]);
           setActiveTab(index);
           setStatus(tab.value);
         }}
@@ -264,9 +264,9 @@ export default (props) => {
                     {item.status === TRACE_STATUS_1 ? (
                       <div className="order__item-bottom--pay">
                         等待付款
-                        <div className="order__item-bottom--close">
+                        {/* <div className="order__item-bottom--close">
                           15分钟00秒自动关闭
-                        </div>
+                        </div> */}
                       </div>
                     ) : (
                       ''

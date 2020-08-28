@@ -1,5 +1,5 @@
 import React from 'react';
-import { List } from 'antd-mobile';
+import { List, Modal, Button } from 'antd-mobile';
 const Item = List.Item;
 import icon1 from '@/assets/images/@2x/user-icon1.png';
 import icon2 from '@/assets/images/@2x/user-icon2.png';
@@ -53,11 +53,24 @@ export default (props) => {
 
       <div className="user__other-btn">
         <ul>
-          <li className="user__other-btn-item">
+          <li
+            className="user__other-btn-item"
+            onClick={() => {
+              Modal.alert('咨询商品问题,请添加客服QQ(791441309)', '', [
+                {
+                  text: '我知道了',
+                  onPress: () => {},
+                },
+              ]);
+            }}
+          >
             <img className="user__other-btn-item-img" src={icon5} />
             <span className="user__other-btn-item-text">客服咨询</span>
           </li>
-          <li className="user__other-btn-item">
+          <li
+            className="user__other-btn-item"
+            onClick={() => (window.location.href = 'tel:13397527281')}
+          >
             <img className="user__other-btn-item-img" src={icon6} />
             <span className="user__other-btn-item-text">商务合作</span>
           </li>

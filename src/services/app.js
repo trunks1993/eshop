@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-08-24 17:08:21
+ * @LastEditTime: 2020-08-27 17:33:21
  */
 import request from '@/utils/request';
 
@@ -87,5 +87,14 @@ export async function searchGoodsByBrandCode(data) {
   return request('/detail/searchGoodsByBrandCode', {
     method: 'POST',
     data,
+  });
+}
+/**
+ * @name: 获取登录超时后的跳转URL
+ * @param {}
+ */
+export async function getTargetUrlTimeout() {
+  return request('/wx/user/getTargetUrlTimeout', {
+    method: 'POST',
   });
 }
