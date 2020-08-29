@@ -1,5 +1,8 @@
-import React from 'react';
-import { List, Modal, Button } from 'antd-mobile';
+import React, { useEffect, useState } from 'react';
+import { List, Modal, Button, Toast } from 'antd-mobile';
+import { getQueryVariable } from '@/utils';
+import { setToken } from '@/utils/auth';
+
 const Item = List.Item;
 import icon1 from '@/assets/images/@2x/user-icon1.png';
 import icon2 from '@/assets/images/@2x/user-icon2.png';
@@ -8,22 +11,45 @@ import icon4 from '@/assets/images/@2x/user-icon4.png';
 
 import icon5 from '@/assets/images/@2x/user-icon5.png';
 import icon6 from '@/assets/images/@2x/user-icon6.png';
-import userNoHead from '@/assets/images/@2x/user-no-head.png';
+import { getUseInfo } from '@/services/app';
 
 export default (props) => {
   const { history } = props;
+  const [list, setList] = useState([]);
+
   const toOrder = (status) => {
     history.push(`/order?status=${status}`);
   };
+
+  useEffect(() => {
+    getToken();
+    initList();
+  }, []);
+
+  const initList = async () => {
+    try {
+      const [err, data, msg] = await getUseInfo();
+      if (!err) setList(data);
+      else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const getToken = () => {
+    const token = getQueryVariable('token');
+    if (token) setToken(token);
+  };
+
   return (
     <div className="user">
       <div className="user__info-panel">
         <div className="user__info-panel-wrap">
           <div className="user__info-panel-avater">
             <div className="user__info-panel-avater-box">
-              <img src={userNoHead} />
+              <img src={list.headIcon} />
             </div>
-            <span className="user__info-panel-avater-name">trunks</span>
+            <span className="user__info-panel-avater-name">
+              {list.aliasName}
+            </span>
           </div>
           <Item arrow="horizontal" onClick={() => history.push(`/order`)}>
             <span className="user__item-text">全部订单</span>

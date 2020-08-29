@@ -19,6 +19,7 @@ export default (props) => {
       probeType: 3,
       click: true,
       bounce: false,
+      preventDefault: false,
     });
   }, [list]);
 
@@ -135,7 +136,12 @@ export default (props) => {
           <span className="card__html-title-text">使用须知</span>
           <span className="card__html-title-line before"></span>
         </div>
-        <div className="card__html-content">{list.usageIllustration}</div>
+        <div
+          className="card__html-content"
+          dangerouslySetInnerHTML={{
+            __html: list.usageIllustration,
+          }}
+        />
       </div>
       {/* <div className="modal"> */}
       <Modal

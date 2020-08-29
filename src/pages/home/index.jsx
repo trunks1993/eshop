@@ -1,76 +1,18 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-08-24 17:22:14
+ * @LastEditTime: 2020-08-29 16:15:44
  */
 
 import React, { useEffect, useState } from 'react';
 import BScroll from '@better-scroll/core';
-import icon from '@/assets/images/icon.png';
-import brand from '@/assets/images/brand.png';
 import { Tabs as TabsComp } from '@/components/lib';
 import { getList } from '@/services/app';
 import { getQueryVariable } from '@/utils';
 import { setToken } from '@/utils/auth';
+import Cookies from 'js-cookie';
+import { Toast } from 'antd-mobile';
 
 let myScroll;
-const data = Array(5)
-  .fill('')
-  .map((item, index) => ({
-    key: index,
-    title: '生活服务' + index,
-    icon: icon,
-    list: [
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-      {
-        brandName: '美团外卖',
-        icon: brand,
-      },
-    ],
-  }));
-
 export default (props) => {
   const { history } = props;
 
@@ -95,7 +37,7 @@ export default (props) => {
             return item;
           })
         );
-      }
+      } else Toast.fail(msg, 1);
     } catch (error) {
       console.log('_getList -> error', error);
     }
@@ -103,7 +45,7 @@ export default (props) => {
 
   const _getToken = () => {
     const token = getQueryVariable('token');
-    setToken(token);
+    if (token) setToken(token);
   };
 
   useEffect(() => {
@@ -130,8 +72,8 @@ export default (props) => {
     setActiveTab(anchorName);
   };
 
-  const toItem = (index, brandCode) => {
-    console.log(index, brandCode);
+  const toItem = (index, brandCode, key) => {
+    Cookies.set('shopname', JSON.stringify(data[key]));
     history.push(
       index === 2
         ? `/creditItem?brandCode=${brandCode}`
@@ -168,9 +110,9 @@ export default (props) => {
               />
             )}
             <div className="home__content-wrap-list">
-              {_.map(data, (item, index) => (
-                <div className="home__card" key={index}>
-                  <div id={index + ''} className="home__card-anchor"></div>
+              {_.map(data, (item, indes) => (
+                <div className="home__card" key={indes}>
+                  <div id={indes + ''} className="home__card-anchor"></div>
                   <div className="home__card-title">
                     <img
                       className="home__card-title-icon"
@@ -183,7 +125,7 @@ export default (props) => {
                       <li
                         className="home__card-brand-item"
                         key={index}
-                        onClick={() => toItem(item.bizType, item.code)}
+                        onClick={() => toItem(item.bizType, item.code, indes)}
                       >
                         <img
                           className="home__card-brand-item-img"
