@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 14:31:03
- * @LastEditTime: 2020-08-24 16:04:07
+ * @LastEditTime: 2020-08-28 20:19:30
  */
 
 const webpackMerge = require("webpack-merge");
@@ -32,7 +32,7 @@ const config = webpackMerge(baseWebpackConfig, {
     }),
     new webpack.DefinePlugin({
       "process.env": {
-        BASE_API: '"/api"',
+        BASE_API: '"/wap"',
         FILE_URL: '"/file"',
       },
     }),
@@ -54,10 +54,10 @@ const config = webpackMerge(baseWebpackConfig, {
     publicPath: "/", // 访问资源加前缀
     proxy: {
       // 接口请求代理
-      "/api": {
-        target: "http://192.168.28.61:9003/",
+      "/wap": {
+        target: "http://test.eshop.yunjinshuke.com/wap/",
         changeOrigin: true,
-        pathRewrite: { "^/api": "" },
+        pathRewrite: { "^/wap": "" },
       },
       "/file": {
         target: "http://101.132.39.136:9080/",

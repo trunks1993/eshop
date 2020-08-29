@@ -2,7 +2,7 @@
   height: 100%;
   &__filter-tabs {
     background: #f7f9fa;
-    .hairline("bottom");
+    .hairline('bottom');
     position: fixed;
     top: 0;
     right: 0;
@@ -25,7 +25,7 @@
       &-head {
         position: relative;
         padding: 30px;
-        .hairline("bottom");
+        .hairline('bottom');
         border-bottom-style: dashed;
         &-no {
           font-size: 24px;
@@ -41,13 +41,23 @@
       &-goods {
         padding: 30px;
         position: relative;
-        .hairline("bottom");
+        .hairline('bottom');
         border-bottom-style: dashed;
         display: flex;
         align-items: center;
         &-img {
           width: 100px;
           height: 100px;
+        }
+        &-unimg {
+          width: 100px;
+          height: 100px;
+          -webkit-filter: grayscale(100%);
+          -moz-filter: grayscale(100%);
+          -ms-filter: grayscale(100%);
+          -o-filter: grayscale(100%);
+          filter: grayscale(100%);
+          filter: gray;
         }
         &-name {
           width: 240px;
@@ -65,6 +75,16 @@
             display: inline-block;
             font-weight: normal;
           }
+          &--untype {
+            font-size: 20px;
+            line-height: 20px;
+            border-radius: 4px;
+            padding: 5px;
+            color: @color-white-base;
+            background: gray;
+            display: inline-block;
+            font-weight: normal;
+          }
         }
         &-other {
           width: calc(100% - 448px);
@@ -79,7 +99,7 @@
       }
       &-extra {
         padding: 30px;
-        .hairline("bottom");
+        .hairline('bottom');
         position: relative;
         border-bottom-style: dashed;
         &-item {
@@ -95,10 +115,46 @@
         min-height: 63px;
         position: relative;
         &::after {
-          .circle("right");
+          .circle('right');
         }
         &::before {
-          .circle("left");
+          .circle('left');
+        }
+        &-text {
+          padding: 30px 40px 0px 30px;
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          &--money {
+            color: #e23333;
+            font-size: 30px;
+          }
+          &--text {
+            font-size: 24px;
+          }
+          &--unmoney {
+            color: #999999;
+          }
+        }
+        &--text {
+          display: inline-flex;
+          align-items: center;
+          justify-content: flex-start;
+          margin-right: 220px;
+        }
+        &--pay {
+          font-size: 24px;
+          font-family: PingFang SC;
+          font-weight: bold;
+          color: #333333;
+          line-height: 36px;
+        }
+        &--close {
+          font-size: 24px;
+          font-family: PingFang SC;
+          font-weight: 500;
+          color: #ffa200;
+          line-height: 36px;
         }
 
         &-btn {
@@ -125,7 +181,7 @@
 }
 
 .circle(@direction) when(@direction = "right") {
-  content: " ";
+  content: ' ';
   display: block;
   width: 20px;
   height: 20px;
@@ -137,7 +193,7 @@
 }
 
 .circle(@direction) when(@direction = "left") {
-  content: " ";
+  content: ' ';
   display: block;
   width: 20px;
   height: 20px;

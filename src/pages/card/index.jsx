@@ -1,78 +1,129 @@
-import React, { useEffect, useState } from "react";
-import brand from "@/assets/images/brand.png";
-import { SvgIcon } from "@/components/lib";
-import BScroll from "@better-scroll/core";
+import React, { useEffect, useState } from 'react';
+import unTime from '@/assets/images/unTime.png';
+import { SvgIcon } from '@/components/lib';
+import BScroll from '@better-scroll/core';
+import { getOrderWithDetailByOrderId } from '@/services/app';
+import { getQueryVariable } from '@/utils';
+import { Toast, Flex, Modal } from 'antd-mobile';
+import { KAMI_TYPE_1, KAMI_TYPE_2, KAMI_TYPE_3 } from '@/const';
+import * as QrCode from 'qrcode.react';
 
-const list = [
-  {
-    icon: brand,
-    title: "星巴克中杯通兑券",
-    time: "2020-06-20 10:21:30",
-    code: "fa88t1rz1j",
-    status: 0,
-  },
-  {
-    icon: brand,
-    title: "星巴克中杯通兑券",
-    time: "2020-06-20 10:21:30",
-    code: "fa88t1rz1j",
-    status: 1,
-  },
-  {
-    icon: brand,
-    title: "星巴克中杯通兑券",
-    time: "2020-06-20 10:21:30",
-    code: "fa88t1rz1j",
-    status: 1,
-  },
-];
 export default (props) => {
   const { history } = props;
+  const [visible, setVisible] = useState(false);
+  const [list, setList] = useState([]);
+  const [items, setItems] = useState([]);
 
   useEffect(() => {
-    new BScroll(".card__list", {
-      // mouseWheel: true, // 开启鼠标滚轮支持
-      //   scrollbars: "custom", // 开启滚动条支持
+    new BScroll('.card__list', {
       probeType: 3,
       click: true,
+      bounce: false,
+      preventDefault: false,
     });
-    // myScroll.on("scroll", eventScroll);
-    // return () => {
-    //   myScroll.off("scroll", eventScroll);
-    // };
+  }, [list]);
+
+  useEffect(() => {
+    initList();
   }, []);
+
+  useEffect(() => {
+    if (_.isEmpty(items)) return;
+    setVisible(true);
+  }, [items]);
+
+  const initList = async () => {
+    try {
+      const [err, data, msg] = await getOrderWithDetailByOrderId({
+        orderId: getQueryVariable('orderId'),
+      });
+      if (!err) setList(data);
+      else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const codeVisible = (item) => {
+    setItems(item);
+  };
+
+  const onWrapTouchStart = (e) => {
+    // fix touch to scroll background page on iOS
+    if (!/iPhone|iPod|iPad/i.test(navigator.userAgent)) {
+      return;
+    }
+    const pNode = closest(e.target, '.am-modal-content');
+    if (!pNode) {
+      e.preventDefault();
+    }
+  };
+
+  const TypeMap = {
+    [KAMI_TYPE_1]: (item) => {
+      return (
+        <div onClick={() => codeVisible(item)}>
+          <SvgIcon iconClass="qrCode" />
+        </div>
+      );
+    },
+    [KAMI_TYPE_2]: (item) => {
+      return (
+        <div className="unTime">
+          <img src={unTime} />
+        </div>
+      );
+    },
+    [KAMI_TYPE_3]: (item) => {},
+  };
 
   return (
     <div className="card">
-      <div className="card__head">星巴克中杯通兑券</div>
+      <div className="card__head">{list.goodsName}</div>
       <div className="card__list">
         <ul>
-          {_.map(list, (item, index) => (
+          {_.map(list.orderDetailList, (item, index) => (
             <li key={index} className="card__list-item">
               <div className="card__list-item-info">
-                <img src={item.icon} />
+                <img
+                  src={`/file${list.iconUrl}`}
+                  className={item.status === KAMI_TYPE_2 ? 'grayimg' : 'img'}
+                />
                 <div className="right">
-                  <span className="title">{item.title}</span>
-                  <span className="time">有效期至 {item.time}</span>
+                  <span
+                    className={
+                      item.status === KAMI_TYPE_2 ? 'graytitle' : 'title'
+                    }
+                  >
+                    {item.goodsName}
+                  </span>
+                  <span
+                    className={
+                      item.status === KAMI_TYPE_2 ? 'graytime' : 'time'
+                    }
+                  >
+                    有效期至 {item.invalidTime}
+                  </span>
                 </div>
               </div>
               <div className="card__list-item-code">
-                <span className="text">
-                  兑换码：<b>{item.code}</b>
-                </span>
+                <div
+                  className={
+                    item.status === KAMI_TYPE_2 ? 'graytexts' : 'texts'
+                  }
+                >
+                  兑换码：<b>{item.password}</b>
+                </div>
               </div>
-
-              <SvgIcon iconClass="qrCode" />
+              {TypeMap[item.status](item)}
             </li>
           ))}
         </ul>
       </div>
 
       <div className="card__btn">
-        <div className="card__btn-1" onClick={() => history.push("/order")}>
+        <div className="card__btn-1" onClick={() => history.push('/order')}>
           查看订单
         </div>
-        <div className="card__btn-2" onClick={() => history.push("/home")}>
+        <div className="card__btn-2" onClick={() => history.push('/home')}>
           继续购买
         </div>
       </div>
@@ -85,21 +136,34 @@ export default (props) => {
           <span className="card__html-title-text">使用须知</span>
           <span className="card__html-title-line before"></span>
         </div>
-        <div className="card__html-content">
-          <p>
-            1.
-            收到的短链接就是星礼卡的电子兑换券，点击短链接即可生成二维码，到店初始
-          </p>
-          <p>
-            2.
-            收到的短链接就是星礼卡的电子兑换券，点击短链接即可生成二维码，到店初始
-          </p>
-          <p>
-            3.
-            收到的短链接就是星礼卡的电子兑换券，点击短链接即可生成二维码，到店初始
-          </p>
-        </div>
+        <div
+          className="card__html-content"
+          dangerouslySetInnerHTML={{
+            __html: list.usageIllustration,
+          }}
+        />
       </div>
+      {/* <div className="modal"> */}
+      <Modal
+        visible={visible}
+        transparent
+        closable
+        maskClosable
+        onClose={() => setVisible(false)}
+        title={<div className="modal-title">{items.goodsName}</div>}
+        wrapProps={{ onTouchStart: onWrapTouchStart }}
+        afterClose={() => setItems([])}
+        className="modal"
+      >
+        <div>
+          <div className="modal-text">付款时请向店员出示二维码</div>
+          <QrCode value={items.password} size={80} id="qrCode" />
+          <div className="modal-pwd">
+            兑换码:<b>{items.password}</b>
+          </div>
+        </div>
+      </Modal>
+      {/* </div> */}
     </div>
   );
 };
