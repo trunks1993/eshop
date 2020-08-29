@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 14:31:35
- * @LastEditTime: 2020-08-06 15:36:34
+ * @LastEditTime: 2020-08-28 20:14:40
  */
 
 const webpackMerge = require("webpack-merge");
@@ -38,7 +38,7 @@ const config = webpackMerge(baseWebpackConfig, {
     }),
     new webpack.DefinePlugin({
       "process.env": {
-        BASE_API: '"/api"',
+        BASE_API: '"/wap"',
         FILE_URL: '"/file"',
       },
     }),

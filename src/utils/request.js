@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-06-30 09:20:46
- * @LastEditTime: 2020-08-28 10:36:15
+ * @LastEditTime: 2020-08-28 20:28:43
  */
 
 import { extend } from 'umi-request';
@@ -59,7 +59,6 @@ const request = extend({
   credentials: 'include', // 默认请求是否带上cookie
   timeout: 10000,
   headers: {
-    token: getToken(),
     'Content-Type': 'application/json;charset=UTF-8',
   },
 });
@@ -69,10 +68,7 @@ request.use(async (ctx, next) => {
   const { url, options } = req;
   const { data, method } = options;
 
-  // data可能为undefind
-  // options.data = {
-  //   ...data,
-  // };
+  options.headers.token = getToken();
 
   // 如果是post请求并且 需要接口需要token
   // const needToken =
@@ -85,11 +81,11 @@ request.use(async (ctx, next) => {
   const { success, result, resultMsg, code } = res;
   if (!success) ctx.res = [!res.success, null, resultMsg];
   else ctx.res = [!res.success, result, null];
-  if (code === '-2') {
-    getToken();
-    // removeToken();
-    // unLogin();
-  }
+  // if (code === '-2') {
+  //   getToken();
+  //   removeToken();
+  //   unLogin();
+  // }
 });
 
 const unLogin = async () => {

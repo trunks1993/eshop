@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-08-27 17:33:21
+ * @LastEditTime: 2020-08-29 12:35:04
  */
 import request from '@/utils/request';
 
@@ -74,7 +74,7 @@ export async function searchUserSubscribeOrderList(data) {
  * @param {}
  */
 export async function pay(data) {
-  return request('/wx/pay', {
+  return request('/wx/jsapi/pay', {
     method: 'POST',
     data,
   });
@@ -95,6 +95,27 @@ export async function searchGoodsByBrandCode(data) {
  */
 export async function getTargetUrlTimeout() {
   return request('/wx/user/getTargetUrlTimeout', {
+    method: 'POST',
+  });
+}
+
+/**
+ * @name: 获取登录超时后的跳转URL
+ * @param {}
+ */
+export async function wxCallback(data) {
+  return request('/wx/pay/callback', {
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @name: 获取用户基本信息
+ * @param {}
+ */
+export async function getUseInfo() {
+  return request('/wx/user/getUseInfo', {
     method: 'POST',
   });
 }
