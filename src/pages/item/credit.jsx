@@ -109,6 +109,7 @@ export default (props) => {
                   key={index}
                   onClick={() => setNameKey(index)}
                 >
+                  <div></div>
                   {item}
                 </li>
               ))}
@@ -130,6 +131,9 @@ export default (props) => {
                   key={index}
                   onClick={() => setNormKey(index)}
                 >
+                  {!_.isEmpty(item.tags) && (
+                    <div className="tags">{item.tags}</div>
+                  )}
                   <div className="name">{item?.shortName}</div>
                   <div className="price">售价{item?.price / 10000}元</div>
                   <div className="facePrice">
@@ -155,6 +159,7 @@ export default (props) => {
         goodsCode={!_.isEmpty(norm) ? norm[nameKey][normKey]?.code : ''}
         rechargeAccount={addPhone ? addPhone : ''}
         history={history}
+        tags={list[goodsSelect]?.tags}
         type="zhichong"
       />
     </>

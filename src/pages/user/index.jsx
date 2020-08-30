@@ -82,7 +82,7 @@ export default (props) => {
           <li
             className="user__other-btn-item"
             onClick={() => {
-              Modal.alert('咨询商品问题,请添加客服QQ(791441309)', '', [
+              Modal.alert(<div className="modalTop">咨询商品问题,请添加客服QQ(791441309)</div>, '', [
                 {
                   text: '我知道了',
                   onPress: () => {},
