@@ -76,7 +76,7 @@ export default (props) => {
           <div className="credit-item__head">
             <img src={`/file${list[goodsSelect]?.iconUrl}`} />
             <span className="credit-item__head-name">
-              {list[goodsSelect]?.brandName}
+              {list[nameKey]?.brandName}
             </span>
           </div>
 
@@ -84,17 +84,19 @@ export default (props) => {
             <div className="credit-item__count-title">充值账号</div>
             <InputItem
               type="phone"
-              placeholder="请输入充值手机号"
+              placeholder="请输入需要充值的账号"
               onChange={(e) => setaddPhone(e)}
             />
 
             <div className="credit-item__count-content">
               <div className="title">购买须知</div>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: list[normKey]?.purchaseNotes,
-                }}
-              />
+              {norm[nameKey] && (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: norm[nameKey][normKey]?.purchaseNotes,
+                  }}
+                />
+              )}
             </div>
           </div>
 
