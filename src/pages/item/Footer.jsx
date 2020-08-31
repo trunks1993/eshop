@@ -36,17 +36,11 @@ export default (props) => {
   const shop = async () => {
     try {
       const { goodsCode, rechargeAccount, amount, type } = props;
-
-      if (!rechargeAccount && !amount) return Toast.fail('请输入完整信息', 1);
+      
       if (type == 'zhichong' && !rechargeAccount) {
-        return Toast.fail('请输入充值手机号', 1);
+        return Toast.fail('请输入需要充值的账号', 1);
       } else if (type == 'kami' && !amount) {
         return Toast.fail('请输入数量', 1);
-      } else if (
-        rechargeAccount &&
-        !/^1[3456789]\d{9}$/.test(rechargeAccount.split(' ').join(''))
-      ) {
-        return Toast.fail('手机号格式不正确', 1);
       }
 
       if (!goodsCode) return Toast.fail('请选择商品', 1);
@@ -97,12 +91,16 @@ export default (props) => {
   };
 
   const kefuModal = _.debounce(() => {
-    Modal.alert(<div className="modalTop">咨询商品问题,请添加客服QQ(791441309)</div>, '', [
-      {
-        text: '我知道了',
-        onPress: () => {},
-      },
-    ]);
+    Modal.alert(
+      <div className="modalTop">咨询商品问题,请添加客服QQ(791441309)</div>,
+      '',
+      [
+        {
+          text: '我知道了',
+          onPress: () => {},
+        },
+      ]
+    );
   }, 100);
 
   return (
