@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-08-31 19:58:42
+ * @LastEditTime: 2020-08-31 23:22:57
  */
 import request from '@/utils/request';
 
@@ -18,7 +18,7 @@ export async function getList() {
  * @name: 立即购买
  * @param {}
  */
-export async function buyImmediately(data) {
+export async function getOrderId(data) {
   return request('/order/buyImmediately', {
     method: 'POST',
     data,

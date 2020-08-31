@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-08-31 19:48:12
+ * @LastEditTime: 2020-09-01 01:42:38
  */
 
 import React, { useEffect, useState } from "react";
@@ -132,6 +132,11 @@ export default (props) => {
                         key={item.code}
                         onClick={() => toItem(item.bizType, item.code, index)}
                       >
+                        {item.tags && (
+                          <div className="home__card-brand-item-tags">
+                            {item.tags}
+                          </div>
+                        )}
                         <img
                           className="home__card-brand-item-img"
                           src={"/file" + item.iconUrl}

@@ -2,48 +2,30 @@ import React, { useEffect, useState } from "react";
 import order from "@/assets/images/order.png";
 import service from "@/assets/images/service.png";
 import { Toast, Modal } from "antd-mobile";
-import { buyImmediately, pay, getOrderByOrderId } from "@/services/app";
+import { getOrderId, pay, getOrderByOrderId } from "@/services/app";
 import _ from "lodash";
 
 export default (props) => {
   let timer = null;
 
-  const {
-    goodsCode,
-    rechargeAccount,
-    amount,
-    type,
-    successCallBack,
-    history,
-  } = props;
+  const { children, successCallback, validCallback, history, btnText } = props;
 
   const shop = async () => {
     try {
-      const { goodsCode, rechargeAccount, amount, type } = props;
-      
-      if (type == 'zhichong' && !rechargeAccount) {
-        return Toast.fail('请输入需要充值的账号', 1);
-      } else if (type == 'kami' && !amount) {
-        return Toast.fail('请输入数量', 1);
-      }
-      if (!goodsCode) return Toast.fail("请选择商品", 1);
-      const [err, data, msg] = await buyImmediately({
-        goodsCode,
-        rechargeAccount,
-        amount,
-      });
-      if (!err) {
-        shopPay(data.orderId);
-      } else Toast.fail(msg, 1);
-    } catch (error) {}
-  };
+      const params = validCallback();
 
-  const shopPay = async (orderId) => {
-    try {
-      const [err, data, msg] = await pay({ orderId });
+      if (!params) return;
+
+      let [err, data, msg] = await getOrderId(params);
+
+      const { orderId } = data;
+
       if (!err) {
-        getList(orderId);
-        wxpay(data);
+        [err, data, msg] = await pay({ orderId });
+        if (!err) {
+          getList(orderId);
+          wxpay(data);
+        } else Toast.fail(msg, 1);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
@@ -81,7 +63,7 @@ export default (props) => {
         if (data.payStatus === 1) {
           clearTimeout(timer);
           Toast.success("支付成功");
-          successCallBack(orderId);
+          successCallback(orderId);
         } else timer = setTimeout(() => getList(orderId), 1000);
       } else Toast.fail(msg, 1);
     } catch (error) {}
@@ -115,10 +97,8 @@ export default (props) => {
           <span className="item-footer-subtn-title">订单</span>
         </div>
         <div className="item-footer__btn" onClick={shop}>
-          {!_.isEmpty(props?.tags) && (
-            <div className="item-footer__btn-tags">{props?.tags}</div>
-          )}
-          {props?.amount ? "立即购买" : "立即充值"}
+          {children}
+          {btnText}
         </div>
       </div>
     </>

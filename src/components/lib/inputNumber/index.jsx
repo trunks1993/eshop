@@ -1,15 +1,23 @@
 /*
  * @Date: 2020-07-17 19:17:43
- * @LastEditTime: 2020-08-12 17:26:10
+ * @LastEditTime: 2020-09-01 03:22:17
  */
 
-import React, { useState } from "react";
+import React, { useState, useImperativeHandle } from "react";
 import { SvgIcon } from "@/components/lib";
 
-const InputNumber = (props) => {
+const InputNumber = (props, ref) => {
   const { min, max, defaultValue, onChange } = props;
-  const ref = React.createRef();
   const [currentValue, setCurrentValue] = useState(defaultValue || "");
+  
+  const inputRef = React.useRef();
+
+  useImperativeHandle(ref, () => ({
+    setInputVal: (val) => {
+      inputRef.current.value = val;
+      onChange && onChange(val);
+    }
+  }));
 
   const handleBlur = (e) => {
     let value = parseInt(e.target.value);
@@ -36,13 +44,13 @@ const InputNumber = (props) => {
   };
 
   const handleChange = (num) => {
-    let value = parseInt(ref.current.value) + num;
+    let value = parseInt(inputRef.current.value) + num;
     if (min && value < min) {
       value = min;
     } else if (max && value > max) {
       value = max;
     }
-    ref.current.value = value;
+    inputRef.current.value = value;
     setCurrentValue(value);
     onChange && onChange(value);
   };
@@ -64,7 +72,7 @@ const InputNumber = (props) => {
         className="input-number-input"
         defaultValue={defaultValue}
         onBlur={handleBlur}
-        ref={ref}
+        ref={inputRef}
       />
       <span
         className={`input-number-plus ${
@@ -74,11 +82,11 @@ const InputNumber = (props) => {
       >
         <SvgIcon
           iconClass="plus"
-          fill={currentValue === max ? "#CCCCCC" : "black"}
+          fill={currentValue === max ? "#CCCCCC" : "#333333"}
         />
       </span>
     </div>
   );
 };
 
-export default InputNumber;
+export default React.forwardRef(InputNumber);

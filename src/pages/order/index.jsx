@@ -374,7 +374,7 @@ export default (props) => {
                   </div>
                   <div className="order__item-extra">
                     <span className="order__item-extra-item">
-                      购买时间：{item.modifyTime}
+                      购买时间：{item.createTime}
                     </span>
                     {item.productTypeCode === PRODUCT_TYPE_4 && (
                       <span className="order__item-extra-item">

@@ -34,17 +34,20 @@ export default (props) => {
   const [active, setActive] = useState(brandCode);
   const [activeTab, setActiveTab] = useState(0);
   const [goodsSelect, setGoodsSelect] = useState(0);
-  const [shopAmount, setShopAmount] = useState(1);
+  const [amount, setAmount] = useState(1);
   const [skuCaches, setSkuCaches] = useState({});
 
   const [b1, setB1] = useState(null);
   const [b2, setB2] = useState(null);
+
+  const inputRef = React.createRef();
 
   useEffect(() => {
     const b1 = new BScroll(".card-item__goods", {
       scrollX: true,
       bounce: false,
       click: true,
+      probeType: 3,
     });
 
     const b2 = new BScroll(".card-item", {
@@ -63,16 +66,19 @@ export default (props) => {
   }, [activeTab]);
 
   useEffect(() => {
+    setGoodsSelect(0);
+    inputRef.current.setInputVal(1);
+  }, [active]);
+
+  useEffect(() => {
     if (list.length) {
       const sum = list.length * 300 + (list.length + 1) * 30;
       document.querySelector("#goods").style.width =
         toFixed((sum / 750) * 100, 6) + "vw";
     }
 
-    if (b1) {
-      b1.refresh();
-      b1.scrollTo(0);
-    }
+    if (b1) b1.refresh();
+
     if (b2) b2.refresh();
   }, [list]);
 
@@ -104,19 +110,20 @@ export default (props) => {
   };
 
   const initList = async (brandCode) => {
-    const cacheList = skuCaches[brandCode];
+    // const cacheList = skuCaches[brandCode];
 
-    if (!_.isEmpty(cacheList)) return setList(cacheList);
+    // if (!_.isEmpty(cacheList)) return setList(cacheList);
 
     try {
+      Toast.loading();
       const [err, data, msg] = await searchGoodsByBrandCode({ brandCode });
-
+      Toast.hide();
       if (!err) {
         setList(data || []);
-        setSkuCaches({
-          ...skuCaches,
-          [brandCode]: data,
-        });
+        // setSkuCaches({
+        //   ...skuCaches,
+        //   [brandCode]: data,
+        // });
         if (data[0].productTypeCode === 104) {
           history.push(`/creditItem?brandCode=${brandCode}`);
         }
@@ -155,7 +162,9 @@ export default (props) => {
                 <li
                   key={index}
                   className={classnames({ active: goodsSelect === index })}
-                  onClick={() => setGoodsSelect(index)}
+                  onClick={() => {
+                    setGoodsSelect(index);
+                  }}
                 >
                   <div className="img-box">
                     <img src={item.iconUrl ? `/file${item.iconUrl}` : goods} />
@@ -189,7 +198,8 @@ export default (props) => {
                 min={1}
                 max={list[goodsSelect]?.singleBuyLimit}
                 defaultValue={1}
-                onChange={(val) => setShopAmount(val)}
+                onChange={(val) => setAmount(val)}
+                ref={inputRef}
               />
             </div>
 
@@ -211,7 +221,7 @@ export default (props) => {
               <span className="card-item__view-item-title">应付金额</span>
               <span className="card-item__view-item-price">
                 <b>￥</b>
-                {list[goodsSelect]?.price / 10000}
+                {(list[goodsSelect]?.price * amount) / 10000}
               </span>
             </li>
             <li className="card-item__view-item">
@@ -255,13 +265,27 @@ export default (props) => {
         </div>
       </div>
       <Footer
-        goodsCode={list[goodsSelect]?.code}
-        amount={shopAmount}
         history={history}
-        tags={list[goodsSelect]?.facePrice - list[goodsSelect]?.price}
-        type="kami"
-        successCallBack={() => history.push(`/order`)}
-      />
+        successCallback={() => history.push(`/order`)}
+        validCallback={() => {
+          if (!list[goodsSelect]?.code) return Toast.fail("请选择商品", 1);
+          return {
+            goodsCode: list[goodsSelect]?.code,
+            amount,
+          };
+        }}
+        btnText="立即购买"
+      >
+        {list[goodsSelect]?.facePrice - list[goodsSelect]?.price > 0 && (
+          <div className="item-footer__btn-tags">
+            立省
+            {((list[goodsSelect]?.facePrice - list[goodsSelect]?.price) *
+              amount) /
+              10000}
+            元
+          </div>
+        )}
+      </Footer>
     </>
   );
 };

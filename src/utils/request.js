@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-06-30 09:20:46
- * @LastEditTime: 2020-08-31 19:50:26
+ * @LastEditTime: 2020-09-01 01:04:41
  */
 
 import { extend } from "umi-request";
@@ -73,11 +73,11 @@ request.use(async (ctx, next) => {
   const { success, result, resultMsg, code } = res;
   if (!success) ctx.res = [!res.success, null, resultMsg];
   else ctx.res = [!res.success, result, null];
-  // if (code === '-2') {
-  //   getToken();
-  //   removeToken();
-  //   unLogin();
-  // }
+  if (code === '-2') {
+    // getToken();
+    // removeToken();
+    unLogin();
+  }
 });
 
 const unLogin = async () => {
@@ -85,11 +85,11 @@ const unLogin = async () => {
     const [err, data, msg] = await getTargetUrlTimeout();
     if (!err) {
       window.location.href = data;
-      const redirect = location.href.split("#")[1];
-      window.location.href = `http://192.168.28.124:8081/${encodeURIComponent(
-        redirect
-      )}`;
-      location.reload();
+      // const redirect = location.href.split("#")[1];
+      // window.location.href = `http://192.168.28.124:8081/${encodeURIComponent(
+      //   redirect
+      // )}`;
+      // location.reload();
     } else Toast.fail(msg, 1);
   } catch (error) {}
 };

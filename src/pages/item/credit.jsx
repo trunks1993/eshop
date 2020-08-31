@@ -8,21 +8,21 @@ import BScroll from "@better-scroll/core";
 import _ from "lodash";
 
 export default (props) => {
+  const brandCode = getQueryVariable("brandCode");
+
   const { history } = props;
   const [list, setList] = useState([]);
-  const [name, setName] = useState([]);
-  const [norm, setNorm] = useState([]);
-  const [addPhone, setaddPhone] = useState();
-  const [normKey, setNormKey] = useState(0);
-  const [nameKey, setNameKey] = useState(0);
-  const [goodsSelect, setGoodsSelect] = useState(0);
+  const [parent, setParent] = useState("");
+
+  const [rechargeAccount, setRechargeAccount] = useState();
+
+  const [goodsSelect, setGoodsSelect] = useState({});
+
   const [b, setB] = useState(null);
 
   useEffect(() => {
-    initList(getQueryVariable("brandCode"));
-  }, []);
+    initList();
 
-  useEffect(() => {
     const b = new BScroll(".credit-item", {
       bounce: false,
       probeType: 3,
@@ -33,40 +33,21 @@ export default (props) => {
 
   useEffect(() => {
     if (b) b.refresh();
-  }, [normKey, nameKey, list, name, norm]);
+  }, [list, parent, goodsSelect]);
 
-  const initList = async (brandCode) => {
+  useEffect(() => {
+    const skuList = list.filter((item) => item.productName === parent);
+    setGoodsSelect(skuList[0]);
+  }, [parent]);
+
+  const initList = async () => {
     try {
       const [err, data, msg] = await searchGoodsByBrandCode({ brandCode });
       if (!err) {
-        getShopDetail(data);
         setList(data);
+        setParent(data[0].productName);
       } else Toast.fail(msg, 1);
     } catch (error) {}
-  };
-
-  /** 获取选择商品和商品规格 */
-  const getShopDetail = (data) => {
-    let name = [];
-    let norm = [];
-
-    var map = data.reduce((all, m) => {
-      let list = all.get(m.productName);
-      if (!list) {
-        list = [];
-        all.set(m.productName, list);
-      }
-      list.push(m);
-      return all;
-    }, new Map());
-
-    Array.from(map.entries()).forEach(([des, list]) => {
-      name.push(des);
-      norm.push(list);
-    });
-
-    setName(name);
-    setNorm(norm);
   };
 
   return (
@@ -74,10 +55,8 @@ export default (props) => {
       <div className="credit-item">
         <div>
           <div className="credit-item__head">
-            <img src={`/file${list[goodsSelect]?.iconUrl}`} />
-            <span className="credit-item__head-name">
-              {list[nameKey]?.brandName}
-            </span>
+            <img src={`/file${list[0]?.iconUrl}`} />
+            <span className="credit-item__head-name">{list[0]?.brandName}</span>
           </div>
 
           <div className="credit-item__count">
@@ -85,38 +64,45 @@ export default (props) => {
             <InputItem
               type="phone"
               placeholder="请输入需要充值的账号"
-              onChange={(e) => setaddPhone(e)}
+              onChange={(e) => setRechargeAccount(e)}
             />
 
             <div className="credit-item__count-content">
               <div className="title">购买须知</div>
-              {norm[nameKey] && (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: norm[nameKey][normKey]?.purchaseNotes,
-                  }}
-                />
-              )}
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: goodsSelect?.purchaseNotes,
+                }}
+              />
             </div>
           </div>
 
           <div className="credit-item__sku">
             <div className="credit-item__sku-title">选择商品</div>
             <ul className="credit-item__sku-context">
-              {_.map(name, (item, index) => (
-                <li
-                  className={
-                    nameKey === index
-                      ? "credit-item__sku-goods-item--active"
-                      : "credit-item__sku-goods-item"
-                  }
-                  key={index}
-                  onClick={() => setNameKey(index)}
-                >
-                  <div></div>
-                  {item}
-                </li>
-              ))}
+              {_.map(
+                list.filter((item, index, arr) => {
+                  return (
+                    arr.findIndex(
+                      (el) => el.productName == item.productName
+                    ) === index
+                  );
+                }),
+                (item, index) => (
+                  <li
+                    className={
+                      parent === item.productName
+                        ? "credit-item__sku-goods-item--active"
+                        : "credit-item__sku-goods-item"
+                    }
+                    key={index}
+                    onClick={() => setParent(item.productName)}
+                  >
+                    <div></div>
+                    {item.productName}
+                  </li>
+                )
+              )}
             </ul>
             <div
               className="credit-item__sku-title"
@@ -125,26 +111,29 @@ export default (props) => {
               商品规格
             </div>
             <ul className="credit-item__sku-context">
-              {_.map(norm[nameKey], (item, index) => (
-                <li
-                  className={
-                    normKey === index
-                      ? "credit-item__sku-norms-item--active"
-                      : "credit-item__sku-norms-item"
-                  }
-                  key={index}
-                  onClick={() => setNormKey(index)}
-                >
-                  {!_.isEmpty(item.tags) && (
-                    <div className="tags">{item.tags}</div>
-                  )}
-                  <div className="name">{item?.shortName}</div>
-                  <div className="price">售价{item?.price / 10000}元</div>
-                  <div className="facePrice">
-                    官方价{item?.facePrice / 10000}元
-                  </div>
-                </li>
-              ))}
+              {_.map(
+                list.filter((item) => item.productName === parent),
+                (item, index) => (
+                  <li
+                    className={
+                      goodsSelect?.code === item.code
+                        ? "credit-item__sku-norms-item--active"
+                        : "credit-item__sku-norms-item"
+                    }
+                    key={index}
+                    onClick={() => setGoodsSelect(item)}
+                  >
+                    {!_.isEmpty(item.tags) && (
+                      <div className="tags">{item.tags}</div>
+                    )}
+                    <div className="name">{item?.shortName}</div>
+                    <div className="price">售价{item?.price / 10000}元</div>
+                    <div className="facePrice">
+                      官方价{item?.facePrice / 10000}元
+                    </div>
+                  </li>
+                )
+              )}
             </ul>
 
             <div className="credit-item__sku-needknow">
@@ -152,7 +141,7 @@ export default (props) => {
               <div className="credit-item__sku-needknow--title">使用说明</div>
               <div
                 dangerouslySetInnerHTML={{
-                  __html: list[goodsSelect]?.usageIllustration,
+                  __html: goodsSelect?.usageIllustration,
                 }}
               />
             </div>
@@ -160,15 +149,26 @@ export default (props) => {
         </div>
       </div>
       <Footer
-        goodsCode={!_.isEmpty(norm) ? norm[nameKey][normKey]?.code : ""}
-        rechargeAccount={addPhone ? addPhone : ""}
         history={history}
-        tags={list[goodsSelect]?.tags}
-        type="zhichong"
-        successCallBack={(orderId) =>
+        successCallback={(orderId) =>
           history.push(`/creditItems?orderId=${orderId}`)
         }
-      />
+        validCallback={() => {
+          if (!rechargeAccount) return Toast.fail("请输入需要充值的账号", 1);
+          return {
+            goodsCode: goodsSelect.code,
+            rechargeAccount,
+          };
+        }}
+        btnText="立即充值"
+      >
+        {goodsSelect?.facePrice - goodsSelect?.price > 0 && (
+          <div className="item-footer__btn-tags">
+            立省
+            {(goodsSelect?.facePrice - goodsSelect?.price) / 10000}元
+          </div>
+        )}
+      </Footer>
     </>
   );
 };
