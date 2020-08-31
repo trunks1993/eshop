@@ -19,18 +19,13 @@ export default (props) => {
 
   const shop = async () => {
     try {
-      if (!rechargeAccount && !amount) return Toast.fail("请输入完整信息", 1);
-      if (type == "zhichong" && !rechargeAccount) {
-        return Toast.fail("请输入充值手机号", 1);
-      } else if (type == "kami" && !amount) {
-        return Toast.fail("请输入数量", 1);
-      } else if (
-        rechargeAccount &&
-        !/^1[3456789]\d{9}$/.test(rechargeAccount.split(" ").join(""))
-      ) {
-        return Toast.fail("手机号格式不正确", 1);
+      const { goodsCode, rechargeAccount, amount, type } = props;
+      
+      if (type == 'zhichong' && !rechargeAccount) {
+        return Toast.fail('请输入需要充值的账号', 1);
+      } else if (type == 'kami' && !amount) {
+        return Toast.fail('请输入数量', 1);
       }
-
       if (!goodsCode) return Toast.fail("请选择商品", 1);
       const [err, data, msg] = await buyImmediately({
         goodsCode,
