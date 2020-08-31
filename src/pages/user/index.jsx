@@ -17,8 +17,8 @@ export default (props) => {
   const { history } = props;
   const [list, setList] = useState([]);
 
-  const toOrder = (status) => {
-    history.push(`/order?status=${status}`);
+  const toOrder = (index) => {
+    history.push(`/order?index=${index}`);
   };
 
   useEffect(() => {
@@ -51,25 +51,25 @@ export default (props) => {
               {list.aliasName}
             </span>
           </div>
-          <Item arrow="horizontal" onClick={() => history.push(`/order`)}>
+          <Item arrow="horizontal" onClick={() => toOrder(0)}>
             <span className="user__item-text">全部订单</span>
           </Item>
         </div>
         <div className="user__icon-btn">
           <ul>
-            <li className="user__icon-btn-item" onClick={() => toOrder('1')}>
+            <li className="user__icon-btn-item" onClick={() => toOrder(1)}>
               <img className="user__icon-btn-item-img" src={icon1} />
               <span className="user__icon-btn-item-text">待付款</span>
             </li>
-            <li className="user__icon-btn-item" onClick={() => toOrder('2,3')}>
+            <li className="user__icon-btn-item" onClick={() => toOrder(2)}>
               <img className="user__icon-btn-item-img" src={icon2} />
               <span className="user__icon-btn-item-text">处理中</span>
             </li>
-            <li className="user__icon-btn-item" onClick={() => toOrder('4,5')}>
+            <li className="user__icon-btn-item" onClick={() => toOrder(3)}>
               <img className="user__icon-btn-item-img" src={icon3} />
               <span className="user__icon-btn-item-text">已完成</span>
             </li>
-            <li className="user__icon-btn-item" onClick={() => toOrder('6')}>
+            <li className="user__icon-btn-item" onClick={() => toOrder(4)}>
               <img className="user__icon-btn-item-img" src={icon4} />
               <span className="user__icon-btn-item-text">已取消</span>
             </li>
@@ -82,7 +82,7 @@ export default (props) => {
           <li
             className="user__other-btn-item"
             onClick={() => {
-              Modal.alert(<div className="modalTop">咨询商品问题,请添加客服QQ(791441309)</div>, '', [
+              Modal.alert(<div className="modalTop">咨询商品问题,请添加客服QQ(2045879978)</div>, '', [
                 {
                   text: '我知道了',
                   onPress: () => {},
@@ -95,7 +95,7 @@ export default (props) => {
           </li>
           <li
             className="user__other-btn-item"
-            onClick={() => (window.location.href = 'tel:13397527281')}
+            onClick={() => (window.location.href = 'tel:18627374839')}
           >
             <img className="user__other-btn-item-img" src={icon6} />
             <span className="user__other-btn-item-text">商务合作</span>

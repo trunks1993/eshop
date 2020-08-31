@@ -72,7 +72,7 @@ export default (props) => {
               title={
                 (current === 3 && TypeMap[list.status]) || '预计10秒内到账'
               }
-              description="具体到账情况以运营商为准,如有疑问请致电 400-8888-8888 联系我们"
+              description="具体到账情况以运营商为准,如有疑问请致电 0731-85790298 联系我们"
             />
           </Steps>
         </div>

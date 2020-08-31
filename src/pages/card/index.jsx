@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import unTime from '@/assets/images/unTime.png';
-import { SvgIcon } from '@/components/lib';
-import BScroll from '@better-scroll/core';
-import { getOrderWithDetailByOrderId } from '@/services/app';
-import { getQueryVariable } from '@/utils';
-import { Toast, Flex, Modal } from 'antd-mobile';
-import { KAMI_TYPE_1, KAMI_TYPE_2, KAMI_TYPE_3 } from '@/const';
-import * as QrCode from 'qrcode.react';
+import React, { useEffect, useState } from "react";
+import unTime from "@/assets/images/unTime.png";
+import { SvgIcon } from "@/components/lib";
+import BScroll from "@better-scroll/core";
+import { getOrderWithDetailByOrderId } from "@/services/app";
+import { getQueryVariable } from "@/utils";
+import { Toast, Flex, Modal } from "antd-mobile";
+import { KAMI_TYPE_1, KAMI_TYPE_2, KAMI_TYPE_3 } from "@/const";
+import * as QrCode from "qrcode.react";
 
 export default (props) => {
   const { history } = props;
@@ -15,7 +15,7 @@ export default (props) => {
   const [items, setItems] = useState([]);
 
   useEffect(() => {
-    new BScroll('.card__list', {
+    new BScroll(".card__list", {
       probeType: 3,
       click: true,
       bounce: false,
@@ -35,7 +35,7 @@ export default (props) => {
   const initList = async () => {
     try {
       const [err, data, msg] = await getOrderWithDetailByOrderId({
-        orderId: getQueryVariable('orderId'),
+        orderId: getQueryVariable("orderId"),
       });
       if (!err) setList(data);
       else Toast.fail(msg, 1);
@@ -51,7 +51,7 @@ export default (props) => {
     if (!/iPhone|iPod|iPad/i.test(navigator.userAgent)) {
       return;
     }
-    const pNode = closest(e.target, '.am-modal-content');
+    const pNode = closest(e.target, ".am-modal-content");
     if (!pNode) {
       e.preventDefault();
     }
@@ -72,13 +72,13 @@ export default (props) => {
         </div>
       );
     },
-    [KAMI_TYPE_3]: (item) => {
-      return (
-        <div className="unTime">
-          <img src={unTime} />
-        </div>
-      );
-    },
+    // [KAMI_TYPE_3]: (item) => {
+    //   return (
+    //     <div className="unTime">
+    //       {/* <img src={unTime} /> */}
+    //     </div>
+    //   );
+    // },
   };
 
   return (
@@ -93,16 +93,16 @@ export default (props) => {
                   src={`/file${list.iconUrl}`}
                   className={
                     item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
-                      ? 'grayimg'
-                      : 'img'
+                      ? "grayimg"
+                      : "img"
                   }
                 />
                 <div className="right">
                   <span
                     className={
                       item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
-                        ? 'graytitle'
-                        : 'title'
+                        ? "graytitle"
+                        : "title"
                     }
                   >
                     {item.goodsName}
@@ -110,8 +110,8 @@ export default (props) => {
                   <span
                     className={
                       item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
-                        ? 'graytime'
-                        : 'time'
+                        ? "graytime"
+                        : "time"
                     }
                   >
                     有效期至 {item.invalidTime}
@@ -122,24 +122,24 @@ export default (props) => {
                 <div
                   className={
                     item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
-                      ? 'graytexts'
-                      : 'texts'
+                      ? "graytexts"
+                      : "texts"
                   }
                 >
                   兑换码：<b>{item.password}</b>
                 </div>
               </div>
-              {TypeMap[item.status](item)}
+              {TypeMap[item.status] && TypeMap[item.status](item)}
             </li>
           ))}
         </ul>
       </div>
 
       <div className="card__btn">
-        <div className="card__btn-1" onClick={() => history.push('/order')}>
+        <div className="card__btn-1" onClick={() => history.push("/order")}>
           查看订单
         </div>
-        <div className="card__btn-2" onClick={() => history.push('/home')}>
+        <div className="card__btn-2" onClick={() => history.push("/home")}>
           继续购买
         </div>
       </div>
