@@ -24,6 +24,7 @@ const data = [
     key: 1,
   },
 ];
+
 export default (props) => {
   const { history } = props;
   const [list, setList] = useState({});
@@ -32,6 +33,7 @@ export default (props) => {
   const [activeTab, setActiveTab] = useState(0);
   const [goodsSelect, setGoodsSelect] = useState(0);
   const [shopAmount, setShopAmount] = useState(1);
+  const [skuCaches, setSkuCaches] = useState({});
 
   useEffect(() => {
     if (_.isEmpty(shopList)) return;
@@ -79,23 +81,38 @@ export default (props) => {
   }, [activeTab]);
 
   useEffect(() => {
-    getShopName();
-    initList(getQueryVariable('brandCode'));
+    const brandCode = getQueryVariable('brandCode');
+    getShopName(brandCode);
+    initList(brandCode);
   }, []);
 
-  const getShopName = () => {
+  const getShopName = (brandCode) => {
     const shopList = JSON.parse(Cookies.get('shopname'));
+    const index = shopList.brandList.findIndex((e) => e.code == brandCode);
+    shopList.brandList.unshift(shopList.brandList.splice(index, 1)[0]);
     setShopList(shopList.brandList);
   };
 
   const initList = _.debounce(async (brandCode) => {
+    setActive(brandCode); //我不知道为什么把这个setActive放在那个onClick那里会导致这个方法调两次,所以放在这里了
+    const cacheList = skuCaches[brandCode];
+    if (!_.isEmpty(cacheList)) {
+      if (cacheList.productTypeCode === 104) {
+        return history.push(`/creditItem?brandCode=${brandCode}`);
+      }
+      return setList(cacheList);
+    }
     try {
       const [err, data, msg] = await searchGoodsByBrandCode({ brandCode });
       if (!err) {
+        setList(data);
+        setSkuCaches({
+          ...skuCaches,
+          [brandCode]: data,
+        });
         if (data[0].productTypeCode === 104) {
           history.push(`/creditItem?brandCode=${brandCode}`);
         }
-        setList(data);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   }, 200);
@@ -108,12 +125,11 @@ export default (props) => {
             <ul id="brand">
               {_.map(shopList, (item, index) => (
                 <li
-                  key={shopList[index].code}
+                  key={index}
                   className={classnames({
                     active: active == shopList[index].code,
                   })}
                   onClick={() => {
-                    setActive(shopList[index].code);
                     initList(shopList[index].code);
                   }}
                   style={{ letterSpacing: realIos ? '-1.4px' : undefined }}
@@ -136,7 +152,7 @@ export default (props) => {
                     <img src={item.iconUrl ? `/file${item.iconUrl}` : goods} />
                   </div>
                   <div className="info-wrap">
-                    <span className="info-wrap-name">{item.title}</span>
+                    <span className="info-wrap-name">{item.shortName}</span>
                     <div className="info-wrap-price">
                       <span className="info-wrap-price__price">
                         <b style={{ fontSize: '24SUPX' }}>￥</b>
@@ -162,7 +178,7 @@ export default (props) => {
               </span>
               <InputNumber
                 min={1}
-                max={10}
+                max={list[goodsSelect]?.singleBuyLimit}
                 defaultValue={1}
                 onChange={(val) => setShopAmount(val)}
               />
@@ -229,6 +245,7 @@ export default (props) => {
         goodsCode={list[goodsSelect]?.code}
         amount={shopAmount}
         history={history}
+        tags={list[goodsSelect]?.tags}
         type="kami"
       />
     </>

@@ -72,7 +72,13 @@ export default (props) => {
         </div>
       );
     },
-    [KAMI_TYPE_3]: (item) => {},
+    [KAMI_TYPE_3]: (item) => {
+      return (
+        <div className="unTime">
+          <img src={unTime} />
+        </div>
+      );
+    },
   };
 
   return (
@@ -85,19 +91,27 @@ export default (props) => {
               <div className="card__list-item-info">
                 <img
                   src={`/file${list.iconUrl}`}
-                  className={item.status === KAMI_TYPE_2 ? 'grayimg' : 'img'}
+                  className={
+                    item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
+                      ? 'grayimg'
+                      : 'img'
+                  }
                 />
                 <div className="right">
                   <span
                     className={
-                      item.status === KAMI_TYPE_2 ? 'graytitle' : 'title'
+                      item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
+                        ? 'graytitle'
+                        : 'title'
                     }
                   >
                     {item.goodsName}
                   </span>
                   <span
                     className={
-                      item.status === KAMI_TYPE_2 ? 'graytime' : 'time'
+                      item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
+                        ? 'graytime'
+                        : 'time'
                     }
                   >
                     有效期至 {item.invalidTime}
@@ -107,7 +121,9 @@ export default (props) => {
               <div className="card__list-item-code">
                 <div
                   className={
-                    item.status === KAMI_TYPE_2 ? 'graytexts' : 'texts'
+                    item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
+                      ? 'graytexts'
+                      : 'texts'
                   }
                 >
                   兑换码：<b>{item.password}</b>

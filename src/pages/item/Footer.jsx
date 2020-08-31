@@ -8,6 +8,31 @@ import _ from 'lodash';
 export default (props) => {
   const { history } = props;
   const [list, setList] = useState();
+  const [redirect, setRedirect] = useState();
+
+  useEffect(() => {
+    if (_.isEmpty(redirect)) return;
+    if (redirect == 2) {
+      //直充
+      history.push(`/creditItems?orderId=${list.orderId}`);
+    } else {
+      //卡密
+      history.push('/order');
+    }
+  }, [redirect]);
+
+  useEffect(() => {
+    if (!_.isEmpty(redirect)) {
+      if (redirect == 2) {
+        //直充
+        history.push(`/creditItems?orderId=${list.orderId}`);
+      } else {
+        //卡密
+        history.push('/order');
+      }
+    }
+  }, []);
+
   const shop = async () => {
     try {
       const { goodsCode, rechargeAccount, amount, type } = props;
@@ -65,20 +90,14 @@ export default (props) => {
       },
       function (res) {
         if (res.err_msg == 'get_brand_wcpay_request:ok') {
-          if (list.bizType == 2) {
-            //直充
-            history.push(`/creditItems?orderId=${list.orderId}`);
-          } else {
-            //卡密
-            history.push('/order');
-          }
+          setRedirect(list.bizType);
         }
       }
     );
   };
 
   const kefuModal = _.debounce(() => {
-    Modal.alert('咨询商品问题,请添加客服QQ(791441309)', '', [
+    Modal.alert(<div className="modalTop">咨询商品问题,请添加客服QQ(791441309)</div>, '', [
       {
         text: '我知道了',
         onPress: () => {},
@@ -107,6 +126,9 @@ export default (props) => {
           </span>
         </div>
         <div className="item-footer-btn" onClick={shop}>
+          {!_.isEmpty(props?.tags) && (
+            <div className="item-footer-tags">{props?.tags}</div>
+          )}
           {props?.amount ? '立即购买' : '立即充值'}
         </div>
       </div>
