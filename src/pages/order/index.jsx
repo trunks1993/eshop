@@ -101,6 +101,7 @@ export default (props) => {
   }, [currPage]);
 
   useEffect(() => {
+    cuur = 1;
     dispatchInit();
   }, [activeTab]);
 

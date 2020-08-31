@@ -24,10 +24,8 @@
         margin-top: 20px;
       }
       &-head {
-        position: relative;
         padding: 30px;
-        .hairline("bottom");
-        border-bottom-style: dashed;
+        border-bottom: 1px dashed @color-border-base;
         &-no {
           font-size: 24px;
           color: #999999;
@@ -42,9 +40,7 @@
 
       &-goods {
         padding: 30px;
-        position: relative;
-        .hairline("bottom");
-        border-bottom-style: dashed;
+        border-bottom: 1px dashed @color-border-base;
         display: flex;
         align-items: center;
         &-img {
@@ -101,9 +97,9 @@
       }
       &-extra {
         padding: 30px;
-        .hairline("bottom");
-        position: relative;
-        border-bottom-style: dashed;
+        // .hairline("bottom");
+        // position: relative;
+        border-bottom: 1px dashed @color-border-base;
         &-item {
           font-size: 24px;
           color: #333333;
@@ -218,6 +214,7 @@
   position: absolute;
   right: -10px;
   top: -10px;
+  z-index: 10;
 }
 
 .circle(@direction) when(@direction = "left") {
@@ -230,6 +227,7 @@
   position: absolute;
   left: -10px;
   top: -10px;
+  z-index: 10;
 }
 
 .btn-base() {

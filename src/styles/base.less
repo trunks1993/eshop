@@ -1,24 +1,24 @@
 @charset "utf-8";
-@import './var.less';
-@import './antd.less';
-@import './layout.less';
-@import './home.less';
-@import './user.less';
-@import './order.less';
-@import './item.less';
-@import './card.less';
-@import './lib/inputNumber.less';
-@import './404.less';
+@import "./var.less";
+@import "./antd.less";
+@import "./layout.less";
+@import "./home.less";
+@import "./user.less";
+@import "./order.less";
+@import "./item.less";
+@import "./card.less";
+@import "./lib/inputNumber.less";
+@import "./404.less";
 
 // @font-face {
 //   font-family: 'pfb';
 //   src: url('./font/PingFang\ Bold.ttf');
 // }
 
-@font-face {
-  font-family: 'pfm';
-  src: url('./font/PingFang\ Medium.ttf');
-}
+// @font-face {
+//   font-family: "pfm";
+//   src: url("./font/PingFang\ Medium.ttf");
+// }
 
 html,
 body,
@@ -26,7 +26,7 @@ body,
   height: 100%;
   background: @color-bg-base;
   overflow: hidden;
-  font-family: 'pfm';
+  // font-family: "font-family:Microsoft YaHei";
   position: fixed;
   top: 0;
   right: 0;
@@ -45,7 +45,7 @@ ul {
 }
 
 .scale-hairline-common(@color, @top, @right, @bottom, @left) {
-  content: '';
+  content: "";
   position: absolute;
   background-color: @color;
   display: block;
@@ -56,7 +56,7 @@ ul {
   left: @left;
 }
 
-.hairline(@direction, @color: @color-border-base) when (@direction = 'top') {
+.hairline(@direction, @color: @color-border-base) when (@direction = "top") {
   border-top: 1px solid @color;
 
   html:not([data-scale]) & {
@@ -78,7 +78,7 @@ ul {
   }
 }
 
-.hairline(@direction, @color: @color-border-base) when (@direction = 'right') {
+.hairline(@direction, @color: @color-border-base) when (@direction = "right") {
   border-right: 1px solid @color;
 
   html:not([data-scale]) & {
@@ -101,7 +101,7 @@ ul {
   }
 }
 
-.hairline(@direction, @color: @color-border-base) when (@direction = 'bottom') {
+.hairline(@direction, @color: @color-border-base) when (@direction = "bottom") {
   border-bottom: 1px solid @color;
   html:not([data-scale]) & {
     @media (min-resolution: 2dppx) {
@@ -120,7 +120,7 @@ ul {
   }
 }
 
-.hairline(@direction, @color: @color-border-base) when (@direction = 'left') {
+.hairline(@direction, @color: @color-border-base) when (@direction = "left") {
   border-left: 1px solid @color;
 
   html:not([data-scale]) & {
@@ -144,7 +144,7 @@ ul {
 
 .hairline(@direction, @color: @color-border-base, @radius: 0)
   when
-  (@direction = 'all') {
+  (@direction = "all") {
   border: 1px solid @color;
   border-radius: @radius;
 
@@ -154,7 +154,7 @@ ul {
       border: none;
 
       &::before {
-        content: '';
+        content: "";
         position: absolute;
         left: 0;
         top: 0;
@@ -179,15 +179,15 @@ ul {
 }
 
 .bg-image(@name) {
-  background-image: ~'url(../assets/images/@2x/@{name})';
+  background-image: ~"url(../assets/images/@2x/@{name})";
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 100%;
   @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
-    background-image: ~'url(../assets/images/@3x/@{name})';
+    background-image: ~"url(../assets/images/@3x/@{name})";
   }
 }
 
-.modalTop{
+.modalTop {
   margin-top: 30px;
 }

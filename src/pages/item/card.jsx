@@ -141,7 +141,7 @@ export default (props) => {
                     setActive(brandCode);
                     initList(brandCode);
                   }}
-                  style={{ letterSpacing: realIos ? "-1.4px" : undefined }}
+                  style={{ letterSpacing: realIos ? "-1SUPX" : undefined }}
                 >
                   {item.name}
                 </li>
