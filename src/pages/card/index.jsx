@@ -5,7 +5,14 @@ import BScroll from '@better-scroll/core';
 import { getOrderWithDetailByOrderId } from '@/services/app';
 import { getQueryVariable } from '@/utils';
 import { Toast, Flex, Modal } from 'antd-mobile';
-import { KAMI_TYPE_1, KAMI_TYPE_2, KAMI_TYPE_3 } from '@/const';
+import {
+  KAMI_TYPE_1,
+  KAMI_TYPE_2,
+  KAMI_TYPE_3,
+  PRODUCT_TYPE_1,
+  PRODUCT_TYPE_2,
+  PRODUCT_TYPE_3,
+} from '@/const';
 import * as QrCode from 'qrcode.react';
 
 export default (props) => {
@@ -72,15 +79,63 @@ export default (props) => {
         </div>
       );
     },
-    [KAMI_TYPE_3]: (item) => {
+    // [KAMI_TYPE_3]: (item) => {
+    //   return (
+    //     <div className="unTime">
+    //       {/* <img src={unTime} /> */}
+    //     </div>
+    //   );
+    // },
+  };
+
+  const ProductTypesMap = {
+    [PRODUCT_TYPE_1]: (item) => {
       return (
-        <div className="unTime">
-          <img src={unTime} />
+        <>
+          <div
+            className={
+              item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
+                ? 'graytexts'
+                : 'texts'
+            }
+          >
+            <div>
+              卡号：<b>{item.objNo}</b>
+            </div>
+            <div>
+              密码：<b>{item.password}</b>
+            </div>
+          </div>
+        </>
+      );
+    },
+    [PRODUCT_TYPE_2]: (item) => {
+      return (
+        <div
+          className={
+            item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
+              ? 'graytexts'
+              : 'texts'
+          }
+        >
+          兑换码：<b>{item.password}</b>
+        </div>
+      );
+    },
+    [PRODUCT_TYPE_3]: (item) => {
+      return (
+        <div
+          className={
+            item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
+              ? 'graytexts'
+              : 'texts'
+          }
+        >
+          短链接：<b>{item.password}</b>
         </div>
       );
     },
   };
-
   return (
     <div className="card">
       <div className="card__head">{list.goodsName}</div>
@@ -119,17 +174,10 @@ export default (props) => {
                 </div>
               </div>
               <div className="card__list-item-code">
-                <div
-                  className={
-                    item.status === KAMI_TYPE_2 || item.status === KAMI_TYPE_3
-                      ? 'graytexts'
-                      : 'texts'
-                  }
-                >
-                  兑换码：<b>{item.password}</b>
-                </div>
+                {ProductTypesMap[list.productTypeCode](item)}
               </div>
-              {TypeMap[item.status](item)}
+              {TypeMap[list.orderDetailList[index].status] &&
+                TypeMap[item.status](item)}
             </li>
           ))}
         </ul>
@@ -164,7 +212,7 @@ export default (props) => {
         visible={visible}
         transparent
         closable
-        maskClosable
+        maskClosable={false}
         onClose={() => setVisible(false)}
         title={<div className="modal-title">{items.goodsName}</div>}
         wrapProps={{ onTouchStart: onWrapTouchStart }}
@@ -175,7 +223,8 @@ export default (props) => {
           <div className="modal-text">付款时请向店员出示二维码</div>
           <QrCode value={items.password} size={80} id="qrCode" />
           <div className="modal-pwd">
-            兑换码:<b>{items.password}</b>
+            {list?.productTypeCode &&
+              ProductTypesMap[list.productTypeCode](items)}
           </div>
         </div>
       </Modal>

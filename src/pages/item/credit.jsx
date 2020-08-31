@@ -1,44 +1,46 @@
-import React, { useEffect, useState } from 'react';
-import { InputItem, Toast } from 'antd-mobile';
-import { getQueryVariable } from '@/utils';
-import tags from '@/assets/images/tags.png';
-import Footer from './Footer';
-import { searchGoodsByBrandCode } from '@/services/app';
-import BScroll from '@better-scroll/core';
-import _ from 'lodash';
+import React, { useEffect, useState } from "react";
+import { InputItem, Toast } from "antd-mobile";
+import { getQueryVariable } from "@/utils";
+import tags from "@/assets/images/tags.png";
+import Footer from "./Footer";
+import { searchGoodsByBrandCode } from "@/services/app";
+import BScroll from "@better-scroll/core";
+import _ from "lodash";
 
 export default (props) => {
   const { history } = props;
-  const [list, setList] = useState({});
-  const [name, setName] = useState({});
-  const [norm, setNorm] = useState({});
+  const [list, setList] = useState([]);
+  const [name, setName] = useState([]);
+  const [norm, setNorm] = useState([]);
   const [addPhone, setaddPhone] = useState();
   const [normKey, setNormKey] = useState(0);
   const [nameKey, setNameKey] = useState(0);
   const [goodsSelect, setGoodsSelect] = useState(0);
+  const [b, setB] = useState(null);
 
   useEffect(() => {
-    initList(getQueryVariable('brandCode'));
+    initList(getQueryVariable("brandCode"));
   }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      new BScroll('.credit-item', {
-        // mouseWheel: true, // 开启鼠标滚轮支持
-        //   scrollbars: "custom", // 开启滚动条支持
-        bounce: false,
-        probeType: 3,
-        click: true,
-      });
+    const b = new BScroll(".credit-item", {
+      bounce: false,
+      probeType: 3,
+      click: true,
     });
-  }, [list]);
+    setB(b);
+  }, []);
+
+  useEffect(() => {
+    if (b) b.refresh();
+  }, [normKey, nameKey, list, name, norm]);
 
   const initList = async (brandCode) => {
     try {
       const [err, data, msg] = await searchGoodsByBrandCode({ brandCode });
       if (!err) {
-        setList(data);
         getShopDetail(data);
+        setList(data);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
@@ -105,8 +107,8 @@ export default (props) => {
                 <li
                   className={
                     nameKey === index
-                      ? 'credit-item__sku-goods-item--active'
-                      : 'credit-item__sku-goods-item'
+                      ? "credit-item__sku-goods-item--active"
+                      : "credit-item__sku-goods-item"
                   }
                   key={index}
                   onClick={() => setNameKey(index)}
@@ -118,7 +120,7 @@ export default (props) => {
             </ul>
             <div
               className="credit-item__sku-title"
-              style={{ marginTop: '15SUPX' }}
+              style={{ marginTop: "15SUPX" }}
             >
               商品规格
             </div>
@@ -127,8 +129,8 @@ export default (props) => {
                 <li
                   className={
                     normKey === index
-                      ? 'credit-item__sku-norms-item--active'
-                      : 'credit-item__sku-norms-item'
+                      ? "credit-item__sku-norms-item--active"
+                      : "credit-item__sku-norms-item"
                   }
                   key={index}
                   onClick={() => setNormKey(index)}
@@ -158,11 +160,14 @@ export default (props) => {
         </div>
       </div>
       <Footer
-        goodsCode={!_.isEmpty(norm) ? norm[nameKey][normKey]?.code : ''}
-        rechargeAccount={addPhone ? addPhone : ''}
+        goodsCode={!_.isEmpty(norm) ? norm[nameKey][normKey]?.code : ""}
+        rechargeAccount={addPhone ? addPhone : ""}
         history={history}
         tags={list[goodsSelect]?.tags}
         type="zhichong"
+        successCallBack={(orderId) =>
+          history.push(`/creditItems?orderId=${orderId}`)
+        }
       />
     </>
   );

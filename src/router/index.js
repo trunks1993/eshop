@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-06-20 17:03:03
- * @LastEditTime: 2020-08-28 17:54:46
+ * @LastEditTime: 2020-08-31 19:38:32
  */
 import React from "react";
 import { routerRedux, Route, Switch, Redirect } from "dva/router";
@@ -15,6 +15,7 @@ import CreditItem from "@/pages/item/credit";
 import CreditItems from "@/pages/item/credits";
 
 import Card from "@/pages/card";
+import Page404 from "@/pages/page404";
 
 export default ({ history }) => {
   return (
@@ -27,6 +28,7 @@ export default ({ history }) => {
         <Route exact path="/creditItems" component={CreditItems} />
 
         <Route exact path="/card" component={Card} />
+        <Route exact path="/404" component={Page404} />
         <Route path="/" component={Layout} />
       </Switch>
     </ConnectedRouter>

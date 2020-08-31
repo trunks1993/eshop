@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import TabsComp from '@/components/lib/tabs';
-import BScroll from '@better-scroll/core';
-import PullUp from '@better-scroll/pull-up';
-import { Toast, Modal } from 'antd-mobile';
-import { setToken } from '@/utils/auth';
+import React, { useState, useEffect } from "react";
+import TabsComp from "@/components/lib/tabs";
+import BScroll from "@better-scroll/core";
+import PullUp from "@better-scroll/pull-up";
+import { Toast, Modal } from "antd-mobile";
+import { setToken } from "@/utils/auth";
 import {
-  buyImmediately,
+  getOrderByOrderId,
   pay,
   searchUserSubscribeOrderList,
-} from '@/services/app';
-import UnList from '@/assets/images/brand.png';
-import { getQueryVariable } from '@/utils';
+} from "@/services/app";
+import empty from "@/assets/images/empty.png";
+import { getQueryVariable } from "@/utils";
 import {
   ProductTypes,
   TraceStatus,
@@ -24,96 +24,85 @@ import {
   PRODUCT_TYPE_1,
   PRODUCT_TYPE_2,
   PRODUCT_TYPE_3,
+  PRODUCT_TYPE_4,
   TRANSACTION_TYPE_1,
   TRANSACTION_TYPE_2,
-} from '@/const';
-import _ from 'lodash';
+} from "@/const";
+import _ from "lodash";
 BScroll.use(PullUp);
-let scroll;
+
 let cuur = 1;
-const data = [
+const tabData = [
   {
     key: 0,
-    title: '全部',
-    value: '0',
+    title: "全部",
+    value: "",
   },
   {
     key: 1,
-    title: '待付款',
-    value: '1',
+    title: "待付款",
+    value: "1",
   },
   {
     key: 2,
-    title: '处理中',
-    value: '2,3',
+    title: "处理中",
+    value: "2,3",
   },
   {
     key: 3,
-    title: '已完成',
-    value: '4,5',
+    title: "已完成",
+    value: "4,5",
   },
   {
     key: 4,
-    title: '已取消',
-    value: '6',
+    title: "已取消",
+    value: "6",
   },
 ];
 
 export default (props) => {
   const { history } = props;
 
+  const tabIndex = parseInt(getQueryVariable("index")) || 0;
+  const token = getQueryVariable("token");
+
   const [currPage, setCurrPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [status, setStatus] = useState();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(tabIndex);
+
   const [list, setList] = useState([]);
+  const [noMore, setNoMore] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [b, setB] = useState(null);
+
+  let timer = null;
 
   useEffect(() => {
-    if (_.isEmpty(getQueryVariable('status'))) return;
-    setStatus(getQueryVariable('status'));
-    for (let i = 0; i <= data?.length; i++) {
-      if (data[i]?.value === getQueryVariable('status')) {
-        return setActiveTab(data[i]?.key);
-      }
-    }
+    if (token) setToken(token);
+
+    const b = new BScroll(".order__list", {
+      scrollY: true,
+      click: true,
+      pullUpLoad: true,
+    });
+    b.on("pullingUp", pullingUpHandler); //上拉加载更多
+    setB(b);
   }, []);
 
   useEffect(() => {
-    if (_.isEmpty(list) || list.length > pageSize) return;
-    scroll = new BScroll('.order__list', {
-      scrollY: true,
-      click: true,
-      pullUpLoad: {
-        threshold: 50, //触发pullingDown事件的位置
-      },
-    });
-    scroll.on('pullingUp', pullingUpHandler); //上拉加载更多
+    if (!b) return;
+    b.finishPullUp();
+    b.refresh();
   }, [list]);
 
   useEffect(() => {
-    if (_.isEmpty(scroll) || _.isEmpty(list)) return;
-    scroll.finishPullUp();
-    scroll.refresh();
-  }, [list]);
-
-  useEffect(() => {
-    if (!_.isEmpty(getQueryVariable('status'))) return;
     initList();
   }, [currPage]);
 
   useEffect(() => {
-    if (_.isEmpty(status)) return;
     dispatchInit();
-  }, [status]);
-
-  useEffect(() => {
-    _getToken();
-  }, []);
-
-  const _getToken = () => {
-    const token = getQueryVariable('token');
-    if (token) setToken(token);
-  };
+  }, [activeTab]);
 
   const pullingUpHandler = () => {
     setCurrPage(++cuur);
@@ -125,13 +114,23 @@ export default (props) => {
 
   const initList = async () => {
     try {
+      setLoading(true);
+      Toast.loading();
+      const statusArray = _.find(tabData, (item) => item.key === activeTab)
+        .value;
       const [err, data, msg] = await searchUserSubscribeOrderList({
-        statusArray: status === '0' ? undefined : status,
+        statusArray,
         currPage,
         pageSize,
       });
       if (!err) {
-        setList([...list, ...data.list]);
+        const newList = data?.list;
+        if (!newList || newList.length < pageSize) {
+          setNoMore(true);
+        }
+        setList([...list, ...(newList || [])]);
+        setLoading(false);
+        Toast.hide();
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
@@ -155,15 +154,22 @@ export default (props) => {
       </div>
     ),
     [TRACE_STATUS_3]: () => {},
-    [TRACE_STATUS_4]: (item) => {
+    [TRACE_STATUS_4]: (item) => (
       <div className="order__item-bottom-text">
         <span className="order__item-bottom-text--text">合计:</span>
-        <span className="order__item-bottom-text--unmoney">
+        <span className="order__item-bottom-text--money">
           &nbsp;￥{(item.amount * item.price) / 10000}
         </span>
-      </div>;
-    },
-    [TRACE_STATUS_5]: () => {},
+      </div>
+    ),
+    [TRACE_STATUS_5]: (item) => (
+      <div className="order__item-bottom-text">
+        <span className="order__item-bottom-text--text">合计:</span>
+        <span className="order__item-bottom-text--money">
+          &nbsp;￥{(item.amount * item.price) / 10000}
+        </span>
+      </div>
+    ),
     [TRACE_STATUS_6]: (item) => (
       <div className="order__item-bottom-text">
         <span className="order__item-bottom-text--text">合计:</span>
@@ -184,14 +190,7 @@ export default (props) => {
           </div>
           <div
             className="order__item-bottom-btn--primary"
-            onClick={() => {
-              console.log(item);
-              if (item.rechargeAccount) {
-                shop(item.goodsCode, item.rechargeAccount, _);
-              } else {
-                shop(item.goodsCode, _, item.amount);
-              }
-            }}
+            onClick={() => _pay(item.orderId)}
           >
             继续支付
           </div>
@@ -213,7 +212,7 @@ export default (props) => {
       ) {
         return (
           <>
-            <div
+            {/* <div
               className="order__item-bottom-btn--ghost"
               onClick={() => {
                 if (item.bizType === TRANSACTION_TYPE_1) {
@@ -224,7 +223,7 @@ export default (props) => {
               }}
             >
               再来一单
-            </div>
+            </div> */}
             <div
               className="order__item-bottom-btn--primary"
               onClick={() => history.push(`/card?orderId=${item.orderId}`)}
@@ -233,37 +232,25 @@ export default (props) => {
             </div>
           </>
         );
-      } else return '';
+      } else return "";
     },
     [TRACE_STATUS_5]: () => {},
     [TRACE_STATUS_6]: () => {},
   };
 
-  const shop = async (goodsCode, rechargeAccount, amount) => {
+  const _pay = async (orderId) => {
     try {
-      console.log(goodsCode, rechargeAccount, amount);
-      if (!rechargeAccount && !amount) return Toast.fail('请输入完整信息', 1);
-      if (!goodsCode) return Toast.fail('请选择商品', 1);
-      const [err, data, msg] = await buyImmediately({
-        goodsCode,
-        rechargeAccount,
-        amount,
-      });
-      if (!err) {
-        shopPay(data.orderId);
+      if (orderId) {
+        const [err, data, msg] = await pay({ orderId });
+        if (!err) {
+          getList(orderId);
+          wxpay(data);
+        } else Toast.fail(msg, 1);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
 
-  const shopPay = async (orderId) => {
-    try {
-      const [err, data, msg] = await pay({ orderId });
-      if (!err) wxpay(data);
-      else Toast.fail(msg, 1);
-    } catch (error) {}
-  };
-
-  const wxpay = async ({
+  const wxpay = ({
     appId,
     timestamp,
     nonceStr,
@@ -272,7 +259,7 @@ export default (props) => {
     orderdetail,
   }) => {
     WeixinJSBridge.invoke(
-      'getBrandWCPayRequest',
+      "getBrandWCPayRequest",
       {
         appId, //公众号名称，由商户传入
         timeStamp: timestamp, //时间戳，自1970年以来的秒数
@@ -281,27 +268,38 @@ export default (props) => {
         signType, //微信签名方式：
         paySign, //微信签名
       },
-      function (res) {
-        if (res.err_msg == 'get_brand_wcpay_request:ok') {
-          if (list.bizType == 2) {
-            //直充
-            history.push(`/creditItems?orderId=${list.orderId}`);
-          } else if (list.bizType == 1) {
-            //卡密
-            history.push('/order');
-          }
+      (res) => {
+        if (res.err_msg == "get_brand_wcpay_request:cancel") {
+          clearTimeout(timer);
         }
       }
     );
   };
 
+  const getList = async (orderId) => {
+    try {
+      const [err, data, msg] = await getOrderByOrderId({ orderId });
+      if (!err) {
+        if (data.payStatus === 1) {
+          clearTimeout(timer);
+          dispatchInit();
+          Toast.success("支付成功");
+        } else timer = setTimeout(() => getList(orderId), 1000);
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
   const kefuModal = _.debounce(() => {
-    Modal.alert(<div className="modalTop">咨询商品问题,请添加客服QQ(791441309)</div>, '', [
-      {
-        text: '我知道了',
-        onPress: () => {},
-      },
-    ]);
+    Modal.alert(
+      <div className="modalTop">咨询商品问题,请添加客服QQ(2045879978)</div>,
+      "",
+      [
+        {
+          text: "我知道了",
+          onPress: () => {},
+        },
+      ]
+    );
   }, 100);
 
   return (
@@ -310,97 +308,100 @@ export default (props) => {
         className="order__filter-tabs"
         activeTab={activeTab}
         onTabClick={(tab, index) => {
+          if (tab.key === activeTab) return;
           setList([]);
           setActiveTab(index);
-          setStatus(tab.value);
         }}
-        data={data}
+        data={tabData}
         page={5}
       />
       <div className="order__filter-tabs--block"></div>
       <div className="order__list">
-        <ul>
-          {_.isEmpty(list) ? (
+        <div>
+          {!list.length && !loading ? (
             <div className="order__list-unList">
-              <img src={UnList} />
+              <img src={empty} />
               <div className="order__list-unList-text">您还没有订单</div>
               <div
                 className="order__item-bottom-btn--ghost"
                 onClick={() => {
-                  history.push('/home');
+                  history.push("/home");
                 }}
               >
                 去购买
               </div>
             </div>
           ) : (
-            _.map(list, (item, index) => (
-              <li className="order__item" key={index}>
-                <div className="order__item-head">
-                  <span className="order__item-head-no">
-                    订单号：{item.orderId}
-                  </span>
-                  <span className="order__item-head-status">
-                    {TraceStatus[item.status]}
-                  </span>
-                </div>
-                <div className="order__item-goods">
-                  <img
-                    className={
-                      item.status === TRACE_STATUS_6
-                        ? 'order__item-goods-unimg'
-                        : 'order__item-goods-img'
-                    }
-                    src={`/file${item.iconUrl}`}
-                  />
-                  <span className="order__item-goods-name">
-                    {item.goodsName}
-                    <b
+            <ul>
+              {_.map(list, (item, index) => (
+                <li className="order__item" key={index}>
+                  <div className="order__item-head">
+                    <span className="order__item-head-no">
+                      订单号：{item.orderId}
+                    </span>
+                    <span className="order__item-head-status">
+                      {typeof TraceStatus[item.status] === "function"
+                        ? TraceStatus[item.status](item.productTypeCode)
+                        : TraceStatus[item.status]}
+                    </span>
+                  </div>
+                  <div className="order__item-goods">
+                    <img
                       className={
                         item.status === TRACE_STATUS_6
-                          ? 'order__item-goods-name--untype'
-                          : 'order__item-goods-name--type'
+                          ? "order__item-goods-unimg"
+                          : "order__item-goods-img"
                       }
-                    >
-                      {ProductTypes[item.productTypeCode]}
-                    </b>
-                  </span>
-                  <span className="order__item-goods-other">
-                    <span>x{item.amount}</span>
-                    <span className="price">￥{item.price / 10000}</span>
-                  </span>
-                </div>
-                <div className="order__item-extra">
-                  {/* <span className="order__item-extra-item">
-                  有效期至：{item.createTime}
-                </span> */}
-                  <span className="order__item-extra-item" />
-                  <span className="order__item-extra-item">
-                    购买时间：{item.createTime}
-                  </span>
-                </div>
-                <div className="order__item-bottom">
-                  {payTypeMap[item.status](item)}
-                  <div className="order__item-bottom-btn">
-                    <span className="order__item-bottom--text">
-                      {item.status === TRACE_STATUS_1 ? (
-                        <div className="order__item-bottom--pay">
-                          等待买家付款
-                          {/* <div className="order__item-bottom--close">
-                          15分钟00秒自动关闭
-                        </div> */}
-                        </div>
-                      ) : (
-                        ''
-                      )}
+                      src={`/file${item.iconUrl}`}
+                    />
+                    <span className="order__item-goods-name">
+                      {item.goodsName}
+                      <b
+                        className={
+                          item.status === TRACE_STATUS_6
+                            ? "order__item-goods-name--untype"
+                            : "order__item-goods-name--type"
+                        }
+                      >
+                        {ProductTypes[item.productTypeCode]}
+                      </b>
                     </span>
-                    {payButMap[item.status](item)}
+                    <span className="order__item-goods-other">
+                      <span>x{item.amount}</span>
+                      <span className="price">￥{item.price / 10000}</span>
+                    </span>
                   </div>
-                </div>
-              </li>
-            ))
+                  <div className="order__item-extra">
+                    <span className="order__item-extra-item">
+                      购买时间：{item.modifyTime}
+                    </span>
+                    {item.productTypeCode === PRODUCT_TYPE_4 && (
+                      <span className="order__item-extra-item">
+                        充值账号：{item.rechargeAccount}
+                      </span>
+                    )}
+                  </div>
+                  <div className="order__item-bottom">
+                    {payTypeMap[item.status](item)}
+                    <div className="order__item-bottom-btn">
+                      <span className="order__item-bottom--text">
+                        {item.status === TRACE_STATUS_1 ? (
+                          <div className="order__item-bottom--pay">
+                            等待买家付款
+                          </div>
+                        ) : (
+                          ""
+                        )}
+                      </span>
+                      {payButMap[item.status](item)}
+                    </div>
+                  </div>
+                </li>
+              ))}
+              {/* {noMore && <li className="order__item--no-more">没有更多</li>} */}
+            </ul>
           )}
-        </ul>
+        </div>
       </div>
     </div>
   );

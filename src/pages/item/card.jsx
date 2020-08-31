@@ -1,111 +1,118 @@
-import React, { useEffect, useState } from 'react';
-import BScroll from '@better-scroll/core';
-import classnames from 'classnames';
-import { toFixed, isIos } from '@/utils';
-import goods from '@/assets/images/goods.png';
-import { InputNumber, Tabs as TabsComp } from '@/components/lib';
-import { getQueryVariable } from '@/utils';
-import { searchGoodsByBrandCode } from '@/services/app';
-import { Toast } from 'antd-mobile';
-import _ from 'lodash';
-import { ProductTypes } from '@/const';
-import Footer from './Footer';
-import Cookies from 'js-cookie';
+import React, { useEffect, useState } from "react";
+import BScroll from "@better-scroll/core";
+import classnames from "classnames";
+import { toFixed, isIos } from "@/utils";
+import goods from "@/assets/images/goods.png";
+import { InputNumber, Tabs as TabsComp } from "@/components/lib";
+import { getQueryVariable } from "@/utils";
+import { searchGoodsByBrandCode } from "@/services/app";
+import { Toast } from "antd-mobile";
+import _ from "lodash";
+import { ProductTypes } from "@/const";
+import Footer from "./Footer";
+import Cookies from "js-cookie";
 
 const realIos = isIos();
 
 const data = [
   {
-    title: '购买须知',
+    title: "购买须知",
     key: 0,
   },
   {
-    title: '使用说明',
+    title: "使用说明",
     key: 1,
   },
 ];
 
 export default (props) => {
+  const brandCode = getQueryVariable("brandCode");
+
   const { history } = props;
-  const [list, setList] = useState({});
-  const [shopList, setShopList] = useState({});
-  const [active, setActive] = useState(getQueryVariable('brandCode'));
+  const [list, setList] = useState([]);
+  const [brandList, setBrandList] = useState([]);
+  const [active, setActive] = useState(brandCode);
   const [activeTab, setActiveTab] = useState(0);
   const [goodsSelect, setGoodsSelect] = useState(0);
   const [shopAmount, setShopAmount] = useState(1);
   const [skuCaches, setSkuCaches] = useState({});
 
+  const [b1, setB1] = useState(null);
+  const [b2, setB2] = useState(null);
+
   useEffect(() => {
-    if (_.isEmpty(shopList)) return;
-    let sum = _.map(shopList, (item) => item.name.length * 30 + 60).reduce(
-      (t, p) => t + p
-    );
-
-    document.querySelector('#brand').style.width =
-      toFixed((sum / 750) * 100, 6) + 'vw';
-
-    new BScroll('.card-item__scroll-filter', {
+    const b1 = new BScroll(".card-item__goods", {
       scrollX: true,
       bounce: false,
       click: true,
     });
 
-    sum = list.length * 300 + (list.length + 1) * 30;
-
-    document.querySelector('#goods').style.width =
-      toFixed((sum / 750) * 100, 6) + 'vw';
-
-    new BScroll('.card-item__goods', {
-      scrollX: true,
+    const b2 = new BScroll(".card-item", {
       bounce: false,
+      probeType: 3,
       click: true,
+      resizePolling: 60,
     });
 
-    setTimeout(() => {
-      new BScroll('.card-item', {
-        bounce: false,
-        probeType: 3,
-        click: true,
-      });
-    });
-  }, [list]);
+    setB1(b1);
+    setB2(b2);
+  }, []);
 
   useEffect(() => {
-    setTimeout(() => {
-      new BScroll('.card-item', {
-        bounce: false,
-        probeType: 3,
-        click: true,
-      });
-    });
+    if (b2) b2.refresh();
   }, [activeTab]);
 
   useEffect(() => {
-    const brandCode = getQueryVariable('brandCode');
-    getShopName(brandCode);
+    if (list.length) {
+      const sum = list.length * 300 + (list.length + 1) * 30;
+      document.querySelector("#goods").style.width =
+        toFixed((sum / 750) * 100, 6) + "vw";
+    }
+
+    if (b1) {
+      b1.refresh();
+      b1.scrollTo(0);
+    }
+    if (b2) b2.refresh();
+  }, [list]);
+
+  useEffect(() => {
+    const brandList = getBrandList(brandCode);
+
+    let sum = _.map(brandList, (item) => item.name.length * 30 + 60).reduce(
+      (t, p) => t + p
+    );
+
+    document.querySelector("#brand").style.width =
+      toFixed((sum / 750) * 100, 6) + "vw";
+
+    new BScroll(".card-item__scroll-filter", {
+      scrollX: true,
+      bounce: false,
+      click: true,
+    });
+
+    setBrandList(brandList);
     initList(brandCode);
   }, []);
 
-  const getShopName = (brandCode) => {
-    const shopList = JSON.parse(Cookies.get('shopname'));
-    const index = shopList.brandList.findIndex((e) => e.code == brandCode);
-    shopList.brandList.unshift(shopList.brandList.splice(index, 1)[0]);
-    setShopList(shopList.brandList);
+  const getBrandList = (brandCode) => {
+    const brandList = JSON.parse(Cookies.get("brandList"));
+    const index = brandList.findIndex((e) => e.code == brandCode);
+    brandList.unshift(brandList.splice(index, 1)[0]);
+    return brandList;
   };
 
-  const initList = _.debounce(async (brandCode) => {
-    setActive(brandCode); //我不知道为什么把这个setActive放在那个onClick那里会导致这个方法调两次,所以放在这里了
+  const initList = async (brandCode) => {
     const cacheList = skuCaches[brandCode];
-    if (!_.isEmpty(cacheList)) {
-      if (cacheList.productTypeCode === 104) {
-        return history.push(`/creditItem?brandCode=${brandCode}`);
-      }
-      return setList(cacheList);
-    }
+
+    if (!_.isEmpty(cacheList)) return setList(cacheList);
+
     try {
       const [err, data, msg] = await searchGoodsByBrandCode({ brandCode });
+
       if (!err) {
-        setList(data);
+        setList(data || []);
         setSkuCaches({
           ...skuCaches,
           [brandCode]: data,
@@ -115,7 +122,7 @@ export default (props) => {
         }
       } else Toast.fail(msg, 1);
     } catch (error) {}
-  }, 200);
+  };
 
   return (
     <>
@@ -123,23 +130,25 @@ export default (props) => {
         <div>
           <div className="card-item__scroll-filter">
             <ul id="brand">
-              {_.map(shopList, (item, index) => (
+              {_.map(brandList, (item, index) => (
                 <li
                   key={index}
                   className={classnames({
-                    active: active == shopList[index].code,
+                    active: active == brandList[index].code,
                   })}
                   onClick={() => {
-                    initList(shopList[index].code);
+                    const brandCode = brandList[index].code;
+                    setActive(brandCode);
+                    initList(brandCode);
                   }}
-                  style={{ letterSpacing: realIos ? '-1.4px' : undefined }}
+                  style={{ letterSpacing: realIos ? "-1.4px" : undefined }}
                 >
                   {item.name}
                 </li>
               ))}
+              <div className="card-item__scroll-filter--line"></div>
             </ul>
           </div>
-
           <div className="card-item__goods">
             <ul id="goods">
               {_.map(list, (item, index) => (
@@ -155,7 +164,7 @@ export default (props) => {
                     <span className="info-wrap-name">{item.shortName}</span>
                     <div className="info-wrap-price">
                       <span className="info-wrap-price__price">
-                        <b style={{ fontSize: '24SUPX' }}>￥</b>
+                        <b style={{ fontSize: "24SUPX" }}>￥</b>
                         {item.price / 10000}
                       </span>
                       <span className="info-wrap-price__face-price">
@@ -227,13 +236,17 @@ export default (props) => {
               {activeTab === 0 ? (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: list[goodsSelect]?.purchaseNotes,
+                    __html:
+                      list[goodsSelect]?.purchaseNotes ||
+                      "<p style='text-align: center'>暂无数据</p>",
                   }}
                 />
               ) : (
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: list[goodsSelect]?.usageIllustration,
+                    __html:
+                      list[goodsSelect]?.usageIllustration ||
+                      "<p style='text-align: center'>暂无数据</p>",
                   }}
                 />
               )}
@@ -245,8 +258,9 @@ export default (props) => {
         goodsCode={list[goodsSelect]?.code}
         amount={shopAmount}
         history={history}
-        tags={list[goodsSelect]?.tags}
+        tags={list[goodsSelect]?.facePrice - list[goodsSelect]?.price}
         type="kami"
+        successCallBack={() => history.push(`/order`)}
       />
     </>
   );
