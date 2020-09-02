@@ -43,22 +43,20 @@ export default (props) => {
   const inputRef = React.createRef();
 
   useEffect(() => {
-    const b1 = new BScroll(".card-item__goods", {
-      scrollX: true,
-      bounce: false,
-      click: true,
-      probeType: 3,
-    });
-
-    const b2 = new BScroll(".card-item", {
-      bounce: false,
-      probeType: 3,
-      click: true,
-      resizePolling: 60,
-    });
-
-    setB1(b1);
-    setB2(b2);
+    // const b1 = new BScroll(".card-item__goods", {
+    //   scrollX: true,
+    //   bounce: false,
+    //   click: true,
+    //   probeType: 3,
+    // });
+    // const b2 = new BScroll(".card-item", {
+    //   bounce: false,
+    //   probeType: 3,
+    //   click: true,
+    //   resizePolling: 60,
+    // });
+    // setB1(b1);
+    // setB2(b2);
   }, []);
 
   useEffect(() => {
@@ -71,32 +69,30 @@ export default (props) => {
   }, [active]);
 
   useEffect(() => {
-    if (list.length) {
-      const sum = list.length * 300 + (list.length + 1) * 30;
-      document.querySelector("#goods").style.width =
-        toFixed((sum / 750) * 100, 6) + "vw";
-    }
-
-    if (b1) b1.refresh();
-
-    if (b2) b2.refresh();
+    // if (list.length) {
+    //   const sum = list.length * 300 + (list.length + 1) * 30;
+    //   document.querySelector("#goods").style.width =
+    //     toFixed((sum / 750) * 100, 6) + "vw";
+    // }
+    // if (b1) b1.refresh();
+    // if (b2) b2.refresh();
   }, [list]);
 
   useEffect(() => {
     const brandList = getBrandList(brandCode);
 
-    let sum = _.map(brandList, (item) => item.name.length * 30 + 60).reduce(
-      (t, p) => t + p
-    );
+    // let sum = _.map(brandList, (item) => item.name.length * 30 + 60).reduce(
+    //   (t, p) => t + p
+    // );
 
-    document.querySelector("#brand").style.width =
-      toFixed((sum / 750) * 100, 6) + "vw";
+    // document.querySelector("#brand").style.width =
+    //   toFixed((sum / 750) * 100, 6) + "vw";
 
-    new BScroll(".card-item__scroll-filter", {
-      scrollX: true,
-      bounce: false,
-      click: true,
-    });
+    // new BScroll(".card-item__scroll-filter", {
+    //   scrollX: true,
+    //   bounce: false,
+    //   click: true,
+    // });
 
     setBrandList(brandList);
     initList(brandCode);
@@ -134,9 +130,16 @@ export default (props) => {
   return (
     <>
       <div className="card-item">
-        <div>
-          <div className="card-item__scroll-filter">
-            <ul id="brand">
+        <div className="card-item__scroll-filter">
+          {/* 隐藏ios滚动条 */}
+          {/* <div
+            style={{
+              height: "86SUPX",
+              // paddingTop: "4SUPX",
+              overflowY: "hidden",
+            }}
+          > */}
+            <ul>
               {_.map(brandList, (item, index) => (
                 <li
                   key={index}
@@ -153,17 +156,27 @@ export default (props) => {
                   {item.name}
                 </li>
               ))}
-              <div className="card-item__scroll-filter--line"></div>
             </ul>
-          </div>
-          <div className="card-item__goods">
-            <ul id="goods">
+          {/* </div> */}
+          <div className="card-item__scroll-filter--line"></div>
+        </div>
+        <div className="card-item__goods">
+          {/* 隐藏ios滚动条 */}
+          <div
+            style={{
+              height: "408SUPX",
+              paddingTop: "4SUPX",
+              overflowY: "hidden",
+            }}
+          >
+            <ul>
               {_.map(list, (item, index) => (
                 <li
                   key={index}
                   className={classnames({ active: goodsSelect === index })}
                   onClick={() => {
                     setGoodsSelect(index);
+                    inputRef.current.setInputVal(1);
                   }}
                 >
                   <div className="img-box">
@@ -185,82 +198,82 @@ export default (props) => {
               ))}
             </ul>
           </div>
+        </div>
 
-          <div className="card-item__count-box">
-            <div className="card-item__count-box-num">
-              <span>
-                <span className="card-item__count-box-num-title">购买数量</span>
-                <span className="card-item__count-box-num-subtitle">
-                  最多可购买 {list[goodsSelect]?.singleBuyLimit} 张
-                </span>
+        <div className="card-item__count-box">
+          <div className="card-item__count-box-num">
+            <span>
+              <span className="card-item__count-box-num-title">购买数量</span>
+              <span className="card-item__count-box-num-subtitle">
+                最多可购买 {list[goodsSelect]?.singleBuyLimit} 张
               </span>
-              <InputNumber
-                min={1}
-                max={list[goodsSelect]?.singleBuyLimit}
-                defaultValue={1}
-                onChange={(val) => setAmount(val)}
-                ref={inputRef}
-              />
-            </div>
-
-            <div className="card-item__count-box-suggestion">
-              <span>
-                使用有效期：<b>购买起24小时内</b>
-              </span>
-            </div>
+            </span>
+            <InputNumber
+              min={1}
+              max={list[goodsSelect]?.singleBuyLimit}
+              defaultValue={1}
+              onChange={(val) => setAmount(val)}
+              ref={inputRef}
+            />
           </div>
 
-          <ul className="card-item__view">
-            <li className="card-item__view-item line">
-              <span className="card-item__view-item-title">商品名称</span>
-              <span className="card-item__view-item-sub">
-                {list[goodsSelect]?.name}
-              </span>
-            </li>
-            <li className="card-item__view-item line">
-              <span className="card-item__view-item-title">应付金额</span>
-              <span className="card-item__view-item-price">
-                <b>￥</b>
-                {(list[goodsSelect]?.price * amount) / 10000}
-              </span>
-            </li>
-            <li className="card-item__view-item">
-              <span className="card-item__view-item-title">商品标签</span>
-              <div className="card-item__view-item-block">
-                <span>{ProductTypes[list[goodsSelect]?.productTypeCode]}</span>
-              </div>
-            </li>
-          </ul>
+          <div className="card-item__count-box-suggestion">
+            <span>
+              使用有效期：<b>购买起24小时内</b>
+            </span>
+          </div>
+        </div>
 
-          <div className="card-item__html">
-            <TabsComp
-              className="home__content-wrap-tabs"
-              activeTab={activeTab}
-              onTabClick={({ key }) => {
-                setActiveTab(key);
-              }}
-              data={data}
-              page={4}
-            />
-            <div className="card-item__html-content">
-              {activeTab === 0 ? (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      list[goodsSelect]?.purchaseNotes ||
-                      "<p style='text-align: center'>暂无数据</p>",
-                  }}
-                />
-              ) : (
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      list[goodsSelect]?.usageIllustration ||
-                      "<p style='text-align: center'>暂无数据</p>",
-                  }}
-                />
-              )}
+        <ul className="card-item__view">
+          <li className="card-item__view-item line">
+            <span className="card-item__view-item-title">商品名称</span>
+            <span className="card-item__view-item-sub">
+              {list[goodsSelect]?.name}
+            </span>
+          </li>
+          <li className="card-item__view-item line">
+            <span className="card-item__view-item-title">应付金额</span>
+            <span className="card-item__view-item-price">
+              <b>￥</b>
+              {(list[goodsSelect]?.price * amount) / 10000}
+            </span>
+          </li>
+          <li className="card-item__view-item">
+            <span className="card-item__view-item-title">商品标签</span>
+            <div className="card-item__view-item-block">
+              <span>{ProductTypes[list[goodsSelect]?.productTypeCode]}</span>
             </div>
+          </li>
+        </ul>
+
+        <div className="card-item__html">
+          <TabsComp
+            className="home__content-wrap-tabs"
+            activeTab={activeTab}
+            onTabClick={({ key }) => {
+              setActiveTab(key);
+            }}
+            data={data}
+            page={4}
+          />
+          <div className="card-item__html-content">
+            {activeTab === 0 ? (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html:
+                    list[goodsSelect]?.purchaseNotes ||
+                    "<p style='text-align: center'>暂无数据</p>",
+                }}
+              />
+            ) : (
+              <div
+                dangerouslySetInnerHTML={{
+                  __html:
+                    list[goodsSelect]?.usageIllustration ||
+                    "<p style='text-align: center'>暂无数据</p>",
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

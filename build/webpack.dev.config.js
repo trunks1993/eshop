@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 14:31:03
- * @LastEditTime: 2020-08-28 20:19:30
+ * @LastEditTime: 2020-09-01 15:48:47
  */
 
 const webpackMerge = require("webpack-merge");
@@ -55,7 +55,7 @@ const config = webpackMerge(baseWebpackConfig, {
     proxy: {
       // 接口请求代理
       "/wap": {
-        target: "http://test.eshop.yunjinshuke.com/wap/",
+        target: "http://eshop.yunjinshuke.com/wap/",
         changeOrigin: true,
         pathRewrite: { "^/wap": "" },
       },

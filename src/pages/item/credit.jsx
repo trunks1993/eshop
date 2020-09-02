@@ -4,7 +4,6 @@ import { getQueryVariable } from "@/utils";
 import tags from "@/assets/images/tags.png";
 import Footer from "./Footer";
 import { searchGoodsByBrandCode } from "@/services/app";
-import BScroll from "@better-scroll/core";
 import _ from "lodash";
 
 export default (props) => {
@@ -18,22 +17,9 @@ export default (props) => {
 
   const [goodsSelect, setGoodsSelect] = useState({});
 
-  const [b, setB] = useState(null);
-
   useEffect(() => {
     initList();
-
-    const b = new BScroll(".credit-item", {
-      bounce: false,
-      probeType: 3,
-      click: true,
-    });
-    setB(b);
   }, []);
-
-  useEffect(() => {
-    if (b) b.refresh();
-  }, [list, parent, goodsSelect]);
 
   useEffect(() => {
     const skuList = list.filter((item) => item.productName === parent);
@@ -157,7 +143,7 @@ export default (props) => {
           if (!rechargeAccount) return Toast.fail("请输入需要充值的账号", 1);
           return {
             goodsCode: goodsSelect.code,
-            rechargeAccount,
+            rechargeAccount: rechargeAccount.replace(/\s+/g, ""),
           };
         }}
         btnText="立即充值"
