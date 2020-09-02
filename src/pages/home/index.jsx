@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-09-01 01:42:38
+ * @LastEditTime: 2020-09-02 19:53:09
  */
 
 import React, { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import { getQueryVariable } from "@/utils";
 import { setToken } from "@/utils/auth";
 import Cookies from "js-cookie";
 import { Toast } from "antd-mobile";
+import classnames from "classnames";
 
 export default (props) => {
   const { history } = props;
@@ -19,12 +20,24 @@ export default (props) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const [data, setDataList] = useState([]);
-  const [b, setB] = useState(null);
+  const [positionMap, setPositionMap] = useState({});
 
   useEffect(() => {
     _getToken();
     _getList();
   }, []);
+
+  useEffect(() => {
+    if (!data || !data.length) return;
+    let obj = {};
+    _.map(data, (item) => {
+      const y = Math.floor(
+        document.getElementById(`${item.code}`).getBoundingClientRect().y
+      );
+      obj[y] = item.code;
+    });
+    setPositionMap(obj);
+  }, [data]);
 
   const _getList = async () => {
     try {
@@ -48,33 +61,29 @@ export default (props) => {
     if (token) setToken(token);
   };
 
-  useEffect(() => {
-    const b = new BScroll("#home", {
-      // mouseWheel: true, // 开启鼠标滚轮支持
-      //   scrollbars: "custom", // 开启滚动条支持
-      bounce: false,
-      probeType: 3,
-      click: true,
-    });
-    b.on("scroll", eventScroll);
-    setB(b);
-    return () => {
-      b.off("scroll", eventScroll);
-    };
-  }, []);
+  const eventScroll = (e) => {
+    const position = e.target.scrollTop;
+    setFix(position > 140);
 
-  useEffect(() => {
-    if (b) b.refresh();
-  }, [data]);
-
-  function eventScroll() {
-    setFix(this.y < -170);
-  }
+    const rp = _.find(_.keys(positionMap), (p) => Math.abs(position - p) < 20);
+    const code = positionMap[rp];
+    if (code) {
+      const index = _.findIndex(data, (item) => item.code === code);
+      console.log("eventScroll -> index", index);
+      setActiveTab(index);
+    }
+  };
 
   const scrollToAnchor = (tab, anchorName) => {
-    let anchorElement = document.getElementById(anchorName + "");
-    b.scrollToElement(anchorElement, 500);
-    setActiveTab(anchorName);
+    if (tab) {
+      // 找到锚点
+      const anchorElement = document.getElementById(tab.key);
+      setActiveTab(anchorName);
+      // 如果对应id的锚点存在，就跳转到锚点
+      if (anchorElement) {
+        anchorElement.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    }
   };
 
   const toItem = (bizType, brandCode, index) => {
@@ -87,72 +96,63 @@ export default (props) => {
   };
 
   return (
-    <>
-      {fix ? (
+    <div className="home" onScroll={eventScroll}>
+      <div className="home__img-wrap">
+        <div className="home__img-wrap-img"></div>
+      </div>
+      <div className="home__content-wrap">
         <TabsComp
-          className="home__content-wrap-tabs home__content-wrap-tabs--fix"
+          className={classnames("home__content-wrap-tabs", {
+            "home__content-wrap-tabs--fix": fix,
+          })}
           activeTab={activeTab}
           onTabClick={scrollToAnchor}
           data={data}
           page={4}
         />
-      ) : null}
-      <div id="home" className="home">
-        <div>
-          <div className="home__img-wrap">
-            <div className="home__img-wrap-img"></div>
-          </div>
-          <div className="home__content-wrap">
-            {fix ? (
-              <div className="home__content-wrap-tabs--block"></div>
-            ) : (
-              <TabsComp
-                className="home__content-wrap-tabs"
-                activeTab={activeTab}
-                onTabClick={scrollToAnchor}
-                data={data}
-                page={4}
-              />
-            )}
-            <div className="home__content-wrap-list">
-              {_.map(data, (item, index) => (
-                <div className="home__card" key={index}>
-                  <div id={index + ""} className="home__card-anchor"></div>
-                  <div className="home__card-title">
+        {fix ? <div className="home__content-wrap-tabs--block"></div> : null}
+        <div className="home__content-wrap-list">
+          {_.map(data, (item, index) => (
+            <div className="home__card" key={index}>
+              <div
+                id={item.key}
+                className="home__card-anchor"
+                onScrollCapture={(e) => console.log(1)}
+              ></div>
+              <div className="home__card-title">
+                <img
+                  className="home__card-title-icon"
+                  src={"/file" + item.iconUrl}
+                />
+                <span className="home__card-title-text">{item.title}</span>
+              </div>
+              <ul className="home__card-brand">
+                {_.map(item.brandList, (item) => (
+                  <li
+                    className="home__card-brand-item"
+                    key={item.code}
+                    onClick={() => toItem(item.bizType, item.code, index)}
+                  >
+                    {item.tags && (
+                      <div className="home__card-brand-item-tags">
+                        {item.tags}
+                      </div>
+                    )}
                     <img
-                      className="home__card-title-icon"
+                      className="home__card-brand-item-img"
                       src={"/file" + item.iconUrl}
                     />
-                    <span className="home__card-title-text">{item.title}</span>
-                  </div>
-                  <ul className="home__card-brand">
-                    {_.map(item.brandList, (item) => (
-                      <li
-                        className="home__card-brand-item"
-                        key={item.code}
-                        onClick={() => toItem(item.bizType, item.code, index)}
-                      >
-                        {item.tags && (
-                          <div className="home__card-brand-item-tags">
-                            {item.tags}
-                          </div>
-                        )}
-                        <img
-                          className="home__card-brand-item-img"
-                          src={"/file" + item.iconUrl}
-                        />
-                        <span className="home__card-brand-item-name">
-                          {item.name}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                    <span className="home__card-brand-item-name">
+                      {item.name}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
+          ))}
         </div>
       </div>
-    </>
+    </div>
+    // </>
   );
 };

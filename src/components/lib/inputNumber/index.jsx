@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-17 19:17:43
- * @LastEditTime: 2020-09-01 03:22:17
+ * @LastEditTime: 2020-09-02 18:09:24
  */
 
 import React, { useState, useImperativeHandle } from "react";
@@ -15,6 +15,7 @@ const InputNumber = (props, ref) => {
   useImperativeHandle(ref, () => ({
     setInputVal: (val) => {
       inputRef.current.value = val;
+      setCurrentValue(val);
       onChange && onChange(val);
     }
   }));
