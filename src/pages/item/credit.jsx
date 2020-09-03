@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { InputItem, Toast } from "antd-mobile";
-import { getQueryVariable } from "@/utils";
+import { getQueryVariable, getFloat } from "@/utils";
 import tags from "@/assets/images/tags.png";
 import Footer from "./Footer";
 import { searchGoodsByBrandCode } from "@/services/app";
 import _ from "lodash";
+import { TRANSTEMP, PRECISION } from "@/const";
 
 export default (props) => {
   const brandCode = getQueryVariable("brandCode");
@@ -113,9 +114,9 @@ export default (props) => {
                       <div className="tags">{item.tags}</div>
                     )}
                     <div className="name">{item?.shortName}</div>
-                    <div className="price">售价{item?.price / 10000}元</div>
+                    <div className="price">售价{getFloat(item?.price / TRANSTEMP, PRECISION)}元</div>
                     <div className="facePrice">
-                      官方价{item?.facePrice / 10000}元
+                      官方价{getFloat(item?.facePrice / TRANSTEMP, PRECISION)}元
                     </div>
                   </li>
                 )

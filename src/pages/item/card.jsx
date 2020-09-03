@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import BScroll from "@better-scroll/core";
 import classnames from "classnames";
-import { toFixed, isIos } from "@/utils";
+import { getFloat } from "@/utils";
 import goods from "@/assets/images/goods.png";
 import { InputNumber, Tabs as TabsComp } from "@/components/lib";
 import { getQueryVariable } from "@/utils";
 import { searchGoodsByBrandCode } from "@/services/app";
 import { Toast } from "antd-mobile";
 import _ from "lodash";
-import { ProductTypes } from "@/const";
+import { ProductTypes, TRANSTEMP, PRECISION } from "@/const";
 import Footer from "./Footer";
 import Cookies from "js-cookie";
-
-const realIos = isIos();
 
 const data = [
   {
@@ -37,31 +34,7 @@ export default (props) => {
   const [amount, setAmount] = useState(1);
   const [skuCaches, setSkuCaches] = useState({});
 
-  const [b1, setB1] = useState(null);
-  const [b2, setB2] = useState(null);
-
   const inputRef = React.createRef();
-
-  useEffect(() => {
-    // const b1 = new BScroll(".card-item__goods", {
-    //   scrollX: true,
-    //   bounce: false,
-    //   click: true,
-    //   probeType: 3,
-    // });
-    // const b2 = new BScroll(".card-item", {
-    //   bounce: false,
-    //   probeType: 3,
-    //   click: true,
-    //   resizePolling: 60,
-    // });
-    // setB1(b1);
-    // setB2(b2);
-  }, []);
-
-  useEffect(() => {
-    if (b2) b2.refresh();
-  }, [activeTab]);
 
   useEffect(() => {
     setGoodsSelect(0);
@@ -69,30 +42,7 @@ export default (props) => {
   }, [active]);
 
   useEffect(() => {
-    // if (list.length) {
-    //   const sum = list.length * 300 + (list.length + 1) * 30;
-    //   document.querySelector("#goods").style.width =
-    //     toFixed((sum / 750) * 100, 6) + "vw";
-    // }
-    // if (b1) b1.refresh();
-    // if (b2) b2.refresh();
-  }, [list]);
-
-  useEffect(() => {
     const brandList = getBrandList(brandCode);
-
-    // let sum = _.map(brandList, (item) => item.name.length * 30 + 60).reduce(
-    //   (t, p) => t + p
-    // );
-
-    // document.querySelector("#brand").style.width =
-    //   toFixed((sum / 750) * 100, 6) + "vw";
-
-    // new BScroll(".card-item__scroll-filter", {
-    //   scrollX: true,
-    //   bounce: false,
-    //   click: true,
-    // });
 
     setBrandList(brandList);
     initList(brandCode);
@@ -106,9 +56,9 @@ export default (props) => {
   };
 
   const initList = async (brandCode) => {
-    // const cacheList = skuCaches[brandCode];
+    const cacheList = skuCaches[brandCode];
 
-    // if (!_.isEmpty(cacheList)) return setList(cacheList);
+    if (!_.isEmpty(cacheList)) return setList(cacheList);
 
     try {
       Toast.loading();
@@ -116,10 +66,10 @@ export default (props) => {
       Toast.hide();
       if (!err) {
         setList(data || []);
-        // setSkuCaches({
-        //   ...skuCaches,
-        //   [brandCode]: data,
-        // });
+        setSkuCaches({
+          ...skuCaches,
+          [brandCode]: data,
+        });
         if (data[0].productTypeCode === 104) {
           history.push(`/creditItem?brandCode=${brandCode}`);
         }
@@ -139,24 +89,23 @@ export default (props) => {
               overflowY: "hidden",
             }}
           > */}
-            <ul>
-              {_.map(brandList, (item, index) => (
-                <li
-                  key={index}
-                  className={classnames({
-                    active: active == brandList[index].code,
-                  })}
-                  onClick={() => {
-                    const brandCode = brandList[index].code;
-                    setActive(brandCode);
-                    initList(brandCode);
-                  }}
-                  style={{ letterSpacing: realIos ? "-1SUPX" : undefined }}
-                >
-                  {item.name}
-                </li>
-              ))}
-            </ul>
+          <ul>
+            {_.map(brandList, (item, index) => (
+              <li
+                key={index}
+                className={classnames({
+                  active: active == brandList[index].code,
+                })}
+                onClick={() => {
+                  const brandCode = brandList[index].code;
+                  setActive(brandCode);
+                  initList(brandCode);
+                }}
+              >
+                {item.name}
+              </li>
+            ))}
+          </ul>
           {/* </div> */}
           <div className="card-item__scroll-filter--line"></div>
         </div>
@@ -187,10 +136,10 @@ export default (props) => {
                     <div className="info-wrap-price">
                       <span className="info-wrap-price__price">
                         <b style={{ fontSize: "24SUPX" }}>￥</b>
-                        {item.price / 10000}
+                        {getFloat(item.price / TRANSTEMP, PRECISION)}
                       </span>
                       <span className="info-wrap-price__face-price">
-                        官方价{item.facePrice / 10000}
+                        官方价{getFloat(item.facePrice / TRANSTEMP, PRECISION)}
                       </span>
                     </div>
                   </div>
@@ -235,7 +184,7 @@ export default (props) => {
             <span className="card-item__view-item-title">应付金额</span>
             <span className="card-item__view-item-price">
               <b>￥</b>
-              {(list[goodsSelect]?.price * amount) / 10000}
+              {getFloat((list[goodsSelect]?.price * amount) / TRANSTEMP, PRECISION)}
             </span>
           </li>
           <li className="card-item__view-item">
@@ -292,9 +241,12 @@ export default (props) => {
         {list[goodsSelect]?.facePrice - list[goodsSelect]?.price > 0 && (
           <div className="item-footer__btn-tags">
             立省
-            {((list[goodsSelect]?.facePrice - list[goodsSelect]?.price) *
-              amount) /
-              10000}
+            {getFloat(
+              ((list[goodsSelect]?.facePrice - list[goodsSelect]?.price) *
+                amount) /
+                10000,
+              2
+            )}
             元
           </div>
         )}

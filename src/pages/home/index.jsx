@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-09-03 09:36:05
+ * @LastEditTime: 2020-09-03 10:10:05
  */
 
 import React, { useEffect, useState } from "react";
@@ -63,13 +63,16 @@ export default (props) => {
 
   const eventScroll = (e) => {
     const position = e.target.scrollTop;
-    setFix(position > 140);
+    const isFix = position > 140;
+    setFix(isFix);
 
     const rp = _.find(_.keys(positionMap), (p) => Math.abs(position - p) < 20);
     const code = positionMap[rp];
     if (code) {
       const index = _.findIndex(data, (item) => item.code === code);
       setActiveTab(index);
+    } else if (!isFix) {
+      setActiveTab(0);
     }
   };
 

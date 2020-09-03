@@ -10,7 +10,7 @@ import {
   searchUserSubscribeOrderList,
 } from "@/services/app";
 import empty from "@/assets/images/empty.png";
-import { getQueryVariable } from "@/utils";
+import { getQueryVariable, getFloat } from "@/utils";
 import {
   ProductTypes,
   TraceStatus,
@@ -25,8 +25,8 @@ import {
   PRODUCT_TYPE_2,
   PRODUCT_TYPE_3,
   PRODUCT_TYPE_4,
-  TRANSACTION_TYPE_1,
-  TRANSACTION_TYPE_2,
+  TRANSTEMP,
+  PRECISION,
 } from "@/const";
 import _ from "lodash";
 BScroll.use(PullUp);
@@ -142,7 +142,7 @@ export default (props) => {
       <div className="order__item-bottom-text">
         <span className="order__item-bottom-text--text">待付合计:</span>
         <span className="order__item-bottom-text--money">
-          &nbsp;￥{(item.amount * item.price) / 10000}
+          &nbsp;￥{getFloat((item.amount * item.price) / TRANSTEMP, PRECISION)}
         </span>
       </div>
     ),
@@ -150,7 +150,7 @@ export default (props) => {
       <div className="order__item-bottom-text">
         <span className="order__item-bottom-text--text">合计:</span>
         <span className="order__item-bottom-text--money">
-          &nbsp;￥{(item.amount * item.price) / 10000}
+          &nbsp;￥{getFloat((item.amount * item.price) / TRANSTEMP, PRECISION)}
         </span>
       </div>
     ),
@@ -159,7 +159,7 @@ export default (props) => {
       <div className="order__item-bottom-text">
         <span className="order__item-bottom-text--text">合计:</span>
         <span className="order__item-bottom-text--money">
-          &nbsp;￥{(item.amount * item.price) / 10000}
+          &nbsp;￥{getFloat((item.amount * item.price) / TRANSTEMP, PRECISION)}
         </span>
       </div>
     ),
@@ -167,7 +167,7 @@ export default (props) => {
       <div className="order__item-bottom-text">
         <span className="order__item-bottom-text--text">合计:</span>
         <span className="order__item-bottom-text--money">
-          &nbsp;￥{(item.amount * item.price) / 10000}
+          &nbsp;￥{getFloat((item.amount * item.price) / TRANSTEMP, PRECISION)}
         </span>
       </div>
     ),
@@ -175,7 +175,7 @@ export default (props) => {
       <div className="order__item-bottom-text">
         <span className="order__item-bottom-text--text">合计:</span>
         <span className="order__item-bottom-text--unmoney">
-          &nbsp;￥{(item.amount * item.price) / 10000}
+          &nbsp;￥{getFloat((item.amount * item.price) / TRANSTEMP, PRECISION)}
         </span>
       </div>
     ),
@@ -369,7 +369,9 @@ export default (props) => {
                     </span>
                     <span className="order__item-goods-other">
                       <span>x{item.amount}</span>
-                      <span className="price">￥{item.price / 10000}</span>
+                      <span className="price">
+                        ￥{getFloat(item.price / TRANSTEMP, PRECISION)}
+                      </span>
                     </span>
                   </div>
                   <div className="order__item-extra">

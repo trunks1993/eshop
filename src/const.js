@@ -1,7 +1,10 @@
 /*
  * @Date: 2020-08-05 09:53:34
- * @LastEditTime: 2020-08-31 19:15:07
+ * @LastEditTime: 2020-09-03 10:34:19
  */
+export const TRANSTEMP = 10000; // 金额转换倍数
+export const PRECISION = 2; // 金额转换倍数
+
 export const ORDER_STATUS_1 = 1; // 待付款
 export const ORDER_STATUS_2 = 2; // 处理中
 export const ORDER_STATUS_3 = 3; // 已完成
