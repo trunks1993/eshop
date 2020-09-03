@@ -1,8 +1,9 @@
 /*
  * @Date: 2020-05-29 14:31:03
- * @LastEditTime: 2020-09-01 15:48:47
+ * @LastEditTime: 2020-09-03 10:05:32
  */
 
+const Proxy = require("./proxy");
 const webpackMerge = require("webpack-merge");
 const baseWebpackConfig = require("./webpack.base.config");
 const utils = require("./utils");
@@ -32,7 +33,7 @@ const config = webpackMerge(baseWebpackConfig, {
     }),
     new webpack.DefinePlugin({
       "process.env": {
-        BASE_API: '"/wap"',
+        BASE_API: '"/api"',
         FILE_URL: '"/file"',
       },
     }),
@@ -46,27 +47,14 @@ const config = webpackMerge(baseWebpackConfig, {
   ],
   // 开发环境本地启动的服务配置
   devServer: {
+    host: "0.0.0.0",
     historyApiFallback: true, // 当找不到路径的时候，默认加载index.html文件
     hot: true,
-    contentBase: '.', // 告诉服务器从哪里提供内容。只有在你想要提供静态文件时才需要
+    contentBase: ".", // 告诉服务器从哪里提供内容。只有在你想要提供静态文件时才需要
     compress: true, // 一切服务都启用gzip 压缩：
     port: "8081", // 指定段靠谱
     publicPath: "/", // 访问资源加前缀
-    proxy: {
-      // 接口请求代理
-      "/wap": {
-        target: "http://eshop.yunjinshuke.com/wap/",
-        changeOrigin: true,
-        pathRewrite: { "^/wap": "" },
-      },
-      "/file": {
-        target: "http://101.132.39.136:9080/",
-        changeOrigin: true,
-        pathRewrite: {
-          "^/file": "",
-        },
-      },
-    },
+    proxy: Proxy[process.env.NODE_ENV],
   },
 });
 
