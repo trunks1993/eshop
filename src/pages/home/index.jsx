@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-09-02 19:53:09
+ * @LastEditTime: 2020-09-03 09:36:05
  */
 
 import React, { useEffect, useState } from "react";
@@ -69,7 +69,6 @@ export default (props) => {
     const code = positionMap[rp];
     if (code) {
       const index = _.findIndex(data, (item) => item.code === code);
-      console.log("eventScroll -> index", index);
       setActiveTab(index);
     }
   };
