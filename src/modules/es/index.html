@@ -1,0 +1,23 @@
+<!--
+ * @Date: 2020-05-29 11:53:44
+ * @LastEditTime: 2020-09-08 14:27:08
+-->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+    />
+    <title>星权益</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+    <% htmlWebpackPlugin.options.cdnConfig.forEach(function(item){ if(item.js &&
+    !htmlWebpackPlugin.options.onlyCss){ %>
+    <script type="text/javascript" src="<%= item.js %>"></script>
+    <% }}) %>
+  </body>
+</html>

@@ -1,12 +1,11 @@
 /*
  * @Date: 2020-05-29 14:31:35
- * @LastEditTime: 2020-08-28 20:14:40
+ * @LastEditTime: 2020-09-08 10:08:36
  */
 
 const webpackMerge = require("webpack-merge");
 const baseWebpackConfig = require("./webpack.base.config");
 const utils = require("./utils");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 // 构建速度分析
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
@@ -43,21 +42,21 @@ const config = webpackMerge(baseWebpackConfig, {
       },
     }),
     new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      filename: utils.resolve("./../dist/index.html"), // html模板的生成路径
-      template: "index.html", //html模板
-      // inject: true, // true：默认值，script标签位于html文件的 body 底部
-      hash: true, // 在打包的资源插入html会加上hash
-      cdnConfig: externalConfig,
-      // onlyCss: false, //加载css
-      //  html 文件进行压缩
-      minify: {
-        removeComments: true, //去注释
-        collapseWhitespace: true, //压缩空格
-        // removeAttributeQuotes: true, //去除属性引用
-      },
-    }),
-  ],
+    // new HtmlWebpackPlugin({
+    //   filename: utils.resolve("./../dist/index.html"), // html模板的生成路径
+    //   template: "index.html", //html模板
+    //   // inject: true, // true：默认值，script标签位于html文件的 body 底部
+    //   hash: true, // 在打包的资源插入html会加上hash
+    //   cdnConfig: externalConfig,
+    //   // onlyCss: false, //加载css
+    //   //  html 文件进行压缩
+    //   minify: {
+    //     removeComments: true, //去注释
+    //     collapseWhitespace: true, //压缩空格
+    //     // removeAttributeQuotes: true, //去除属性引用
+    //   },
+    // }),
+  ].concat(utils.htmlPlugin()),
   optimization: {
     // minimizer: [
     //   new OptimizeCSSAssetsPlugin({

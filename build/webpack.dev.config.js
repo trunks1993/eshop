@@ -1,13 +1,12 @@
 /*
  * @Date: 2020-05-29 14:31:03
- * @LastEditTime: 2020-09-03 10:05:32
+ * @LastEditTime: 2020-09-09 12:28:40
  */
 
 const Proxy = require("./proxy");
 const webpackMerge = require("webpack-merge");
 const baseWebpackConfig = require("./webpack.base.config");
 const utils = require("./utils");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack");
 
 // 构建速度分析
@@ -37,18 +36,18 @@ const config = webpackMerge(baseWebpackConfig, {
         FILE_URL: '"/file"',
       },
     }),
-    new HtmlWebpackPlugin({
-      filename: utils.resolve("./../dist/index.html"), // html模板的生成路径
-      template: "index.html", //html模板
-      inject: true, // true：默认值，script标签位于html文件的 body 底部
-      cdnConfig: externalConfig, // cdn配置
-      // onlyCss: true,
-    }),
-  ],
+    // new HtmlWebpackPlugin({
+    //   // filename: utils.resolve("./../dist/index.html"), // html模板的生成路径
+    //   // template: "index.html", //html模板
+    //   // inject: true, // true：默认值，script标签位于html文件的 body 底部
+    //   cdnConfig: externalConfig, // cdn配置
+    //   // onlyCss: true,
+    // }),
+  ].concat(utils.htmlPlugin()),
   // 开发环境本地启动的服务配置
   devServer: {
     host: "0.0.0.0",
-    historyApiFallback: true, // 当找不到路径的时候，默认加载index.html文件
+    // historyApiFallback: true, // 当找不到路径的时候，默认加载index.html文件
     hot: true,
     contentBase: ".", // 告诉服务器从哪里提供内容。只有在你想要提供静态文件时才需要
     compress: true, // 一切服务都启用gzip 压缩：

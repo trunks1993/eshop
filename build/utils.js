@@ -1,12 +1,14 @@
 /*
  * @Date: 2020-05-29 14:30:17
- * @LastEditTime: 2020-09-03 09:50:50
+ * @LastEditTime: 2020-09-09 14:49:50
  */
 
 const path = require("path");
+const PAGE_PATH = path.resolve(__dirname, "../src/modules");
+const glob = require("glob");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 
-exports.cdnBaseHttp = "https://cdn.bootcdn.net/ajax/libs";
-exports.externalConfig = [
+const externalConfig = [
   {
     name: "react",
     scope: "React",
@@ -55,6 +57,9 @@ exports.externalConfig = [
   },
 ];
 
+exports.cdnBaseHttp = "https://cdn.bootcdn.net/ajax/libs";
+exports.externalConfig = externalConfig;
+
 exports.getModulesVersion = () => {
   let mvs = {};
   let regexp = /^npm_package_.{0,3}dependencies_/gi;
@@ -101,6 +106,65 @@ exports.getExternalModules = (config) => {
   return externals;
 };
 
-exports.resolve = function (dir) {
+exports.resolve = function(dir) {
   return path.resolve(__dirname, dir);
+};
+
+//多入口配置
+// 通过glob模块读取pages文件夹下的所有对应文件夹下的js后缀文件，如果该文件存在
+// 那么就作为入口处理
+exports.entries = function() {
+  const entryFiles = glob.sync(PAGE_PATH + "/*/index.js");
+  const entryFilesNext = glob.sync(PAGE_PATH + "/*/*/index.js");
+
+  entryFiles.push(...entryFilesNext);
+  
+  var map = {};
+  entryFiles.forEach((filePath) => {
+    var i = filePath.lastIndexOf("/");
+    var newfilePath = filePath.substring(0, i);
+
+    var filename = newfilePath.substring(newfilePath.lastIndexOf("/") + 1);
+    map[filename] = filePath;
+  });
+  return map;
+};
+
+//多页面输出配置
+// 与上面的多页面入口配置相同，读取pages文件夹下的对应的html后缀文件，然后放入数组中
+exports.htmlPlugin = function() {
+  const entryHtml = glob.sync(PAGE_PATH + "/*/index.html");
+  const entryHtmlNext = glob.sync(PAGE_PATH + "/*/*/index.html");
+
+  entryHtml.push(...entryHtmlNext);
+
+  let arr = [];
+  entryHtml.forEach((filePath) => {
+    var i = filePath.lastIndexOf("/");
+    var newfilePath = filePath.substring(0, i);
+    var filename = newfilePath.substring(newfilePath.lastIndexOf("/") + 1);
+
+    let conf = {
+      // 模板来源
+      template: filePath,
+      // 文件名称
+      filename: filename + ".html",
+      // 页面模板需要加对应的js脚本，如果不加这行则每个页面都会引入所有的js脚本
+      chunks: ["manifest", "vendor", filename],
+      cdnConfig: externalConfig,
+      inject: true,
+    };
+    if (process.env.NODE_ENV === "production") {
+      conf = merge(conf, {
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+        },
+        chunksSortMode: "dependency",
+      });
+    }
+    arr.push(new HtmlWebpackPlugin(conf));
+  });
+  return arr;
 };

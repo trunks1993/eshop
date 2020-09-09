@@ -1,11 +1,12 @@
 /*
  * @Date: 2020-05-29 14:30:28
- * @LastEditTime: 2020-08-12 16:57:39
+ * @LastEditTime: 2020-09-08 16:35:48
  */
 
 const utils = require("./utils");
 const path = require("path");
 const os = require("os");
+const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
 // 擦除无用css
 const PurgecssPlugin = require("purgecss-webpack-plugin");
@@ -30,9 +31,7 @@ const PATHS = {
 
 module.exports = {
   // 入口
-  entry: {
-    app: "./src/index",
-  },
+  entry: utils.entries(),
   // 出口
   output: {
     path: utils.resolve("../dist"),
@@ -41,7 +40,7 @@ module.exports = {
   },
   devtool: "inline-source-map",
   resolve: {
-    extensions: [".js", ".jsx", ".json"], // 解析扩展。（当我们通过路导入文件，找不到改文件时，会尝试加入这些后缀继续寻找文件）
+    extensions: [".js", ".jsx", '.vue', ".json"], // 解析扩展。（当我们通过路导入文件，找不到改文件时，会尝试加入这些后缀继续寻找文件）
     alias: {
       "@": path.join(__dirname, "..", "src"), // 在项目中使用@符号代替src路径，导入文件路径更方便
     },
@@ -49,6 +48,10 @@ module.exports = {
   // 模块
   module: {
     rules: [
+      {
+        test: /\.vue$/,
+        use: "vue-loader",
+      },
       {
         test: /\.(js|jsx)$/, //一个匹配loaders所处理的文件的拓展名的正则表达式，这里用来匹配js和jsx文件（必须）
         exclude: /node_modules/, // 屏蔽不需要处理的文件（文件夹）（可选）
@@ -145,6 +148,7 @@ module.exports = {
       //允许 HappyPack 输出日志
       verbose: true,
     }),
+    new VueLoaderPlugin(),
   ],
   optimization: {
     splitChunks: {
