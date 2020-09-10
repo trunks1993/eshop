@@ -1,29 +1,29 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-09-08 16:05:02
+ * @LastEditTime: 2020-09-10 16:21:00
  */
-import request from "@/request";
-import { createHashHistory } from "history";
+import request from '@/request';
+import { createHashHistory } from 'history';
 const history = createHashHistory();
 
 /**
  * 异常处理程序
  */
-const errorHandler = (error) => {
-  const { response } = error;
-  history.push("/404");
-  return response;
-};
+// const errorHandler = (error) => {
+//   const { response } = error;
+//   history.push('/404');
+//   return response;
+// };
 
-request.extendOptions({ errorHandler });
+// request.extendOptions({ errorHandler });
 
 /**
  * @name: 获取首页商品目录及品牌列表
  * @param {}
  */
 export async function getList() {
-  return request("/home/searchHomeCategoryList", {
-    method: "POST",
+  return request('/home/searchHomeCategoryList', {
+    method: 'POST',
   });
 }
 
@@ -32,8 +32,8 @@ export async function getList() {
  * @param {}
  */
 export async function getOrderId(data) {
-  return request("/order/buyImmediately", {
-    method: "POST",
+  return request('/order/buyImmediately', {
+    method: 'POST',
     data,
   });
 }
@@ -43,8 +43,8 @@ export async function getOrderId(data) {
  * @param {}
  */
 export async function cancelOrder(data) {
-  return request("/order/cancelOrder", {
-    method: "POST",
+  return request('/order/cancelOrder', {
+    method: 'POST',
     data,
   });
 }
@@ -54,8 +54,8 @@ export async function cancelOrder(data) {
  * @param {}
  */
 export async function getOrderByOrderId(data) {
-  return request("/order/getOrderByOrderId", {
-    method: "POST",
+  return request('/order/getOrderByOrderId', {
+    method: 'POST',
     data,
   });
 }
@@ -65,8 +65,8 @@ export async function getOrderByOrderId(data) {
  * @param {}
  */
 export async function getOrderWithDetailByOrderId(data) {
-  return request("/order/getOrderWithDetailByOrderId", {
-    method: "POST",
+  return request('/order/getOrderWithDetailByOrderId', {
+    method: 'POST',
     data,
   });
 }
@@ -76,8 +76,8 @@ export async function getOrderWithDetailByOrderId(data) {
  * @param {}
  */
 export async function searchUserSubscribeOrderList(data) {
-  return request("/order/searchUserSubscribeOrderList", {
-    method: "POST",
+  return request('/order/searchUserSubscribeOrderList', {
+    method: 'POST',
     data,
   });
 }
@@ -87,8 +87,8 @@ export async function searchUserSubscribeOrderList(data) {
  * @param {}
  */
 export async function pay(data) {
-  return request("/wx/jsapi/pay", {
-    method: "POST",
+  return request('/wx/jsapi/pay', {
+    method: 'POST',
     data,
   });
 }
@@ -97,8 +97,8 @@ export async function pay(data) {
  * @param {}
  */
 export async function searchGoodsByBrandCode(data) {
-  return request("/detail/searchGoodsByBrandCode", {
-    method: "POST",
+  return request('/detail/searchGoodsByBrandCode', {
+    method: 'POST',
     data,
   });
 }
@@ -107,8 +107,8 @@ export async function searchGoodsByBrandCode(data) {
  * @param {}
  */
 export async function getTargetUrlTimeout() {
-  return request("/wx/user/getTargetUrlTimeout", {
-    method: "POST",
+  return request('/wx/user/getTargetUrlTimeout', {
+    method: 'POST',
   });
 }
 
@@ -117,8 +117,8 @@ export async function getTargetUrlTimeout() {
  * @param {}
  */
 export async function wxCallback(data) {
-  return request("/wx/pay/callback", {
-    method: "POST",
+  return request('/wx/pay/callback', {
+    method: 'POST',
     data,
   });
 }
@@ -128,7 +128,18 @@ export async function wxCallback(data) {
  * @param {}
  */
 export async function getUseInfo() {
-  return request("/wx/user/getUseInfo", {
-    method: "POST",
+  return request('/wx/user/getUseInfo', {
+    method: 'POST',
+  });
+}
+
+/**
+ * @name: 获取相同分类下的品牌列表
+ * @param {}
+ */
+export async function getBrandListInSameCategory(brandCode) {
+  return request('/brand/getBrandListInSameCategory', {
+    method: 'POST',
+    data: { brandCode },
   });
 }
