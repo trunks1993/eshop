@@ -16,7 +16,7 @@ export default (props) => {
   const [list, setList] = useState([]);
 
   const toOrder = (index) => {
-    history.push(`/order?index=${index}`);
+    window.location.href = `/order.html#/?index=${index}`;
   };
 
   useEffect(() => {
@@ -74,12 +74,18 @@ export default (props) => {
           <li
             className="user__other-btn-item"
             onClick={() => {
-              Modal.alert(<div className="modalTop">咨询商品问题,请添加客服QQ(2045879978)</div>, '', [
-                {
-                  text: '我知道了',
-                  onPress: () => {},
-                },
-              ]);
+              Modal.alert(
+                <div className="modalTop">
+                  咨询商品问题,请添加客服QQ(2045879978)
+                </div>,
+                '',
+                [
+                  {
+                    text: '我知道了',
+                    onPress: () => {},
+                  },
+                ]
+              );
             }}
           >
             <img className="user__other-btn-item-img" src={icon5} />

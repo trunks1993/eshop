@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Steps, Toast } from "antd-mobile";
-import BScroll from "@better-scroll/core";
-import { getQueryVariable } from "@/utils";
-import { getOrderByOrderId } from "@/services/app";
-import { TRACE_STATUS_4, TRACE_STATUS_5, TRACE_STATUS_6 } from "@/const";
-import _ from "lodash";
+import React, { useState, useEffect } from 'react';
+import { Steps, Toast } from 'antd-mobile';
+import BScroll from '@better-scroll/core';
+import { getQueryVariable } from '@/utils';
+import { getOrderByOrderId } from '@/services/app';
+import { TRACE_STATUS_4, TRACE_STATUS_5, TRACE_STATUS_6 } from '@/const';
+import _ from 'lodash';
 
 export default (props) => {
   const { history } = props;
   const [current, setCurrent] = useState(2);
   const [list, setList] = useState([]);
   let timer = null;
-  const orderId = getQueryVariable("orderId");
+  const orderId = getQueryVariable('orderId');
 
   useEffect(() => {
     getList();
@@ -19,7 +19,7 @@ export default (props) => {
   }, []);
 
   useEffect(() => {
-    new BScroll(".credits-item", {
+    new BScroll('.credits-item', {
       bounce: false,
       probeType: 3,
       click: true,
@@ -43,9 +43,9 @@ export default (props) => {
     } catch (error) {}
   };
   const TypeMap = {
-    [TRACE_STATUS_4]: <div style={{ color: "#FFD598" }}>商品已到账</div>,
-    [TRACE_STATUS_5]: <div style={{ color: "#FFD598" }}>商品已失败</div>,
-    [TRACE_STATUS_6]: <div style={{ color: "#FFD598" }}>商品已取消</div>,
+    [TRACE_STATUS_4]: <div style={{ color: '#FFD598' }}>商品已到账</div>,
+    [TRACE_STATUS_5]: <div style={{ color: '#FFD598' }}>商品已失败</div>,
+    [TRACE_STATUS_6]: <div style={{ color: '#FFD598' }}>商品已取消</div>,
   };
 
   return (
@@ -59,18 +59,18 @@ export default (props) => {
             className="credits-item-head-step"
           >
             <Steps.Step
-              title={<div style={{ color: "#FFD598" }}>支付成功</div>}
+              title={<div style={{ color: '#FFD598' }}>支付成功</div>}
             />
             <Steps.Step
               title={
-                <div style={{ color: "#FFD598" }}>
+                <div style={{ color: '#FFD598' }}>
                   充值已经提交,等待{list?.brandName}处理
                 </div>
               }
             />
             <Steps.Step
               title={
-                (current === 3 && TypeMap[list.status]) || "预计10秒内到账"
+                (current === 3 && TypeMap[list.status]) || '预计10分钟内到账'
               }
               description="具体到账情况以运营商为准,如有疑问请致电 0731-85790298 联系我们"
             />
@@ -86,14 +86,14 @@ export default (props) => {
           <div
             className="credits-item-content-btn--add"
             onClick={() =>
-              history.push(`/creditItem?brandCode=${list.brandCode}`)
+              (window.location.href = `/credit.html#/?brandCode=${list.brandCode}`)
             }
           >
             继续充值
           </div>
           <div
             className="credits-item-content-btn--detail"
-            onClick={() => history.push("/order")}
+            onClick={() => (window.location.href = '/order.html')}
           >
             查看详情
           </div>

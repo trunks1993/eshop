@@ -1,28 +1,31 @@
-import React, { useEffect, useState } from "react";
-import classnames from "classnames";
-import goods from "@/assets/images/goods.png";
-import { InputNumber, Tabs as TabsComp } from "@/components/r";
-import { getQueryVariable, getFloat } from "@/utils";
-import { searchGoodsByBrandCode } from "@/services/app";
-import { Toast } from "antd-mobile";
-import _ from "lodash";
-import { ProductTypes, TRANSTEMP, PRECISION } from "@/const";
-import { Footer } from "@/components/r";
-import Cookies from "js-cookie";
+import React, { useEffect, useState } from 'react';
+import classnames from 'classnames';
+import goods from '@/assets/images/goods.png';
+import { InputNumber, Tabs as TabsComp } from '@/components/r';
+import { getQueryVariable, getFloat } from '@/utils';
+import {
+  searchGoodsByBrandCode,
+  getBrandListInSameCategory,
+} from '@/services/app';
+import { Toast } from 'antd-mobile';
+import _ from 'lodash';
+import { ProductTypes, TRANSTEMP, PRECISION } from '@/const';
+import { Footer } from '@/components/r';
+import Cookies from 'js-cookie';
 
 const data = [
   {
-    title: "购买须知",
+    title: '购买须知',
     key: 0,
   },
   {
-    title: "使用说明",
+    title: '使用说明',
     key: 1,
   },
 ];
 
 export default (props) => {
-  const brandCode = getQueryVariable("brandCode");
+  const brandCode = getQueryVariable('brandCode');
 
   const { history } = props;
   const [list, setList] = useState([]);
@@ -41,17 +44,16 @@ export default (props) => {
   }, [active]);
 
   useEffect(() => {
-    const brandList = getBrandList(brandCode);
-
-    setBrandList(brandList);
+    getBrandList(brandCode);
     initList(brandCode);
   }, []);
 
-  const getBrandList = (brandCode) => {
-    const brandList = JSON.parse(Cookies.get("brandList"));
-    const index = brandList.findIndex((e) => e.code == brandCode);
-    brandList.unshift(brandList.splice(index, 1)[0]);
-    return brandList;
+  const getBrandList = async (brandCode) => {
+    try {
+      const [err, data, msg] = await getBrandListInSameCategory(brandCode);
+      if (!err) setBrandList(data);
+      else Toast.fail(msg);
+    } catch (error) {}
   };
 
   const initList = async (brandCode) => {
@@ -70,7 +72,7 @@ export default (props) => {
           [brandCode]: data,
         });
         if (data[0].productTypeCode === 104) {
-          history.push(`/creditItem?brandCode=${brandCode}`);
+          window.location.href = `/credit.html#/?brandCode=${brandCode}`;
         }
       } else Toast.fail(msg, 1);
     } catch (error) {}
@@ -112,9 +114,9 @@ export default (props) => {
           {/* 隐藏ios滚动条 */}
           <div
             style={{
-              height: "408SUPX",
-              paddingTop: "4SUPX",
-              overflowY: "hidden",
+              height: '408SUPX',
+              paddingTop: '4SUPX',
+              overflowY: 'hidden',
             }}
           >
             <ul>
@@ -134,7 +136,7 @@ export default (props) => {
                     <span className="info-wrap-name">{item.shortName}</span>
                     <div className="info-wrap-price">
                       <span className="info-wrap-price__price">
-                        <b style={{ fontSize: "24SUPX" }}>￥</b>
+                        <b style={{ fontSize: '24SUPX' }}>￥</b>
                         {getFloat(item.price / TRANSTEMP, PRECISION)}
                       </span>
                       <span className="info-wrap-price__face-price">
@@ -183,7 +185,10 @@ export default (props) => {
             <span className="card-item__view-item-title">应付金额</span>
             <span className="card-item__view-item-price">
               <b>￥</b>
-              {getFloat((list[goodsSelect]?.price * amount) / TRANSTEMP, PRECISION)}
+              {getFloat(
+                (list[goodsSelect]?.price * amount) / TRANSTEMP,
+                PRECISION
+              )}
             </span>
           </li>
           <li className="card-item__view-item">
@@ -227,9 +232,9 @@ export default (props) => {
       </div>
       <Footer
         history={history}
-        successCallback={() => history.push(`/order`)}
+        successCallback={() => (window.location.href = `/order.html`)}
         validCallback={() => {
-          if (!list[goodsSelect]?.code) return Toast.fail("请选择商品", 1);
+          if (!list[goodsSelect]?.code) return Toast.fail('请选择商品', 1);
           return {
             goodsCode: list[goodsSelect]?.code,
             amount,

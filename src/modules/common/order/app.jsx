@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import TabsComp from "@/components/r/tabs";
-import BScroll from "@better-scroll/core";
-import PullUp from "@better-scroll/pull-up";
-import { Toast, Modal } from "antd-mobile";
+import React, { useState, useEffect } from 'react';
+import TabsComp from '@/components/r/tabs';
+import BScroll from '@better-scroll/core';
+import PullUp from '@better-scroll/pull-up';
+import { Toast, Modal } from 'antd-mobile';
 import {
   getOrderByOrderId,
   pay,
   searchUserSubscribeOrderList,
-} from "@/services/app";
-import empty from "@/assets/images/empty.png";
-import { getQueryVariable, getFloat } from "@/utils";
+} from '@/services/app';
+import empty from '@/assets/images/empty.png';
+import { getQueryVariable, getFloat } from '@/utils';
 import {
   ProductTypes,
   TraceStatus,
@@ -26,43 +26,43 @@ import {
   PRODUCT_TYPE_4,
   TRANSTEMP,
   PRECISION,
-} from "@/const";
-import _ from "lodash";
+} from '@/const';
+import _ from 'lodash';
 BScroll.use(PullUp);
 
 let cuur = 1;
 const tabData = [
   {
     key: 0,
-    title: "全部",
-    value: "",
+    title: '全部',
+    value: '',
   },
   {
     key: 1,
-    title: "待付款",
-    value: "1",
+    title: '待付款',
+    value: '1',
   },
   {
     key: 2,
-    title: "处理中",
-    value: "2,3",
+    title: '处理中',
+    value: '2,3',
   },
   {
     key: 3,
-    title: "已完成",
-    value: "4,5",
+    title: '已完成',
+    value: '4,5',
   },
   {
     key: 4,
-    title: "已取消",
-    value: "6",
+    title: '已取消',
+    value: '6',
   },
 ];
 
 export default (props) => {
   const { history } = props;
 
-  const tabIndex = parseInt(getQueryVariable("index")) || 0;
+  const tabIndex = parseInt(getQueryVariable('index')) || 0;
 
   const [currPage, setCurrPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -77,12 +77,12 @@ export default (props) => {
   let timer = null;
 
   useEffect(() => {
-    const b = new BScroll(".order__list", {
+    const b = new BScroll('.order__list', {
       scrollY: true,
       click: true,
       pullUpLoad: true,
     });
-    b.on("pullingUp", pullingUpHandler); //上拉加载更多
+    b.on('pullingUp', pullingUpHandler); //上拉加载更多
     setB(b);
   }, []);
 
@@ -209,27 +209,17 @@ export default (props) => {
       ) {
         return (
           <>
-            {/* <div
-              className="order__item-bottom-btn--ghost"
-              onClick={() => {
-                if (item.bizType === TRANSACTION_TYPE_1) {
-                  history.push(`/cardItem?brandCode=${item.brandCode}`);
-                } else if (item.bizType === TRANSACTION_TYPE_2) {
-                  history.push(`/creditItem?brandCode=${item.brandCode}`);
-                }
-              }}
-            >
-              再来一单
-            </div> */}
             <div
               className="order__item-bottom-btn--primary"
-              onClick={() => history.push(`/card?orderId=${item.orderId}`)}
+              onClick={() =>
+                (window.location.href = `/card.html#/?orderId=${item.orderId}`)
+              }
             >
               查看卡券
             </div>
           </>
         );
-      } else return "";
+      } else return '';
     },
     [TRACE_STATUS_5]: () => {},
     [TRACE_STATUS_6]: () => {},
@@ -256,7 +246,7 @@ export default (props) => {
     orderdetail,
   }) => {
     WeixinJSBridge.invoke(
-      "getBrandWCPayRequest",
+      'getBrandWCPayRequest',
       {
         appId, //公众号名称，由商户传入
         timeStamp: timestamp, //时间戳，自1970年以来的秒数
@@ -266,7 +256,7 @@ export default (props) => {
         paySign, //微信签名
       },
       (res) => {
-        if (res.err_msg == "get_brand_wcpay_request:cancel") {
+        if (res.err_msg == 'get_brand_wcpay_request:cancel') {
           clearTimeout(timer);
         }
       }
@@ -280,7 +270,7 @@ export default (props) => {
         if (data.payStatus === 1) {
           clearTimeout(timer);
           dispatchInit();
-          Toast.success("支付成功");
+          Toast.success('支付成功');
         } else timer = setTimeout(() => getList(orderId), 1000);
       } else Toast.fail(msg, 1);
     } catch (error) {}
@@ -289,10 +279,10 @@ export default (props) => {
   const kefuModal = _.debounce(() => {
     Modal.alert(
       <div className="modalTop">咨询商品问题,请添加客服QQ(2045879978)</div>,
-      "",
+      '',
       [
         {
-          text: "我知道了",
+          text: '我知道了',
           onPress: () => {},
         },
       ]
@@ -319,14 +309,6 @@ export default (props) => {
             <div className="order__list-unList">
               <img src={empty} />
               <div className="order__list-unList-text">您还没有订单</div>
-              <div
-                className="order__item-bottom-btn--ghost"
-                onClick={() => {
-                  history.push("/home");
-                }}
-              >
-                去购买
-              </div>
             </div>
           ) : (
             <ul>
@@ -337,7 +319,7 @@ export default (props) => {
                       订单号：{item.orderId}
                     </span>
                     <span className="order__item-head-status">
-                      {typeof TraceStatus[item.status] === "function"
+                      {typeof TraceStatus[item.status] === 'function'
                         ? TraceStatus[item.status](item.productTypeCode)
                         : TraceStatus[item.status]}
                     </span>
@@ -346,8 +328,8 @@ export default (props) => {
                     <img
                       className={
                         item.status === TRACE_STATUS_6
-                          ? "order__item-goods-unimg"
-                          : "order__item-goods-img"
+                          ? 'order__item-goods-unimg'
+                          : 'order__item-goods-img'
                       }
                       src={`/file${item.iconUrl}`}
                     />
@@ -356,8 +338,8 @@ export default (props) => {
                       <b
                         className={
                           item.status === TRACE_STATUS_6
-                            ? "order__item-goods-name--untype"
-                            : "order__item-goods-name--type"
+                            ? 'order__item-goods-name--untype'
+                            : 'order__item-goods-name--type'
                         }
                       >
                         {ProductTypes[item.productTypeCode]}
@@ -389,7 +371,7 @@ export default (props) => {
                             等待买家付款
                           </div>
                         ) : (
-                          ""
+                          ''
                         )}
                       </span>
                       {payButMap[item.status](item)}
