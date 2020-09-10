@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 11:05:46
- * @LastEditTime: 2020-09-10 14:37:53
+ * @LastEditTime: 2020-09-10 15:20:13
  */
 import React from "react";
 import ReactDom from "react-dom";
@@ -10,6 +10,7 @@ import App from "./app";
 import { getQueryVariable, setToken } from "@/utils";
 import "normalize.css";
 import "@/styles/cdkey/index.less";
+import "@/assets/svg";
 
 FastClick.attach(document.body);
 

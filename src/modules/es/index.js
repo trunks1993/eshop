@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 11:05:46
- * @LastEditTime: 2020-09-10 14:29:12
+ * @LastEditTime: 2020-09-10 15:19:31
  */
 
 import App from "./app";
@@ -10,7 +10,6 @@ import FastClick from "fastclick";
 import { getQueryVariable, setToken } from "@/utils";
 
 import "@/styles/es/index.less";
-import "@/assets/images/svg";
 import "normalize.css";
 
 FastClick.attach(document.body);
