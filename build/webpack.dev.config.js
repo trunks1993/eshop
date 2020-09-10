@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 14:31:03
- * @LastEditTime: 2020-09-09 12:28:40
+ * @LastEditTime: 2020-09-10 11:05:27
  */
 
 const Proxy = require("./proxy");
@@ -13,8 +13,8 @@ const webpack = require("webpack");
 const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
 const smp = new SpeedMeasurePlugin();
 
-const externalConfig = JSON.parse(JSON.stringify(utils.externalConfig)); // 读取配置
-utils.getExternalModules(externalConfig); // 获取到合适的路径（引用类型，自动改变）
+// const externalConfig = JSON.parse(JSON.stringify(utils.externalConfig)); // 读取配置
+// utils.getExternalModules(externalConfig); // 获取到合适的路径（引用类型，自动改变）
 
 // 打包分析
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
@@ -43,7 +43,7 @@ const config = webpackMerge(baseWebpackConfig, {
     //   cdnConfig: externalConfig, // cdn配置
     //   // onlyCss: true,
     // }),
-  ].concat(utils.htmlPlugin()),
+  ],
   // 开发环境本地启动的服务配置
   devServer: {
     host: "0.0.0.0",

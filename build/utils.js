@@ -1,12 +1,13 @@
 /*
  * @Date: 2020-05-29 14:30:17
- * @LastEditTime: 2020-09-09 14:49:50
+ * @LastEditTime: 2020-09-10 13:49:29
  */
 
 const path = require("path");
 const PAGE_PATH = path.resolve(__dirname, "../src/modules");
 const glob = require("glob");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpackMerge = require("webpack-merge");
 
 const externalConfig = [
   {
@@ -132,7 +133,7 @@ exports.entries = function() {
 
 //多页面输出配置
 // 与上面的多页面入口配置相同，读取pages文件夹下的对应的html后缀文件，然后放入数组中
-exports.htmlPlugin = function() {
+exports.htmlPlugin = function(externalConfig) {
   const entryHtml = glob.sync(PAGE_PATH + "/*/index.html");
   const entryHtmlNext = glob.sync(PAGE_PATH + "/*/*/index.html");
 
@@ -155,13 +156,13 @@ exports.htmlPlugin = function() {
       inject: true,
     };
     if (process.env.NODE_ENV === "production") {
-      conf = merge(conf, {
+      conf = webpackMerge(conf, {
         minify: {
           removeComments: true,
           collapseWhitespace: true,
-          removeAttributeQuotes: true,
+          // removeAttributeQuotes: true,
         },
-        chunksSortMode: "dependency",
+        // chunksSortMode: "dependency",
       });
     }
     arr.push(new HtmlWebpackPlugin(conf));

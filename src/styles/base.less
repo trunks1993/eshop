@@ -1,14 +1,14 @@
 @charset "utf-8";
 @import "./var.less";
-@import "./antd.less";
-@import "./layout.less";
-@import "./home.less";
-@import "./user.less";
-@import "./order.less";
-@import "./item.less";
-@import "./card.less";
-@import "./lib/inputNumber.less";
-@import "./404.less";
+// @import "./antd.less";
+// @import "./layout.less";
+// @import "./home.less";
+// @import "./user.less";
+// @import "./order.less";
+// @import "./item.less";
+// @import "./card.less";
+// @import "./lib/inputNumber.less";
+// @import "./404.less";
 
 html,
 body,
@@ -171,13 +171,13 @@ ul {
 }
 
 .bg-image(@name) {
-  background-image: ~"url(../assets/images/@2x/@{name})";
+  background-image: ~"url(../../assets/images/@2x/@{name})";
   background-position: center center;
   background-repeat: no-repeat;
   background-size: 100%;
-  @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
-    background-image: ~"url(../assets/images/@2x/@{name})";
-  }
+  // @media (-webkit-min-device-pixel-ratio: 3), (min-device-pixel-ratio: 3) {
+  //   background-image: ~"url(../assets/images/@2x/@{name})";
+  // }
 }
 
 .modalTop {

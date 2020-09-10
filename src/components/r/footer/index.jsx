@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import order from "@/modules/es/assets/images/order.png";
-import service from "@/modules/es/assets/images/service.png";
+import order from "@/assets/images/order.png";
+import service from "@/assets/images/service.png";
 import { Toast, Modal } from "antd-mobile";
-import { getOrderId, pay, getOrderByOrderId } from "@/modules/es/services/app";
+import { getOrderId, pay, getOrderByOrderId } from "@/services/app";
 import _ from "lodash";
 
 export default (props) => {
@@ -91,7 +91,7 @@ export default (props) => {
         </div>
         <div
           className="item-footer-subtn line"
-          onClick={() => history.push("/order")}
+          onClick={() => (window.location.href = "/order.html")}
         >
           <img src={order} />
           <span className="item-footer-subtn-title">订单</span>

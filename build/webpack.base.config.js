@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 14:30:28
- * @LastEditTime: 2020-09-08 16:35:48
+ * @LastEditTime: 2020-09-10 11:04:18
  */
 
 const utils = require("./utils");
@@ -19,6 +19,9 @@ const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 // const WebpackDeepScopeAnalysisPlugin = require("webpack-deep-scope-plugin")
 //   .default;
 
+const externalConfig = JSON.parse(JSON.stringify(utils.externalConfig)); // 读取配置
+const externalModules = utils.getExternalModules(externalConfig); // 获取到合适的路径（引用类型，自动改变）
+
 // antd主题
 const modifyVars = {
   "brand-primary": "#2272FC",
@@ -36,9 +39,10 @@ module.exports = {
   output: {
     path: utils.resolve("../dist"),
     filename: "js/[name].[hash].js",
-    publicPath: "/", // 打包后的资源的访问路径前缀
+    publicPath: "./", // 打包后的资源的访问路径前缀
   },
   devtool: "inline-source-map",
+  externals: externalModules,
   resolve: {
     extensions: [".js", ".jsx", '.vue', ".json"], // 解析扩展。（当我们通过路导入文件，找不到改文件时，会尝试加入这些后缀继续寻找文件）
     alias: {
@@ -149,7 +153,7 @@ module.exports = {
       verbose: true,
     }),
     new VueLoaderPlugin(),
-  ],
+  ].concat(utils.htmlPlugin(externalConfig)),
   optimization: {
     splitChunks: {
       chunks: "all", // "initial" | "all"(推荐) | "async" (默认就是async) | 函数

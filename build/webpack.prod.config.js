@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 14:31:35
- * @LastEditTime: 2020-09-08 10:08:36
+ * @LastEditTime: 2020-09-10 13:40:29
  */
 
 const webpackMerge = require("webpack-merge");
@@ -19,8 +19,8 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 // 压缩插件 对es6友好
 const TerserPlugin = require("terser-webpack-plugin");
 
-const externalConfig = JSON.parse(JSON.stringify(utils.externalConfig)); // 读取配置
-const externalModules = utils.getExternalModules(externalConfig); // 获取到合适的路径（引用类型，自动改变）
+// const externalConfig = JSON.parse(JSON.stringify(utils.externalConfig)); // 读取配置
+// const externalModules = utils.getExternalModules(externalConfig); // 获取到合适的路径（引用类型，自动改变）
 
 // 打包分析
 const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
@@ -28,7 +28,7 @@ const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 const config = webpackMerge(baseWebpackConfig, {
   // 指定构建环境
   mode: "production",
-  externals: externalModules,
+  // externals: externalModules,
   // 插件
   plugins: [
     new BundleAnalyzerPlugin({
@@ -56,7 +56,7 @@ const config = webpackMerge(baseWebpackConfig, {
     //     // removeAttributeQuotes: true, //去除属性引用
     //   },
     // }),
-  ].concat(utils.htmlPlugin()),
+  ],
   optimization: {
     // minimizer: [
     //   new OptimizeCSSAssetsPlugin({

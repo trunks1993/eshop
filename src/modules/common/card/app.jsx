@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import classnames from "classnames";
-import goods from "@/modules/es/assets/images/goods.png";
-import { InputNumber, Tabs as TabsComp } from "@/modules/es/components/lib";
+import goods from "@/assets/images/goods.png";
+import { InputNumber, Tabs as TabsComp } from "@/components/r";
 import { getQueryVariable, getFloat } from "@/utils";
-import { searchGoodsByBrandCode } from "@/modules/es/services/app";
+import { searchGoodsByBrandCode } from "@/services/app";
 import { Toast } from "antd-mobile";
 import _ from "lodash";
 import { ProductTypes, TRANSTEMP, PRECISION } from "@/const";
-import Footer from "@/components/r/Footer";
+import { Footer } from "@/components/r";
 import Cookies from "js-cookie";
 
 const data = [

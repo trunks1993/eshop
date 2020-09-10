@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { List, Modal, Button, Toast } from 'antd-mobile';
 
 const Item = List.Item;
-import icon1 from '@/modules/es/assets/images/@2x/user-icon1.png';
-import icon2 from '@/modules/es/assets/images/@2x/user-icon2.png';
-import icon3 from '@/modules/es/assets/images/@2x/user-icon3.png';
-import icon4 from '@/modules/es/assets/images/@2x/user-icon4.png';
+import icon1 from '@/assets/images/@2x/user-icon1.png';
+import icon2 from '@/assets/images/@2x/user-icon2.png';
+import icon3 from '@/assets/images/@2x/user-icon3.png';
+import icon4 from '@/assets/images/@2x/user-icon4.png';
 
-import icon5 from '@/modules/es/assets/images/@2x/user-icon5.png';
-import icon6 from '@/modules/es/assets/images/@2x/user-icon6.png';
-import { getUseInfo } from '@/modules/es/services/app';
+import icon5 from '@/assets/images/@2x/user-icon5.png';
+import icon6 from '@/assets/images/@2x/user-icon6.png';
+import { getUseInfo } from '@/services/app';
 
 export default (props) => {
   const { history } = props;

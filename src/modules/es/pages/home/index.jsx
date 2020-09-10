@@ -4,8 +4,8 @@
  */
 
 import React, { useEffect, useState } from "react";
-import { Tabs as TabsComp } from "@/modules/es/components/lib";
-import { getList } from "@/modules/es/services/app";
+import { Tabs as TabsComp } from "@/components/r";
+import { getList } from "@/services/app";
 import Cookies from "js-cookie";
 import { Toast } from "antd-mobile";
 import classnames from "classnames";

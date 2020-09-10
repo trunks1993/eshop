@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { InputItem, Toast } from "antd-mobile";
 import { getQueryVariable, getFloat } from "@/utils";
-import tags from "@/modules/es/assets/images/tags.png";
-import Footer from "@/components/r/Footer";
-import { searchGoodsByBrandCode } from "@/modules/es/services/app";
+import tags from "@/assets/images/tags.png";
+import { Footer } from "@/components/r";
+import { searchGoodsByBrandCode } from "@/services/app";
 import _ from "lodash";
 import { TRANSTEMP, PRECISION } from "@/const";
 

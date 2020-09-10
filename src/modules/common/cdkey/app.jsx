@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import unTime from "@/modules/es/assets/images/unTime.png";
-import { SvgIcon } from "@/modules/es/components/lib";
+import unTime from "@/assets/images/unTime.png";
+import { SvgIcon } from "@/components/r";
 import BScroll from "@better-scroll/core";
-import { getOrderWithDetailByOrderId } from "@/modules/es/services/app";
+import { getOrderWithDetailByOrderId } from "@/services/app";
 import { getQueryVariable } from "@/utils";
 import { Toast, Modal } from "antd-mobile";
 import {

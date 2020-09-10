@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import TabsComp from "@/modules/es/components/lib/tabs";
+import TabsComp from "@/components/r/tabs";
 import BScroll from "@better-scroll/core";
 import PullUp from "@better-scroll/pull-up";
 import { Toast, Modal } from "antd-mobile";
@@ -7,8 +7,8 @@ import {
   getOrderByOrderId,
   pay,
   searchUserSubscribeOrderList,
-} from "@/modules/es/services/app";
-import empty from "@/modules/es/assets/images/empty.png";
+} from "@/services/app";
+import empty from "@/assets/images/empty.png";
 import { getQueryVariable, getFloat } from "@/utils";
 import {
   ProductTypes,

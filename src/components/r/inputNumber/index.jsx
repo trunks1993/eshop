@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useImperativeHandle } from "react";
-import { SvgIcon } from "@/modules/es/components/lib";
+import { SvgIcon } from "@/components/r";
 
 const InputNumber = (props, ref) => {
   const { min, max, defaultValue, onChange } = props;

@@ -1,19 +1,16 @@
 /*
  * @Date: 2020-05-29 11:05:46
- * @LastEditTime: 2020-09-09 14:53:07
+ * @LastEditTime: 2020-09-10 14:29:12
  */
 
-import router from "@/modules/es/router";
+import App from "./app";
 import dva from "dva";
-import createLoading from "dva-loading";
-import models from "@/modules/es/models";
 import FastClick from "fastclick";
-import createHistory from "history/createBrowserHistory";
 
 import { getQueryVariable, setToken } from "@/utils";
 
-import "@/modules/es/styles/base.less";
-import "@/modules/es/assets/images/svg";
+import "@/styles/es/index.less";
+import "@/assets/images/svg";
 import "normalize.css";
 
 FastClick.attach(document.body);
@@ -24,12 +21,7 @@ if (token) setToken(token);
 const channel = getQueryVariable("channel");
 if (channel) setChannel(channel);
 
-// const app = dva();
-const app = dva({
-  history: createHistory(),
-});
+const app = dva();
 
-app.use(createLoading());
-_.map(_.values(models), (item) => app.model(item));
-app.router(router);
+app.router(App);
 app.start("#app");

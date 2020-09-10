@@ -1,5 +1,5 @@
 import React from "react";
-import empty from "@/modules/es/assets/images/empty.png";
+import empty from "@/assets/images/empty.png";
 
 export default () => (
   <div className="page-404">
