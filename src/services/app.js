@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-09-10 15:38:49
+ * @LastEditTime: 2020-09-10 16:21:00
  */
 import request from '@/request';
 import { createHashHistory } from 'history';
@@ -9,13 +9,13 @@ const history = createHashHistory();
 /**
  * 异常处理程序
  */
-const errorHandler = (error) => {
-  const { response } = error;
-  history.push('/404');
-  return response;
-};
+// const errorHandler = (error) => {
+//   const { response } = error;
+//   history.push('/404');
+//   return response;
+// };
 
-request.extendOptions({ errorHandler });
+// request.extendOptions({ errorHandler });
 
 /**
  * @name: 获取首页商品目录及品牌列表

@@ -1,14 +1,14 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-09-08 14:34:15
+ * @LastEditTime: 2020-09-10 16:26:30
  */
 
-import React, { useEffect, useState } from "react";
-import { Tabs as TabsComp } from "@/components/r";
-import { getList } from "@/services/app";
-import Cookies from "js-cookie";
-import { Toast } from "antd-mobile";
-import classnames from "classnames";
+import React, { useEffect, useState } from 'react';
+import { Tabs as TabsComp } from '@/components/r';
+import { getList } from '@/services/app';
+import Cookies from 'js-cookie';
+import { Toast } from 'antd-mobile';
+import classnames from 'classnames';
 
 export default (props) => {
   const { history } = props;
@@ -74,18 +74,17 @@ export default (props) => {
       // setActiveTab(anchorName);
       // 如果对应id的锚点存在，就跳转到锚点
       if (anchorElement) {
-        anchorElement.scrollIntoView({ block: "start", behavior: "smooth" });
+        anchorElement.scrollIntoView({ block: 'start', behavior: 'smooth' });
       }
     }
   };
 
   const toItem = (bizType, brandCode, index) => {
-    Cookies.set("brandList", JSON.stringify(data[index]?.brandList));
-    history.push(
+    Cookies.set('brandList', JSON.stringify(data[index]?.brandList));
+    window.location.href =
       bizType === 2
-        ? `/creditItem?brandCode=${brandCode}`
-        : `/cardItem?brandCode=${brandCode}`
-    );
+        ? `/credit.html#/?brandCode=${brandCode}`
+        : `/card.html#/?brandCode=${brandCode}`;
   };
 
   return (
@@ -95,8 +94,8 @@ export default (props) => {
       </div>
       <div className="home__content-wrap">
         <TabsComp
-          className={classnames("home__content-wrap-tabs", {
-            "home__content-wrap-tabs--fix": fix,
+          className={classnames('home__content-wrap-tabs', {
+            'home__content-wrap-tabs--fix': fix,
           })}
           activeTab={activeTab}
           onTabClick={scrollToAnchor}
@@ -115,7 +114,7 @@ export default (props) => {
               <div className="home__card-title">
                 <img
                   className="home__card-title-icon"
-                  src={"/file" + item.iconUrl}
+                  src={'/file' + item.iconUrl}
                 />
                 <span className="home__card-title-text">{item.title}</span>
               </div>
@@ -133,7 +132,7 @@ export default (props) => {
                     )}
                     <img
                       className="home__card-brand-item-img"
-                      src={"/file" + item.iconUrl}
+                      src={'/file' + item.iconUrl}
                     />
                     <span className="home__card-brand-item-name">
                       {item.name}

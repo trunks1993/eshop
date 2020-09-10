@@ -192,12 +192,12 @@ export default (props) => {
         >
           查看订单
         </div>
-        <div
+        {/* <div
           className="card__btn-2"
-          onClick={() => (window.location.href = '/es.html/#/home')}
+          onClick={() => (window.location.href = '/es.html#/home')}
         >
           继续购买
-        </div>
+        </div> */}
       </div>
 
       <div className="card__block"></div>
@@ -229,7 +229,7 @@ export default (props) => {
       >
         <div>
           <div className="modal-text">付款时请向店员出示二维码</div>
-          <QrCode value={items.password} size={80} id="qrCode" />
+          <QrCode value={items.password} size={100} id="qrCode" />
           <div className="modal-pwd">
             {list?.productTypeCode &&
               ProductTypesMap[list.productTypeCode](items)}

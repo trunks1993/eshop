@@ -44,19 +44,16 @@ export default (props) => {
   }, [active]);
 
   useEffect(() => {
-    setBrandList(getBrandList(brandCode));
+    getBrandList(brandCode);
     initList(brandCode);
   }, []);
 
   const getBrandList = async (brandCode) => {
     try {
       const [err, data, msg] = await getBrandListInSameCategory(brandCode);
-      if (!err) {
-        console.log(data);
-        return data;
-      } else Toast.fail(msg);
+      if (!err) setBrandList(data);
+      else Toast.fail(msg);
     } catch (error) {}
-    return brandList;
   };
 
   const initList = async (brandCode) => {
@@ -75,7 +72,7 @@ export default (props) => {
           [brandCode]: data,
         });
         if (data[0].productTypeCode === 104) {
-          window.location.href = `/credit.html/#/?brandCode=${brandCode}`;
+          window.location.href = `/credit.html#/?brandCode=${brandCode}`;
         }
       } else Toast.fail(msg, 1);
     } catch (error) {}

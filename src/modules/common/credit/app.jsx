@@ -139,7 +139,7 @@ export default (props) => {
       <Footer
         history={history}
         successCallback={(orderId) =>
-          (window.location.href = `/cdkey.html/#/?orderId=${orderId}`)
+          (window.location.href = `/cdkey.html#/?orderId=${orderId}`)
         }
         validCallback={() => {
           if (!rechargeAccount) return Toast.fail('请输入需要充值的账号', 1);
