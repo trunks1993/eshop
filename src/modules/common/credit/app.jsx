@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { InputItem, Toast } from "antd-mobile";
-import { getQueryVariable, getFloat } from "@/utils";
-import tags from "@/assets/images/tags.png";
-import { Footer } from "@/components/r";
-import { searchGoodsByBrandCode } from "@/services/app";
-import _ from "lodash";
-import { TRANSTEMP, PRECISION } from "@/const";
+import React, { useEffect, useState } from 'react';
+import { InputItem, Toast } from 'antd-mobile';
+import { getQueryVariable, getFloat } from '@/utils';
+import tags from '@/assets/images/tags.png';
+import { Footer } from '@/components/r';
+import { searchGoodsByBrandCode } from '@/services/app';
+import _ from 'lodash';
+import { TRANSTEMP, PRECISION } from '@/const';
 
 export default (props) => {
-  const brandCode = getQueryVariable("brandCode");
+  const brandCode = getQueryVariable('brandCode');
   const { history } = props;
   const [list, setList] = useState([]);
-  const [parent, setParent] = useState("");
+  const [parent, setParent] = useState('');
 
   const [rechargeAccount, setRechargeAccount] = useState();
 
@@ -78,8 +78,8 @@ export default (props) => {
                   <li
                     className={
                       parent === item.productName
-                        ? "credit-item__sku-goods-item--active"
-                        : "credit-item__sku-goods-item"
+                        ? 'credit-item__sku-goods-item--active'
+                        : 'credit-item__sku-goods-item'
                     }
                     key={index}
                     onClick={() => setParent(item.productName)}
@@ -92,7 +92,7 @@ export default (props) => {
             </ul>
             <div
               className="credit-item__sku-title"
-              style={{ marginTop: "15SUPX" }}
+              style={{ marginTop: '15SUPX' }}
             >
               商品规格
             </div>
@@ -103,8 +103,8 @@ export default (props) => {
                   <li
                     className={
                       goodsSelect?.code === item.code
-                        ? "credit-item__sku-norms-item--active"
-                        : "credit-item__sku-norms-item"
+                        ? 'credit-item__sku-norms-item--active'
+                        : 'credit-item__sku-norms-item'
                     }
                     key={index}
                     onClick={() => setGoodsSelect(item)}
@@ -139,13 +139,13 @@ export default (props) => {
       <Footer
         history={history}
         successCallback={(orderId) =>
-          history.push(`/creditItems?orderId=${orderId}`)
+          (window.location.href = `/cdkey.html/#/?orderId=${orderId}`)
         }
         validCallback={() => {
-          if (!rechargeAccount) return Toast.fail("请输入需要充值的账号", 1);
+          if (!rechargeAccount) return Toast.fail('请输入需要充值的账号', 1);
           return {
             goodsCode: goodsSelect.code,
-            rechargeAccount: rechargeAccount.replace(/\s+/g, ""),
+            rechargeAccount: rechargeAccount.replace(/\s+/g, ''),
           };
         }}
         btnText="立即充值"

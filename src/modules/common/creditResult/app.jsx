@@ -70,7 +70,7 @@ export default (props) => {
             />
             <Steps.Step
               title={
-                (current === 3 && TypeMap[list.status]) || "预计10秒内到账"
+                (current === 3 && TypeMap[list.status]) || "预计10分钟内到账"
               }
               description="具体到账情况以运营商为准,如有疑问请致电 0731-85790298 联系我们"
             />
