@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-09-11 14:00:03
+ * @LastEditTime: 2020-09-11 16:59:01
  */
 import request from '@/request';
 import { createHashHistory } from 'history';
@@ -175,5 +175,36 @@ export async function getPhoneAddress({ telephone }) {
   return request('/brand/getAttribution', {
     method: 'POST',
     data: { telephone },
+  });
+}
+
+/**
+ * @name: 获取首页广告列表
+ * @param {}
+ */
+export async function getBannerList() {
+  return request('/home/getAdvList', {
+    method: 'POST',
+  });
+}
+
+/**
+ * @name: 获取首页商品目录及品牌列表
+ * @param {}
+ */
+export async function getShopTags() {
+  return request('/home/searchHomeCategoryList', {
+    method: 'POST',
+  });
+}
+
+/**
+ * @name: 获取首页商户商品列表
+ * @param {}
+ */
+export async function getShopList(data) {
+  return request('/home/searchHomeMerchantGoodsList', {
+    method: 'POST',
+    data,
   });
 }

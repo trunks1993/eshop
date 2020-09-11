@@ -131,9 +131,11 @@ export default (props) => {
   };
 
   const setPhoneNumber = async (e) => {
-    if (e.split(' ').join('').length != 11) return;
+    if (e.split(' ').join('').length != 11) return setPhoneAddressList({});
     try {
-      const [err, data, msg] = await getPhoneAddress({ telephone: e.split(' ').join('') });
+      const [err, data, msg] = await getPhoneAddress({
+        telephone: e.split(' ').join(''),
+      });
       if (!err) {
         setRechargeAccount(e);
         setPhoneAddressList(data);
