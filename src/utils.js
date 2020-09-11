@@ -1,8 +1,8 @@
 /*
  * @Date: 2020-09-08 14:41:47
- * @LastEditTime: 2020-09-08 14:52:56
+ * @LastEditTime: 2020-09-11 14:25:56
  */
-import moment from "moment";
+// import moment from "moment";
 import Cookies from "js-cookie";
 import { TokenKey, ChannelKey } from "./const";
 
@@ -19,11 +19,11 @@ export function getQueryVariable(variable) {
   return false;
 }
 
-export function formateTime(timeStr, formatStr) {
-  return timeStr
-    ? moment(timeStr).format(formatStr ? formatStr : "YYYY-MM-DD HH:mm:ss")
-    : "";
-}
+// export function formateTime(timeStr, formatStr) {
+//   return timeStr
+//     ? moment(timeStr).format(formatStr ? formatStr : "YYYY-MM-DD HH:mm:ss")
+//     : "";
+// }
 
 export const getFloat = (number, n) => {
   let num = parseFloat(number);
