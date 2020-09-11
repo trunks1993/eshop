@@ -1,150 +1,229 @@
-/*
- * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-09-10 16:26:30
- */
-
 import React, { useEffect, useState } from 'react';
-import { Tabs as TabsComp } from '@/components/r';
-import { getList } from '@/services/app';
-import Cookies from 'js-cookie';
-import { Toast } from 'antd-mobile';
-import classnames from 'classnames';
+import { InputItem, Toast, Modal } from 'antd-mobile';
+import { getChannel, getFloat } from '@/utils';
+import tags from '@/assets/images/tags.png';
+import { Footer } from '@/components/r';
+import IconUrl from '@/assets/images/lxHead.png';
+import {
+  getHomeShopList,
+  getOrderId,
+  pay,
+  getOrderByOrderId,
+  getPhoneAddress,
+} from '@/services/app';
+import _ from 'lodash';
+import { TRANSTEMP, PRECISION } from '@/const';
 
 export default (props) => {
-  const { history } = props;
+  let timer = null;
 
-  const [fix, setFix] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
+  const [list, setList] = useState([]);
+  const [parent, setParent] = useState('');
 
-  const [data, setDataList] = useState([]);
-  const [positionMap, setPositionMap] = useState({});
+  const [rechargeAccount, setRechargeAccount] = useState();
+  const [phoneAddressList, setPhoneAddressList] = useState({});
+
+  const [goodsSelect, setGoodsSelect] = useState({});
 
   useEffect(() => {
-    _getList();
+    initList();
   }, []);
 
   useEffect(() => {
-    if (!data || !data.length) return;
-    let obj = {};
-    _.map(data, (item) => {
-      const y = Math.floor(
-        document.getElementById(`${item.code}`).getBoundingClientRect().y
-      );
-      obj[y] = item.code;
-    });
-    setPositionMap(obj);
-  }, [data]);
+    const skuList = list.filter((item) => item.productName === parent);
+    setGoodsSelect(skuList[0]);
+  }, [parent]);
 
-  const _getList = async () => {
+  const initList = async () => {
     try {
-      Toast.loading();
-      const [err, data, msg] = await getList();
-      Toast.hide();
+      const [err, data, msg] = await getHomeShopList({
+        currPage: 1,
+        pageSize: 1000,
+      });
       if (!err) {
-        setDataList(
-          data.map((item) => {
-            item.key = item.code;
-            item.title = item.name;
-            return item;
-          })
-        );
+        if (!data?.list) Toast.fail('暂无商品', 1);
+        setList(data.list);
+        setParent(data?.list[0]?.productName);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
 
-  const eventScroll = (e) => {
-    const position = e.target.scrollTop;
-    const isFix = position > 140;
-    setFix(isFix);
-
-    const rp = _.find(_.keys(positionMap), (p) => Math.abs(position - p) < 20);
-    const code = positionMap[rp];
-    if (code) {
-      const index = _.findIndex(data, (item) => item.code === code);
-      setActiveTab(index);
-    } else if (!isFix) {
-      setActiveTab(0);
-    }
+  const validCallback = () => {
+    if (!rechargeAccount) return Toast.fail('请输入正确的充值账号', 1);
+    return {
+      goodsCode: goodsSelect.code,
+      rechargeAccount: rechargeAccount.replace(/\s+/g, ''),
+    };
   };
 
-  const scrollToAnchor = (tab, anchorName) => {
-    if (tab) {
-      // 找到锚点
-      const anchorElement = document.getElementById(tab.key);
-      // setActiveTab(anchorName);
-      // 如果对应id的锚点存在，就跳转到锚点
-      if (anchorElement) {
-        anchorElement.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  const shop = async () => {
+    try {
+      const params = validCallback();
+
+      if (!params) return;
+
+      let [err, data, msg] = await getOrderId(params);
+
+      const { orderId } = data;
+
+      if (!err) {
+        [err, data, msg] = await pay({ orderId });
+        if (!err) {
+          getList(orderId);
+          if (getChannel() == 'PLAT3') {
+            shilu(orderId);
+          } else if (
+            getChannel() == 'WECHAT' ||
+            getChannel() == 'PLAT3_WECHAT'
+          ) {
+            wxpay(data);
+          }
+        } else Toast.fail(msg, 1);
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const wxpay = ({
+    appId,
+    timestamp,
+    nonceStr,
+    signType,
+    paySign,
+    orderdetail,
+  }) => {
+    WeixinJSBridge.invoke(
+      'getBrandWCPayRequest',
+      {
+        appId, //公众号名称，由商户传入
+        timeStamp: timestamp, //时间戳，自1970年以来的秒数
+        nonceStr, //随机串
+        package: orderdetail,
+        signType, //微信签名方式：
+        paySign, //微信签名
+      },
+      (res) => {
+        if (res.err_msg == 'get_brand_wcpay_request:cancel') {
+          clearTimeout(timer);
+        }
       }
-    }
+    );
   };
 
-  const toItem = (bizType, brandCode, index) => {
-    Cookies.set('brandList', JSON.stringify(data[index]?.brandList));
-    window.location.href =
-      bizType === 2
-        ? `/credit.html#/?brandCode=${brandCode}`
-        : `/card.html#/?brandCode=${brandCode}`;
+  //wx-h5--支付
+  const shilu = async ({ orderId }) => {
+    try {
+      const [err, data, msg] = await shiluPay({ orderId });
+      if (err) Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const getList = async (orderId) => {
+    try {
+      const [err, data, msg] = await getOrderByOrderId({ orderId });
+      if (!err) {
+        if (data.payStatus === 1) {
+          clearTimeout(timer);
+          Toast.success('支付成功');
+          window.location.href = `/cdkey.html#/?orderId=${orderId}`;
+        } else timer = setTimeout(() => getList(orderId), 1000);
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const setPhoneNumber = async (e) => {
+    if (e.split(' ').join('').length != 11) return;
+    try {
+      const [err, data, msg] = await getPhoneAddress({ telephone: e.split(' ').join('') });
+      if (!err) {
+        setRechargeAccount(e);
+        setPhoneAddressList(data);
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
   };
 
   return (
-    <div className="home" onScroll={eventScroll}>
-      <div className="home__img-wrap">
-        <div className="home__img-wrap-img"></div>
-      </div>
-      <div className="home__content-wrap">
-        <TabsComp
-          className={classnames('home__content-wrap-tabs', {
-            'home__content-wrap-tabs--fix': fix,
-          })}
-          activeTab={activeTab}
-          onTabClick={scrollToAnchor}
-          data={data}
-          page={4}
-        />
-        {fix ? <div className="home__content-wrap-tabs--block"></div> : null}
-        <div className="home__content-wrap-list">
-          {_.map(data, (item, index) => (
-            <div className="home__card" key={index}>
-              <div
-                id={item.key}
-                className="home__card-anchor"
-                onScrollCapture={(e) => console.log(1)}
-              ></div>
-              <div className="home__card-title">
-                <img
-                  className="home__card-title-icon"
-                  src={'/file' + item.iconUrl}
-                />
-                <span className="home__card-title-text">{item.title}</span>
-              </div>
-              <ul className="home__card-brand">
-                {_.map(item.brandList, (item) => (
-                  <li
-                    className="home__card-brand-item"
-                    key={item.code}
-                    onClick={() => toItem(item.bizType, item.code, index)}
-                  >
-                    {item.tags && (
-                      <div className="home__card-brand-item-tags">
-                        {item.tags}
-                      </div>
-                    )}
-                    <img
-                      className="home__card-brand-item-img"
-                      src={'/file' + item.iconUrl}
-                    />
-                    <span className="home__card-brand-item-name">
-                      {item.name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+    <>
+      <div className="lx">
+        <div>
+          <div className="lx__head">
+            <img src={IconUrl} />
+            <span className="lx__head-name">话费充值</span>
+          </div>
+
+          <div className="lx__count">
+            <div className="lx__count-title">
+              充值号码
+              <span className="lx__count-title--detail">(支持三网/虚商)</span>
             </div>
-          ))}
+            <InputItem
+              type="phone"
+              placeholder="请输入充值号码"
+              onChange={(e) => setPhoneNumber(e)}
+              extra={
+                <div>
+                  {phoneAddressList?.province} {phoneAddressList?.city}{' '}
+                  {phoneAddressList?.operatorNo}
+                </div>
+              }
+            />
+          </div>
+
+          <div className="lx__sku">
+            <div className="lx__sku-title" style={{ marginTop: '15SUPX' }}>
+              充值金额
+            </div>
+            <ul className="lx__sku-context">
+              {_.map(list, (item, index) => (
+                <li
+                  className={
+                    goodsSelect?.code === item.code
+                      ? 'lx__sku-norms-item--active'
+                      : 'lx__sku-norms-item'
+                  }
+                  key={index}
+                  onClick={() => setGoodsSelect(item)}
+                >
+                  <div className="name">
+                    <b>{getFloat(item?.facePrice / TRANSTEMP, PRECISION)}</b>元
+                  </div>
+                  <div className="price">
+                    售价<b>{getFloat(item?.price / TRANSTEMP, PRECISION)}</b>元
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div className="lx__sku-needknow">
+              <img src={tags} className="lx__sku-needknow--img" />
+              <div className="lx__sku-needknow--title">使用须知</div>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: goodsSelect?.usageIllustration,
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    // </>
+      <Footer
+        btnText="立即充值"
+        shop={shop}
+        redirectOrder={() => (window.location.href = '/order.html')}
+        showKFModal={_.debounce(() => {
+          Modal.alert(
+            <div className="modalTop">
+              咨询商品问题,请添加客服QQ(2045879978)
+            </div>,
+            '',
+            [
+              {
+                text: '我知道了',
+                onPress: () => {},
+              },
+            ]
+          );
+        }, 100)}
+      />
+    </>
   );
 };
