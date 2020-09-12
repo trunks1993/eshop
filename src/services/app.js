@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-09-10 16:21:00
+ * @LastEditTime: 2020-09-11 16:59:01
  */
 import request from '@/request';
 import { createHashHistory } from 'history';
@@ -92,6 +92,18 @@ export async function pay(data) {
     data,
   });
 }
+
+/**
+ * @name: 发起订单支付
+ * @param {}
+ */
+export async function shiluPay(data) {
+  return request('/pay3/shilu/pay', {
+    method: 'POST',
+    data,
+  });
+}
+
 /**
  * @name: 通过品牌编码获取商品列表
  * @param {}
@@ -141,5 +153,58 @@ export async function getBrandListInSameCategory(brandCode) {
   return request('/brand/getBrandListInSameCategory', {
     method: 'POST',
     data: { brandCode },
+  });
+}
+
+/**
+ * @name: 获取首页商户商品列表
+ * @param {}
+ */
+export async function getHomeShopList({ currPage, pageSize }) {
+  return request('/home/searchHomeMerchantGoodsList', {
+    method: 'POST',
+    data: { currPage, pageSize },
+  });
+}
+
+/**
+ * @name: 获取手机地址
+ * @param {}
+ */
+export async function getPhoneAddress({ telephone }) {
+  return request('/brand/getAttribution', {
+    method: 'POST',
+    data: { telephone },
+  });
+}
+
+/**
+ * @name: 获取首页广告列表
+ * @param {}
+ */
+export async function getBannerList() {
+  return request('/home/getAdvList', {
+    method: 'POST',
+  });
+}
+
+/**
+ * @name: 获取首页商品目录及品牌列表
+ * @param {}
+ */
+export async function getShopTags() {
+  return request('/home/searchHomeCategoryList', {
+    method: 'POST',
+  });
+}
+
+/**
+ * @name: 获取首页商户商品列表
+ * @param {}
+ */
+export async function getShopList(data) {
+  return request('/home/searchHomeMerchantGoodsList', {
+    method: 'POST',
+    data,
   });
 }

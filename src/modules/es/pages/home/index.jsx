@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 15:01:13
- * @LastEditTime: 2020-09-10 16:26:30
+ * @LastEditTime: 2020-09-11 19:33:29
  */
 
 import React, { useEffect, useState } from 'react';
@@ -79,8 +79,7 @@ export default (props) => {
     }
   };
 
-  const toItem = (bizType, brandCode, index) => {
-    Cookies.set('brandList', JSON.stringify(data[index]?.brandList));
+  const toItem = (bizType, brandCode) => {
     window.location.href =
       bizType === 2
         ? `/credit.html#/?brandCode=${brandCode}`
@@ -123,7 +122,7 @@ export default (props) => {
                   <li
                     className="home__card-brand-item"
                     key={item.code}
-                    onClick={() => toItem(item.bizType, item.code, index)}
+                    onClick={() => toItem(item.bizType, item.code)}
                   >
                     {item.tags && (
                       <div className="home__card-brand-item-tags">

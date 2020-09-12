@@ -1,14 +1,16 @@
 /*
- * @Date: 2020-09-08 11:04:34
- * @LastEditTime: 2020-09-11 19:00:37
+ * @Date: 2020-05-29 11:05:46
+ * @LastEditTime: 2020-09-11 11:03:56
  */
-import Vue from 'vue';
+
 import App from './app';
+import dva from 'dva';
 import FastClick from 'fastclick';
-import Vant from 'vant';
-import 'normalize.css';
-import '@/styles/ehb/index.less';
+
 import { getQueryVariable, setToken, setChannel } from '@/utils';
+
+import '@/styles/lx/index.less';
+import 'normalize.css';
 
 FastClick.attach(document.body);
 
@@ -18,9 +20,7 @@ if (token) setToken(token);
 const channel = getQueryVariable('channel');
 if (channel) setChannel(channel);
 
-Vue.use(Vant);
-new Vue({
-  //   router,
-  //   store,
-  render: (h) => h(App),
-}).$mount('#app');
+const app = dva();
+
+app.router(App);
+app.start('#app');

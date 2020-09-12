@@ -6,12 +6,14 @@ import { getQueryVariable, getFloat } from '@/utils';
 import {
   searchGoodsByBrandCode,
   getBrandListInSameCategory,
+  getOrderId,
+  pay,
+  getOrderByOrderId,
 } from '@/services/app';
-import { Toast } from 'antd-mobile';
+import { Toast, Modal } from 'antd-mobile';
 import _ from 'lodash';
 import { ProductTypes, TRANSTEMP, PRECISION } from '@/const';
 import { Footer } from '@/components/r';
-import Cookies from 'js-cookie';
 
 const data = [
   {
@@ -74,6 +76,73 @@ export default (props) => {
         if (data[0].productTypeCode === 104) {
           window.location.href = `/credit.html#/?brandCode=${brandCode}`;
         }
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const validCallback = () => {
+    if (!list[goodsSelect]?.code) return Toast.fail('请选择商品', 1);
+    return {
+      goodsCode: list[goodsSelect]?.code,
+      amount,
+    };
+  };
+
+  const shop = async () => {
+    try {
+      const params = validCallback();
+
+      if (!params) return;
+
+      let [err, data, msg] = await getOrderId(params);
+
+      const { orderId } = data;
+
+      if (!err) {
+        [err, data, msg] = await pay({ orderId });
+        if (!err) {
+          getList(orderId);
+          wxpay(data);
+        } else Toast.fail(msg, 1);
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const wxpay = ({
+    appId,
+    timestamp,
+    nonceStr,
+    signType,
+    paySign,
+    orderdetail,
+  }) => {
+    WeixinJSBridge.invoke(
+      'getBrandWCPayRequest',
+      {
+        appId, //公众号名称，由商户传入
+        timeStamp: timestamp, //时间戳，自1970年以来的秒数
+        nonceStr, //随机串
+        package: orderdetail,
+        signType, //微信签名方式：
+        paySign, //微信签名
+      },
+      (res) => {
+        if (res.err_msg == 'get_brand_wcpay_request:cancel') {
+          clearTimeout(timer);
+        }
+      }
+    );
+  };
+
+  const getList = async (orderId) => {
+    try {
+      const [err, data, msg] = await getOrderByOrderId({ orderId });
+      if (!err) {
+        if (data.payStatus === 1) {
+          clearTimeout(timer);
+          Toast.success('支付成功');
+          window.location.href = `/order.html`;
+        } else timer = setTimeout(() => getList(orderId), 1000);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
@@ -231,16 +300,23 @@ export default (props) => {
         </div>
       </div>
       <Footer
-        history={history}
-        successCallback={() => (window.location.href = `/order.html`)}
-        validCallback={() => {
-          if (!list[goodsSelect]?.code) return Toast.fail('请选择商品', 1);
-          return {
-            goodsCode: list[goodsSelect]?.code,
-            amount,
-          };
-        }}
         btnText="立即购买"
+        shop={shop}
+        redirectOrder={() => (window.location.href = '/order.html')}
+        showKFModal={_.debounce(() => {
+          Modal.alert(
+            <div className="modalTop">
+              咨询商品问题,请添加客服QQ(2045879978)
+            </div>,
+            '',
+            [
+              {
+                text: '我知道了',
+                onPress: () => {},
+              },
+            ]
+          );
+        }, 100)}
       >
         {list[goodsSelect]?.facePrice - list[goodsSelect]?.price > 0 && (
           <div className="item-footer__btn-tags">

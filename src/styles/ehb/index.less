@@ -1,0 +1,100 @@
+@import '../base.less';
+@import '~vant/lib/index.css';
+
+.ehb {
+  background-color: #efefef;
+  &-bannar {
+    .my-swipe .van-swipe-item {
+      width: 100%;
+      height: 260px;
+      color: #fff;
+      font-size: 20px;
+      line-height: 150px;
+      text-align: center;
+    }
+    .my-swipe {
+      height: 260px;
+      background-color: #39a9ed;
+    }
+  }
+  &-content {
+    padding: 15px;
+    &--shop {
+      height: 400px;
+      width: 330px;
+      background-color: #fff;
+      margin-top: 30px;
+      padding: 0px 34px;
+      margin: 15px;
+      border-radius: 15px;
+      display: inline-block;
+      vertical-align: top;
+      img {
+        width: 100%;
+        height: 268px;
+        margin-top: 15px;
+      }
+      &-name {
+        font-size: 30px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #333333;
+        line-height: 50px;
+        width: 280px;
+        word-break: keep-all;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      &-price {
+        font-size: 24px;
+        font-family: PingFang SC;
+        font-weight: bold;
+        color: #e52c1e;
+        line-height: 60px;
+        margin-top: -20px;
+        b {
+          font-size: 40px;
+        }
+      }
+      &-facePrice {
+        font-size: 24px;
+        font-family: PingFang SC;
+        font-weight: 500;
+        color: #666666;
+        line-height: 60px;
+        text-decoration: line-through;
+      }
+    }
+    &--check {
+      padding: 15px;
+      .tags {
+        margin: 30px 10px;
+        .tag {
+          height: 68px;
+          background: #eeeff3;
+          border-radius: 10px;
+          padding: 21px;
+          margin: 0px 10px;
+        }
+      }
+      .divider {
+        margin-top: 52px;
+        margin-bottom: 13px;
+      }
+    }
+  }
+  &-btn--clear {
+    width: 150px;
+    height: 60px;
+    margin: 20px auto;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #e6e6e6;
+  }
+  .van-dropdown-menu__bar {
+    height: 70px;
+    border-radius: 10px;
+    box-shadow: none;
+  }
+}
