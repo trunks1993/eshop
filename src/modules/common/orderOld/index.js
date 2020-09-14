@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-05-29 11:05:46
- * @LastEditTime: 2020-09-12 17:56:41
+ * @LastEditTime: 2020-09-14 10:36:14
  */
 import React from "react";
 import ReactDom from "react-dom";
@@ -9,7 +9,7 @@ import FastClick from "fastclick";
 import App from "./app";
 import { getQueryVariable, setToken, setChannel } from '@/utils';
 import "normalize.css";
-import "@/styles/order/index.less";
+import "@/styles/orderOld/index.less";
 
 FastClick.attach(document.body);
 
