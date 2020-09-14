@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import { InputItem, Toast } from 'antd-mobile';
-import { getQueryVariable, getFloat } from '@/utils';
-import tags from '@/assets/images/tags.png';
-import { Footer } from '@/components/r';
-import { searchGoodsByBrandCode } from '@/services/app';
-import _ from 'lodash';
-import { TRANSTEMP, PRECISION } from '@/const';
+import React, { useEffect, useState } from "react";
+import { InputItem, Toast } from "antd-mobile";
+import { getQueryVariable, getFloat } from "@/utils";
+import tags from "@/assets/images/tags.png";
+import { Footer } from "@/components/r";
+import { searchGoodsByBrandCode, getOrderId, pay, getOrderByOrderId } from "@/services/app";
+import _ from "lodash";
+import { TRANSTEMP, PRECISION } from "@/const";
 
 export default (props) => {
-  const brandCode = getQueryVariable('brandCode');
+  const brandCode = getQueryVariable("brandCode");
   const { history } = props;
   const [list, setList] = useState([]);
-  const [parent, setParent] = useState('');
+  const [parent, setParent] = useState("");
 
   const [rechargeAccount, setRechargeAccount] = useState();
 
@@ -37,10 +37,10 @@ export default (props) => {
   };
 
   const validCallback = () => {
-    if (!rechargeAccount) return Toast.fail('请输入需要充值的账号', 1);
+    if (!rechargeAccount) return Toast.fail("请输入需要充值的账号", 1);
     return {
       goodsCode: goodsSelect.code,
-      rechargeAccount: rechargeAccount.replace(/\s+/g, ''),
+      rechargeAccount: rechargeAccount.replace(/\s+/g, ""),
     };
   };
 
@@ -73,7 +73,7 @@ export default (props) => {
     orderdetail,
   }) => {
     WeixinJSBridge.invoke(
-      'getBrandWCPayRequest',
+      "getBrandWCPayRequest",
       {
         appId, //公众号名称，由商户传入
         timeStamp: timestamp, //时间戳，自1970年以来的秒数
@@ -83,7 +83,7 @@ export default (props) => {
         paySign, //微信签名
       },
       (res) => {
-        if (res.err_msg == 'get_brand_wcpay_request:cancel') {
+        if (res.err_msg == "get_brand_wcpay_request:cancel") {
           clearTimeout(timer);
         }
       }
@@ -95,9 +95,9 @@ export default (props) => {
       const [err, data, msg] = await getOrderByOrderId({ orderId });
       if (!err) {
         if (data.payStatus === 1) {
-          clearTimeout(timer);
-          Toast.success('支付成功');
-          window.location.href = `/cdkey.html#/?orderId=${orderId}`;
+          // clearTimeout(timer);
+          Toast.success("支付成功");
+          window.location.href = `/creditResult.html#/?orderId=${orderId}`;
         } else timer = setTimeout(() => getList(orderId), 1000);
       } else Toast.fail(msg, 1);
     } catch (error) {}
@@ -145,8 +145,8 @@ export default (props) => {
                   <li
                     className={
                       parent === item.productName
-                        ? 'credit-item__sku-goods-item--active'
-                        : 'credit-item__sku-goods-item'
+                        ? "credit-item__sku-goods-item--active"
+                        : "credit-item__sku-goods-item"
                     }
                     key={index}
                     onClick={() => setParent(item.productName)}
@@ -159,7 +159,7 @@ export default (props) => {
             </ul>
             <div
               className="credit-item__sku-title"
-              style={{ marginTop: '15SUPX' }}
+              style={{ marginTop: "15SUPX" }}
             >
               商品规格
             </div>
@@ -170,8 +170,8 @@ export default (props) => {
                   <li
                     className={
                       goodsSelect?.code === item.code
-                        ? 'credit-item__sku-norms-item--active'
-                        : 'credit-item__sku-norms-item'
+                        ? "credit-item__sku-norms-item--active"
+                        : "credit-item__sku-norms-item"
                     }
                     key={index}
                     onClick={() => setGoodsSelect(item)}
@@ -206,16 +206,16 @@ export default (props) => {
       <Footer
         btnText="立即充值"
         shop={shop}
-        redirectOrder={() => (window.location.href = '/order.html')}
+        redirectOrder={() => (window.location.href = "/order.html")}
         showKFModal={_.debounce(() => {
           Modal.alert(
             <div className="modalTop">
               咨询商品问题,请添加客服QQ(2045879978)
             </div>,
-            '',
+            "",
             [
               {
-                text: '我知道了',
+                text: "我知道了",
                 onPress: () => {},
               },
             ]

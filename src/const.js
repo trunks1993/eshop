@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-09-08 14:42:00
- * @LastEditTime: 2020-09-08 14:51:03
+ * @LastEditTime: 2020-09-12 11:16:17
  */
 export const TRANSTEMP = 10000; // 金额转换倍数
 export const PRECISION = 2; // 金额转换倍数

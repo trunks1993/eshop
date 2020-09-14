@@ -1,96 +1,127 @@
-@import '../base.less';
-@import '~vant/lib/index.css';
+@import "../base.less";
+@import "~vant/lib/index.css";
+
+body {
+  background: #ebebed;
+}
 
 .ehb {
-  background-color: #efefef;
-  &-bannar {
-    .my-swipe .van-swipe-item {
-      width: 100%;
-      height: 260px;
-      color: #fff;
-      font-size: 20px;
-      line-height: 150px;
-      text-align: center;
-    }
-    .my-swipe {
-      height: 260px;
-      background-color: #39a9ed;
+  .van-swipe {
+    width: 100%;
+    height: 260px;
+    img {
+      height: 100%;
     }
   }
-  &-content {
-    padding: 15px;
-    &--shop {
-      height: 400px;
-      width: 330px;
-      background-color: #fff;
-      margin-top: 30px;
-      padding: 0px 34px;
-      margin: 15px;
-      border-radius: 15px;
-      display: inline-block;
-      vertical-align: top;
-      img {
-        width: 100%;
-        height: 268px;
-        margin-top: 15px;
+  &__filter {
+    margin: 30px auto;
+    width: calc(100% - 60px);
+    &--active {
+      width: 100%;
+      .van-dropdown-menu__bar {
+        border-radius: 0 !important;
       }
-      &-name {
+      .van-popup {
+        background-color: initial;
+      }
+    }
+    &-box {
+      background: #fff;
+      padding: 0 30px;
+      &-item {
+        display: inline-block;
+        background: #eeeff3;
+        border-radius: 10px;
+        padding: 20px;
+        color: #333333;
         font-size: 30px;
-        font-family: PingFang SC;
+        margin: 0 30px 20px 0;
+        transition: all 0.3s;
+        &--active {
+          background: #ed7a00;
+          color: #fff;
+        }
+      }
+    }
+    &-footer {
+      border-radius: 0px 0px 20px 20px;
+      padding: 20px;
+      background: #fff;
+      text-align: center;
+      .van-button {
+        height: 60px;
+        width: 150px;
+        border-radius: 10px;
+      }
+    }
+  }
+  .van-list {
+    padding: 0 30px;
+    .van-cell {
+      display: inline-block;
+      width: calc(50% - 10px);
+      background-color: #fff;
+      border-radius: 15px;
+      vertical-align: top;
+      padding: 0;
+      padding-bottom: 22px;
+      &:nth-child(2n) {
+        margin-left: 20px;
+      }
+      &:nth-child(n + 3) {
+        margin-top: 20px;
+      }
+      .img-box {
+        height: 270px;
+        img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .name {
+        font-size: 30px;
         font-weight: bold;
         color: #333333;
-        line-height: 50px;
-        width: 280px;
-        word-break: keep-all;
+        width: calc(100% - 40px);
+        margin: 0 auto;
+        margin-top: 20px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
-      &-price {
-        font-size: 24px;
-        font-family: PingFang SC;
-        font-weight: bold;
-        color: #e52c1e;
-        line-height: 60px;
-        margin-top: -20px;
-        b {
+      .price-box {
+        padding: 0 25px;
+        margin-top: 22px;
+        .fit {
+          color: #e52c1e;
+          font-weight: bold;
+          font-size: 24px;
+        }
+        .price {
+          font-weight: bold;
+          color: #e52c1e;
           font-size: 40px;
         }
-      }
-      &-facePrice {
-        font-size: 24px;
-        font-family: PingFang SC;
-        font-weight: 500;
-        color: #666666;
-        line-height: 60px;
-        text-decoration: line-through;
-      }
-    }
-    &--check {
-      padding: 15px;
-      .tags {
-        margin: 30px 10px;
-        .tag {
-          height: 68px;
-          background: #eeeff3;
-          border-radius: 10px;
-          padding: 21px;
-          margin: 0px 10px;
+        .face-price {
+          font-size: 24px;
+          color: #666666;
+          text-decoration: line-through;
         }
-      }
-      .divider {
-        margin-top: 52px;
-        margin-bottom: 13px;
       }
     }
   }
-  &-btn--clear {
-    width: 150px;
-    height: 60px;
-    margin: 20px auto;
-    display: flex;
-    align-items: center;
-    border-top: 1px solid #e6e6e6;
+  &__empty {
+    text-align: center;
+    margin-top: 120px;
+    img {
+      width: 198px;
+    }
+    &-text {
+      font-size: 36px;
+      color: #c2c5cc;
+      margin-top: 35px;
+      font-weight: bold;
+    }
   }
   .van-dropdown-menu__bar {
     height: 70px;

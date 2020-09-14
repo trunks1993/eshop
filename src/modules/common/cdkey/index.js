@@ -7,7 +7,7 @@ import ReactDom from "react-dom";
 import FastClick from "fastclick";
 
 import App from "./app";
-import { getQueryVariable, setToken } from "@/utils";
+import { getQueryVariable, setToken, setChannel } from '@/utils';
 import "normalize.css";
 import "@/styles/cdkey/index.less";
 import "@/assets/svg";

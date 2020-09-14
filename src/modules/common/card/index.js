@@ -1,13 +1,13 @@
 /*
  * @Date: 2020-05-29 11:05:46
- * @LastEditTime: 2020-09-10 15:19:18
+ * @LastEditTime: 2020-09-12 17:56:21
  */
 import React from "react";
 import ReactDom from "react-dom";
 import FastClick from "fastclick";
 
 import App from "./app";
-import { getQueryVariable, setToken } from "@/utils";
+import { getQueryVariable, setToken, setChannel } from '@/utils';
 import "normalize.css";
 import "@/styles/card/index.less";
 import "@/assets/svg";
