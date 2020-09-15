@@ -83,14 +83,14 @@ export default (props) => {
           <div className="credits-item-content-title">
             充值账号:<span>{list.rechargeAccount}</span>
           </div>
-          <div
+          {/* <div
             className="credits-item-content-btn--add"
             onClick={() =>
               (window.location.href = `/credit.html#/?brandCode=${list.brandCode}`)
             }
           >
             继续充值
-          </div>
+          </div> */}
           <div
             className="credits-item-content-btn--detail"
             onClick={() => (window.location.href = '/order.html')}

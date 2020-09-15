@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TabsComp from '@/components/r/tabs';
 import BScroll from '@better-scroll/core';
 import PullUp from '@better-scroll/pull-up';
@@ -7,9 +7,10 @@ import {
   getOrderByOrderId,
   pay,
   searchUserSubscribeOrderList,
+  shiluPay,
 } from '@/services/app';
 import empty from '@/assets/images/empty.png';
-import { getQueryVariable, getFloat } from '@/utils';
+import { getQueryVariable, getFloat, getChannel } from '@/utils';
 import {
   ProductTypes,
   TraceStatus,
@@ -71,6 +72,11 @@ export default (props) => {
   const [list, setList] = useState([]);
   const [noMore, setNoMore] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const [payUrl, setPayUrl] = useState('');
+  const [orderInfo, setOrderInfo] = useState('');
+
+  const formRef = useRef();
 
   const [b, setB] = useState(null);
 
@@ -227,13 +233,17 @@ export default (props) => {
 
   const _pay = async (orderId) => {
     try {
-      if (orderId) {
-        const [err, data, msg] = await pay({ orderId });
+      if (getChannel() == 'PLAT3') {
+        //H5支付
+        shilu(orderId);
+      } else if (getChannel() == 'WECHAT' || getChannel() == 'PLAT3_WECHAT') {
+        //wx公众号支付
+        [err, data, msg] = await pay({ orderId });
         if (!err) {
-          getList(orderId);
           wxpay(data);
-        } else Toast.fail(msg, 1);
-      } else Toast.fail(msg, 1);
+          getList(orderId);
+        } else Toast.fail(msg);
+      }
     } catch (error) {}
   };
 
@@ -261,6 +271,22 @@ export default (props) => {
         }
       }
     );
+  };
+
+  //wx-h5--支付
+  const shilu = async (orderId) => {
+    try {
+      let [err, data, msg] = await shiluPay({ orderId });
+      if (!err) {
+        //这里唤起了H5支付 通过form的action
+        setPayUrl(data.payUrl);
+        setOrderInfo(data.orderInfo);
+        Toast.loading();
+        formRef.current.submit();
+      } else Toast.fail(msg, 1);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getList = async (orderId) => {
@@ -384,6 +410,15 @@ export default (props) => {
           )}
         </div>
       </div>
+      <form id="pay_form" action={payUrl} method="post" ref={formRef}>
+        <input
+          id="order_info"
+          type="text"
+          name="orderInfo"
+          value={orderInfo}
+          style={{ display: 'none' }}
+        />
+      </form>
     </div>
   );
 };

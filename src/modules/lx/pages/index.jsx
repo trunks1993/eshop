@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { InputItem, Toast, Modal } from 'antd-mobile';
 import { getChannel, getFloat } from '@/utils';
 import tags from '@/assets/images/tags.png';
@@ -10,9 +10,11 @@ import {
   pay,
   getOrderByOrderId,
   getPhoneAddress,
+  shiluPay,
 } from '@/services/app';
 import _ from 'lodash';
 import { TRANSTEMP, PRECISION } from '@/const';
+import { getQueryVariable } from '../../../utils';
 
 export default (props) => {
   let timer = null;
@@ -25,6 +27,11 @@ export default (props) => {
 
   const [goodsSelect, setGoodsSelect] = useState({});
 
+  const [payUrl, setPayUrl] = useState('');
+  const [orderInfo, setOrderInfo] = useState('');
+
+  const formRef = useRef();
+
   useEffect(() => {
     initList();
   }, []);
@@ -33,6 +40,14 @@ export default (props) => {
     const skuList = list.filter((item) => item.productName === parent);
     setGoodsSelect(skuList[0]);
   }, [parent]);
+
+  useEffect(() => {
+    // 用于处理 H5 的回调函数  如果穿了orderId 就直接调转到详情页
+    const orderId = getQueryVariable('orderId');
+    if (orderId) {
+      window.location.href = `creditResult.html#/?orderId=${orderId}`;
+    }
+  }, []);
 
   const initList = async () => {
     try {
@@ -64,21 +79,20 @@ export default (props) => {
 
       let [err, data, msg] = await getOrderId(params);
 
-      const { orderId } = data;
-
       if (!err) {
-        [err, data, msg] = await pay({ orderId });
-        if (!err) {
-          getList(orderId);
-          if (getChannel() == 'PLAT3') {
-            shilu(orderId);
-          } else if (
-            getChannel() == 'WECHAT' ||
-            getChannel() == 'PLAT3_WECHAT'
-          ) {
+        const { orderId } = data;
+        // getList(orderId);
+        if (getChannel() == 'PLAT3') {
+          //H5支付
+          shilu(orderId);
+        } else if (getChannel() == 'WECHAT' || getChannel() == 'PLAT3_WECHAT') {
+          //wx公众号支付
+          [err, data, msg] = await pay({ orderId });
+          if (!err) {
             wxpay(data);
-          }
-        } else Toast.fail(msg, 1);
+            getList(orderId);
+          } else Toast.fail(msg, 1);
+        }
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
@@ -110,11 +124,19 @@ export default (props) => {
   };
 
   //wx-h5--支付
-  const shilu = async ({ orderId }) => {
+  const shilu = async (orderId) => {
     try {
-      const [err, data, msg] = await shiluPay({ orderId });
-      if (err) Toast.fail(msg, 1);
-    } catch (error) {}
+      let [err, data, msg] = await shiluPay({ orderId });
+      if (!err) {
+        //这里唤起了H5支付 通过form的action
+        setPayUrl(data.payUrl);
+        setOrderInfo(data.orderInfo);
+        Toast.loading();
+        formRef.current.submit();
+      } else Toast.fail(msg, 1);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const getList = async (orderId) => {
@@ -207,6 +229,23 @@ export default (props) => {
           </div>
         </div>
       </div>
+
+      <form id="pay_form" action={payUrl} method="post" ref={formRef}>
+        <input
+          id="order_info"
+          type="text"
+          name="orderInfo"
+          value={orderInfo}
+          style={{ display: 'none' }}
+        />
+        <input
+          id="pay_submit_btn"
+          type="submit"
+          value="提交"
+          style={{ display: 'none' }}
+        />
+      </form>
+
       <Footer
         btnText="立即充值"
         shop={shop}
