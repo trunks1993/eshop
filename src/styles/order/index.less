@@ -1,18 +1,16 @@
-@import "../base.less";
-@import "../antd.less";
+@import '../base.less';
+@import '~vant/lib/index.css';
 .order {
   height: 100%;
-  &__filter-tabs {
-    background: #f7f9fa;
-    .hairline("bottom");
-    position: fixed;
-    top: 0;
-    right: 0;
-    left: 0;
-    z-index: 10;
-    &--block {
-      height: 90px;
-    }
+  .van-tab {
+    font-size: 30px;
+    font-weight: bold;
+  }
+  .van-tab--active {
+    font-size: 35px;
+  }
+  .van-tabs__wrap {
+    border-bottom: 1px solid #e6e6e6;
   }
   &__list {
     margin-top: 30px;
@@ -21,6 +19,7 @@
     padding: 0 30px;
     .order__item {
       background: @color-white-base;
+      padding: 0px;
       border-radius: 10px;
       &:not(:first-child) {
         margin-top: 20px;
@@ -115,10 +114,10 @@
         min-height: 63px;
         position: relative;
         &::after {
-          .circle("right");
+          .circle('right');
         }
         &::before {
-          .circle("left");
+          .circle('left');
         }
         &-text {
           padding: 30px 40px 0px 30px;
@@ -180,34 +179,27 @@
         }
       }
     }
-    .order__item--no-more {
-      text-align: center;
-      background: @color-white-base;
-      padding: 10px;
+  }
+  .empty {
+    text-align: center;
+    margin-top: 30vh;
+    img {
+      width: 176px;
+      height: 166px;
     }
-
-    &-unList {
-      text-align: center;
-      img {
-        width: 176px;
-        height: 166px;
-        border-radius: 50%;
-        margin-top: 130px;
-      }
-      &-text {
-        font-size: 36px;
-        font-family: PingFang SC;
-        font-weight: bold;
-        color: #c2c5cc;
-        margin-top: 35px;
-        margin-bottom: 60px;
-      }
+    &-text {
+      margin-top: 50px;
+      font-size: 36px;
+      font-family: PingFang SC;
+      font-weight: bold;
+      color: #c2c5cc;
+      line-height: 14px;
     }
   }
 }
 
 .circle(@direction) when(@direction = "right") {
-  content: " ";
+  content: ' ';
   display: block;
   width: 20px;
   height: 20px;
@@ -220,7 +212,7 @@
 }
 
 .circle(@direction) when(@direction = "left") {
-  content: " ";
+  content: ' ';
   display: block;
   width: 20px;
   height: 20px;

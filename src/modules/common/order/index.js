@@ -1,22 +1,28 @@
 /*
- * @Date: 2020-05-29 11:05:46
- * @LastEditTime: 2020-09-12 17:56:41
+ * @Date: 2020-09-08 11:04:34
+ * @LastEditTime: 2020-09-15 11:02:05
  */
-import React from "react";
-import ReactDom from "react-dom";
-import FastClick from "fastclick";
-
-import App from "./app";
+import Vue from 'vue';
+import App from './app';
+import FastClick from 'fastclick';
+import Vant, { Dialog, Toast } from 'vant';
+import 'normalize.css';
+import '@/styles/order/index.less';
 import { getQueryVariable, setToken, setChannel } from '@/utils';
-import "normalize.css";
-import "@/styles/order/index.less";
 
 FastClick.attach(document.body);
 
-const token = getQueryVariable("token");
+const token = getQueryVariable('token');
 if (token) setToken(token);
 
-const channel = getQueryVariable("channel");
+const channel = getQueryVariable('channel');
 if (channel) setChannel(channel);
 
-ReactDom.render(<App />, document.getElementById("app"));
+Vue.prototype.$dialog = Dialog;
+Vue.prototype.$toast = Toast;
+Vue.use(Vant);
+new Vue({
+  //   router,
+  //   store,
+  render: (h) => h(App),
+}).$mount('#app');
