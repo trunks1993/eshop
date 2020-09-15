@@ -11,6 +11,7 @@ import {
   getOrderByOrderId,
   getPhoneAddress,
   shiluPay,
+  getPayStatus,
 } from '@/services/app';
 import _ from 'lodash';
 import { TRANSTEMP, PRECISION } from '@/const';
@@ -18,6 +19,7 @@ import { getQueryVariable } from '../../../utils';
 
 export default (props) => {
   let timer = null;
+  let timed = null;
 
   const [list, setList] = useState([]);
   const [parent, setParent] = useState('');
@@ -44,10 +46,22 @@ export default (props) => {
   useEffect(() => {
     // 用于处理 H5 的回调函数  如果穿了orderId 就直接调转到详情页
     const orderId = getQueryVariable('orderId');
-    if (orderId) {
-      window.location.href = `creditResult.html#/?orderId=${orderId}`;
-    }
+    if (orderId) payStatus(orderId);
   }, []);
+
+  const payStatus = async (orderId) => {
+    try {
+      const [err, data, msg] = await getPayStatus({ orderId });
+      if (!err) {
+        if (data.payStatus == 'success') {
+          clearTimeout(timed);
+          window.location.href = `creditResult.html#/?orderId=${orderId}`;
+        } else if (data.payStatus == 'failed') {
+          clearTimeout(timed);
+        } else timed = setTimeout(() => payStatus(orderId), 2000);
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
 
   const initList = async () => {
     try {
@@ -134,9 +148,7 @@ export default (props) => {
         Toast.loading();
         formRef.current.submit();
       } else Toast.fail(msg, 1);
-    } catch (error) {
-      console.log(error);
-    }
+    } catch (error) {}
   };
 
   const getList = async (orderId) => {
@@ -144,7 +156,7 @@ export default (props) => {
       const [err, data, msg] = await getOrderByOrderId({ orderId });
       if (!err) {
         if (data.payStatus === 1) {
-          clearTimeout(timer);
+          clearTimeout(timed);
           Toast.success('支付成功');
           window.location.href = `/cdkey.html#/?orderId=${orderId}`;
         } else timer = setTimeout(() => getList(orderId), 1000);

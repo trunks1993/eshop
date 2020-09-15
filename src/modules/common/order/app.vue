@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-15 15:58:35
+ * @LastEditTime: 2020-09-15 19:01:53
 -->
 <template>
   <div class="order">
@@ -66,7 +66,7 @@
               <span class="order__item-goods-other">
                 <span>x{{ item.amount }}</span>
                 <span class="price">
-                  ￥{{ (item.price / TRANSTEMP, PRECISION) }}
+                  ￥{{ getFloat(item.price / TRANSTEMP, PRECISION) }}
                 </span>
               </span>
             </div>
@@ -244,6 +244,8 @@ export default {
   name: 'order',
   data() {
     return {
+      timer: null,
+
       active: '',
       OrderTypes,
       empty,
@@ -342,8 +344,9 @@ export default {
             this.wxpay(data);
           } else this.$toast.fail(msg);
         } else if (getChannel() == 'PLAT3') {
+          this.getList(orderId);
           //H5支付
-          this.shilu(orderId);
+          // this.shilu(orderId);
         }
       } catch (error) {}
     },
@@ -375,7 +378,7 @@ export default {
         },
         (res) => {
           if (res.err_msg == 'get_brand_wcpay_request:cancel') {
-            clearTimeout(timer);
+            clearTimeout(this.timer);
           }
         }
       );
@@ -386,12 +389,23 @@ export default {
         const [err, data, msg] = await getOrderByOrderId({ orderId });
         if (!err) {
           if (data.payStatus === 1) {
-            clearTimeout(timer);
-            dispatchInit();
-            this.$toast.success('支付成功');
-          } else timer = setTimeout(() => getList(orderId), 1000);
+          clearTimeout(this.timer);
+          this.currPage = 1;
+          this.list = [];
+          this.fetch();
+          this.$toast.success('支付成功');
+          if (
+            data.productTypeCode === this.PRODUCT_TYPE_1 ||
+            data.productTypeCode === this.PRODUCT_TYPE_2 ||
+            data.productTypeCode === this.PRODUCT_TYPE_3
+          ) {
+            window.location.href = `/creditResult.html#/?orderId=${orderId}`;
+          }
+          } else this.timer = setTimeout(() => this.getList(orderId), 1000);
         } else this.$toast.fail(msg);
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
 };

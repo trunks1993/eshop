@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-12 17:13:07
+ * @LastEditTime: 2020-09-15 17:52:36
 -->
 <template>
   <div class="ehb">
@@ -116,14 +116,14 @@ import {
   getAdvList,
   getFilterBrand,
   getFilterIndustry,
-} from "@/services/app";
-import { TRANSTEMP } from "@/const";
-import { getFloat } from "@/utils";
+} from '@/services/app';
+import { TRANSTEMP } from '@/const';
+import { getFloat } from '@/utils';
 
-import empty from "@/assets/images/ehb-no-data.png";
+import empty from '@/assets/images/ehb-no-data.png';
 
 export default {
-  name: "ehb",
+  name: 'ehb',
   data() {
     return {
       loading: false,

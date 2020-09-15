@@ -1,6 +1,6 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-09-15 15:50:27
+ * @LastEditTime: 2020-09-15 18:29:58
  */
 import request from '@/request';
 import { createHashHistory } from 'history';
@@ -238,6 +238,17 @@ export async function getFilterIndustry() {
  */
 export async function getProductList(data) {
   return request('/home/searchHomeMerchantGoodsList', {
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @name: 识路查询支付状态
+ * @param {}
+ */
+export async function getPayStatus(data) {
+  return request('/pay3/shilu/getPayStatus', {
     method: 'POST',
     data,
   });

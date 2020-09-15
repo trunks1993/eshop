@@ -53,8 +53,13 @@ export default (props) => {
   const getBrandList = async (brandCode) => {
     try {
       const [err, data, msg] = await getBrandListInSameCategory(brandCode);
-      if (!err) setBrandList(data);
-      else Toast.fail(msg);
+      if (!err) {
+        // 将选中的对象置顶为第一个
+        const index = data.findIndex((item) => item.code == brandCode);
+        data.unshift(data.splice(index, 1)[0]);
+
+        setBrandList(data);
+      } else Toast.fail(msg);
     } catch (error) {}
   };
 
@@ -146,7 +151,6 @@ export default (props) => {
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
-
   return (
     <>
       <div className="card-item">
@@ -325,7 +329,7 @@ export default (props) => {
               ((list[goodsSelect]?.facePrice - list[goodsSelect]?.price) *
                 amount) /
                 10000,
-              2
+              PRECISION
             )}
             元
           </div>
