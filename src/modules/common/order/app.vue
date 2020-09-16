@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-16 11:39:39
+ * @LastEditTime: 2020-09-16 11:47:18
 -->
 <template>
   <div class="order">
@@ -203,9 +203,8 @@
     </van-tabs>
 
     <form :action="payUrl" method="post" v-show="false" ref="formRef">
-      <input :value="orderinfo" name="orderInfo" />
+      <input v-model="orderinfo" name="orderInfo" />
     </form>
-    
   </div>
 </template>
 <script>
@@ -241,7 +240,7 @@ export default {
   data() {
     return {
       payUrl: '',
-      orderinfo: 'asddssadsadsadsadsad',
+      orderinfo: '',
 
       timer: null,
 
@@ -355,7 +354,9 @@ export default {
           this.payUrl = data.payUrl;
           this.orderinfo = data.orderInfo;
           this.$toast.loading();
-          this.$refs.formRef;
+          this.$nextTick(() => {
+            this.$refs.formRef.submit();
+          });
         } else this.$toast.fail(msg);
       } catch (error) {}
     },
