@@ -14,7 +14,7 @@ import { TRANSTEMP, PRECISION } from '@/const';
 
 export default (props) => {
   const brandCode = getQueryVariable('brandCode');
-  const { history } = props;
+  const goodsCode = getQueryVariable('goodsCode');
   const [list, setList] = useState([]);
   const [parent, setParent] = useState('');
 
@@ -25,10 +25,14 @@ export default (props) => {
   useEffect(() => {
     initList();
   }, []);
-
+  let i = 0;
   useEffect(() => {
     const skuList = list.filter((item) => item.productName === parent);
-    setGoodsSelect(skuList[0]);
+    const obj =
+      i === 0
+        ? _.find(list, (item) => item.code == goodsCode) || skuList[0]
+        : skuList[0];
+    setGoodsSelect(obj);
   }, [parent]);
 
   const initList = async () => {
@@ -36,7 +40,11 @@ export default (props) => {
       const [err, data, msg] = await searchGoodsByBrandCode({ brandCode });
       if (!err) {
         setList(data);
-        setParent(data[0].productName);
+
+        const parent = goodsCode
+          ? _.find(data, (item) => item.code == goodsCode).productName
+          : data[0].productName;
+        setParent(parent);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };

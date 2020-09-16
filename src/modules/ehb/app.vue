@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-15 17:52:36
+ * @LastEditTime: 2020-09-16 15:33:50
 -->
 <template>
   <div class="ehb">
@@ -83,11 +83,7 @@
       @load="onLoad"
       v-show="list.length"
     >
-      <van-cell
-        v-for="item in list"
-        @click="toItem(item.bizType, item.brandCode)"
-        :key="item.code"
-      >
+      <van-cell v-for="item in list" @click="toItem(item)" :key="item.code">
         <div class="img-box">
           <img :src="'/file' + item.iconUrl" />
         </div>
@@ -215,11 +211,11 @@ export default {
       });
     },
     //跳转
-    toItem(bizType, brandCode) {
+    toItem({ bizType, brandCode, code }) {
       window.location.href =
         bizType === 2
-          ? `/credit.html#/?brandCode=${brandCode}`
-          : `/card.html#/?brandCode=${brandCode}`;
+          ? `/credit.html#/?brandCode=${brandCode}&goodsCode=${code}`
+          : `/card.html#/?brandCode=${brandCode}&goodsCode=${code}`;
     },
     //banner跳转
     toUrl(linkUrl) {

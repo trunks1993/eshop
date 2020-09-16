@@ -29,7 +29,6 @@ const data = [
 export default (props) => {
   const brandCode = getQueryVariable('brandCode');
 
-  const { history } = props;
   const [list, setList] = useState([]);
   const [brandList, setBrandList] = useState([]);
   const [active, setActive] = useState(brandCode);
@@ -41,9 +40,21 @@ export default (props) => {
   const inputRef = React.createRef();
 
   useEffect(() => {
-    setGoodsSelect(0);
+    // const goodsCode = getQueryVariable('goodsCode') || 0
+    // setGoodsSelect(goodsCode);
     inputRef.current.setInputVal(1);
   }, [active]);
+
+  let i = 0;
+
+  useEffect(() => {
+    if (!list.length) return;
+
+    const goodsCode =
+      i === 0 ? getQueryVariable('goodsCode') || list[0].code : list[0].code;
+    setGoodsSelect(parseInt(goodsCode));
+    i++;
+  }, [list]);
 
   useEffect(() => {
     getBrandList(brandCode);
@@ -86,9 +97,10 @@ export default (props) => {
   };
 
   const validCallback = () => {
-    if (!list[goodsSelect]?.code) return Toast.fail('请选择商品', 1);
+    if (!_.find(list, (item) => item.code === goodsSelect)?.code)
+      return Toast.fail('请选择商品', 1);
     return {
-      goodsCode: list[goodsSelect]?.code,
+      goodsCode: _.find(list, (item) => item.code === goodsSelect)?.code,
       amount,
     };
   };
@@ -196,9 +208,9 @@ export default (props) => {
               {_.map(list, (item, index) => (
                 <li
                   key={index}
-                  className={classnames({ active: goodsSelect === index })}
+                  className={classnames({ active: goodsSelect === item.code })}
                   onClick={() => {
-                    setGoodsSelect(index);
+                    setGoodsSelect(item.code);
                     inputRef.current.setInputVal(1);
                   }}
                 >
@@ -228,12 +240,20 @@ export default (props) => {
             <span>
               <span className="card-item__count-box-num-title">购买数量</span>
               <span className="card-item__count-box-num-subtitle">
-                最多可购买 {list[goodsSelect]?.singleBuyLimit} 张
+                最多可购买{' '}
+                {
+                  _.find(list, (item) => item.code === goodsSelect)
+                    ?.singleBuyLimit
+                }{' '}
+                张
               </span>
             </span>
             <InputNumber
               min={1}
-              max={list[goodsSelect]?.singleBuyLimit}
+              max={
+                _.find(list, (item) => item.code === goodsSelect)
+                  ?.singleBuyLimit
+              }
               defaultValue={1}
               onChange={(val) => setAmount(val)}
               ref={inputRef}
@@ -251,7 +271,7 @@ export default (props) => {
           <li className="card-item__view-item line">
             <span className="card-item__view-item-title">商品名称</span>
             <span className="card-item__view-item-sub">
-              {list[goodsSelect]?.name}
+              {_.find(list, (item) => item.code === goodsSelect)?.name}
             </span>
           </li>
           <li className="card-item__view-item line">
@@ -259,7 +279,9 @@ export default (props) => {
             <span className="card-item__view-item-price">
               <b>￥</b>
               {getFloat(
-                (list[goodsSelect]?.price * amount) / TRANSTEMP,
+                (_.find(list, (item) => item.code === goodsSelect)?.price *
+                  amount) /
+                  TRANSTEMP,
                 PRECISION
               )}
             </span>
@@ -267,7 +289,14 @@ export default (props) => {
           <li className="card-item__view-item">
             <span className="card-item__view-item-title">商品标签</span>
             <div className="card-item__view-item-block">
-              <span>{ProductTypes[list[goodsSelect]?.productTypeCode]}</span>
+              <span>
+                {
+                  ProductTypes[
+                    _.find(list, (item) => item.code === goodsSelect)
+                      ?.productTypeCode
+                  ]
+                }
+              </span>
             </div>
           </li>
         </ul>
@@ -287,7 +316,8 @@ export default (props) => {
               <div
                 dangerouslySetInnerHTML={{
                   __html:
-                    list[goodsSelect]?.purchaseNotes ||
+                    _.find(list, (item) => item.code === goodsSelect)
+                      ?.purchaseNotes ||
                     "<p style='text-align: center'>暂无数据</p>",
                 }}
               />
@@ -295,7 +325,8 @@ export default (props) => {
               <div
                 dangerouslySetInnerHTML={{
                   __html:
-                    list[goodsSelect]?.usageIllustration ||
+                    _.find(list, (item) => item.code === goodsSelect)
+                      ?.usageIllustration ||
                     "<p style='text-align: center'>暂无数据</p>",
                 }}
               />
@@ -322,11 +353,14 @@ export default (props) => {
           );
         }, 100)}
       >
-        {list[goodsSelect]?.facePrice - list[goodsSelect]?.price > 0 && (
+        {_.find(list, (item) => item.code === goodsSelect)?.facePrice -
+          _.find(list, (item) => item.code === goodsSelect)?.price >
+          0 && (
           <div className="item-footer__btn-tags">
             立省
             {getFloat(
-              ((list[goodsSelect]?.facePrice - list[goodsSelect]?.price) *
+              ((_.find(list, (item) => item.code === goodsSelect)?.facePrice -
+                _.find(list, (item) => item.code === goodsSelect)?.price) *
                 amount) /
                 10000,
               PRECISION
