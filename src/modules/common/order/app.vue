@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-16 11:38:59
+ * @LastEditTime: 2020-09-16 11:39:39
 -->
 <template>
   <div class="order">
@@ -351,7 +351,6 @@ export default {
       try {
         const [err, data, msg] = await shiluPay({ orderId });
         if (!err) {
-          debugger;
           //这里唤起了H5支付 通过form的action
           this.payUrl = data.payUrl;
           this.orderinfo = data.orderInfo;
