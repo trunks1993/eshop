@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-15 19:01:53
+ * @LastEditTime: 2020-09-16 11:38:59
 -->
 <template>
   <div class="order">
@@ -201,15 +201,11 @@
         </div>
       </van-tab>
     </van-tabs>
-    <form id="pay_form" :action="payUrl" method="post" ref="formRef">
-      <input
-        id="order_info"
-        type="text"
-        name="orderInfo"
-        :value="orderInfo"
-        style="display: none"
-      />
+
+    <form :action="payUrl" method="post" v-show="false" ref="formRef">
+      <input :value="orderinfo" name="orderInfo" />
     </form>
+    
   </div>
 </template>
 <script>
@@ -235,15 +231,18 @@ import {
   PRODUCT_TYPE_4,
   TRANSTEMP,
   PRECISION,
+  OrderTypes,
 } from '@/const';
 import { getQueryVariable, getFloat, getChannel } from '@/utils';
-import { OrderTypes } from '@/const';
 import empty from '@/assets/images/empty.png';
 
 export default {
   name: 'order',
   data() {
     return {
+      payUrl: '',
+      orderinfo: 'asddssadsadsadsadsad',
+
       timer: null,
 
       active: '',
@@ -258,9 +257,6 @@ export default {
       loading: false,
       finished: false,
       visible: false,
-
-      payUrl: '',
-      orderInfo: '',
 
       ProductTypes,
       TraceStatus,
@@ -344,9 +340,8 @@ export default {
             this.wxpay(data);
           } else this.$toast.fail(msg);
         } else if (getChannel() == 'PLAT3') {
-          this.getList(orderId);
           //H5支付
-          // this.shilu(orderId);
+          this.shilu(orderId);
         }
       } catch (error) {}
     },
@@ -356,11 +351,12 @@ export default {
       try {
         const [err, data, msg] = await shiluPay({ orderId });
         if (!err) {
+          debugger;
           //这里唤起了H5支付 通过form的action
           this.payUrl = data.payUrl;
-          this.orderInfo = data.orderInfo;
-          this.$toast.loading({ forbidClick: true });
-          this.$refs.formRef.submit();
+          this.orderinfo = data.orderInfo;
+          this.$toast.loading();
+          this.$refs.formRef;
         } else this.$toast.fail(msg);
       } catch (error) {}
     },
@@ -389,18 +385,18 @@ export default {
         const [err, data, msg] = await getOrderByOrderId({ orderId });
         if (!err) {
           if (data.payStatus === 1) {
-          clearTimeout(this.timer);
-          this.currPage = 1;
-          this.list = [];
-          this.fetch();
-          this.$toast.success('支付成功');
-          if (
-            data.productTypeCode === this.PRODUCT_TYPE_1 ||
-            data.productTypeCode === this.PRODUCT_TYPE_2 ||
-            data.productTypeCode === this.PRODUCT_TYPE_3
-          ) {
-            window.location.href = `/creditResult.html#/?orderId=${orderId}`;
-          }
+            clearTimeout(this.timer);
+            this.currPage = 1;
+            this.list = [];
+            this.fetch();
+            this.$toast.success('支付成功');
+            if (
+              data.productTypeCode === this.PRODUCT_TYPE_1 ||
+              data.productTypeCode === this.PRODUCT_TYPE_2 ||
+              data.productTypeCode === this.PRODUCT_TYPE_3
+            ) {
+              window.location.href = `/creditResult.html#/?orderId=${orderId}`;
+            }
           } else this.timer = setTimeout(() => this.getList(orderId), 1000);
         } else this.$toast.fail(msg);
       } catch (error) {

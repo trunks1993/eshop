@@ -238,7 +238,7 @@ export default (props) => {
         shilu(orderId);
       } else if (getChannel() == 'WECHAT' || getChannel() == 'PLAT3_WECHAT') {
         //wx公众号支付
-        [err, data, msg] = await pay({ orderId });
+        const [err, data, msg] = await pay({ orderId });
         if (!err) {
           wxpay(data);
           getList(orderId);
@@ -276,12 +276,13 @@ export default (props) => {
   //wx-h5--支付
   const shilu = async (orderId) => {
     try {
-      let [err, data, msg] = await shiluPay({ orderId });
+      const [err, data, msg] = await shiluPay({ orderId });
       if (!err) {
         //这里唤起了H5支付 通过form的action
         setPayUrl(data.payUrl);
         setOrderInfo(data.orderInfo);
         Toast.loading();
+        debugger;
         formRef.current.submit();
       } else Toast.fail(msg, 1);
     } catch (error) {
@@ -297,6 +298,13 @@ export default (props) => {
           clearTimeout(timer);
           dispatchInit();
           Toast.success('支付成功');
+          if (
+            data.productTypeCode === this.PRODUCT_TYPE_1 ||
+            data.productTypeCode === this.PRODUCT_TYPE_2 ||
+            data.productTypeCode === this.PRODUCT_TYPE_3
+          ) {
+            window.location.href = `/creditResult.html#/?orderId=${orderId}`;
+          }
         } else timer = setTimeout(() => getList(orderId), 1000);
       } else Toast.fail(msg, 1);
     } catch (error) {}

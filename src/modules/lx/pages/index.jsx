@@ -46,6 +46,7 @@ export default (props) => {
   useEffect(() => {
     // 用于处理 H5 的回调函数  如果穿了orderId 就直接调转到详情页
     const orderId = getQueryVariable('orderId');
+    console.log(orderId);
     if (orderId) payStatus(orderId);
   }, []);
 
@@ -53,12 +54,14 @@ export default (props) => {
     try {
       const [err, data, msg] = await getPayStatus({ orderId });
       if (!err) {
-        if (data.payStatus == 'success') {
+        if (data?.payStatus == 'success') {
           clearTimeout(timed);
           window.location.href = `creditResult.html#/?orderId=${orderId}`;
-        } else if (data.payStatus == 'failed') {
+        } else if (data?.payStatus == 'failed') {
           clearTimeout(timed);
-        } else timed = setTimeout(() => payStatus(orderId), 2000);
+        } else {
+          timed = setTimeout(() => payStatus(orderId), 2000);
+        }
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
