@@ -33,6 +33,7 @@ export default (props) => {
         ? _.find(list, (item) => item.code == goodsCode) || skuList[0]
         : skuList[0];
     setGoodsSelect(obj);
+    i++;
   }, [parent]);
 
   const initList = async () => {
