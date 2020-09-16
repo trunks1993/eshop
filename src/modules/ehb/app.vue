@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-16 15:33:50
+ * @LastEditTime: 2020-09-16 15:53:23
 -->
 <template>
   <div class="ehb">
@@ -17,7 +17,7 @@
       <van-dropdown-menu active-color="#ed7a00">
         <van-dropdown-item
           :title="industrySelection.name || '行业'"
-          ref="item"
+          ref="item1"
           @open="change"
           @close="change"
         >
@@ -32,7 +32,7 @@
               ]"
               v-for="item in industries"
               :key="item.id"
-              @click="selectIndustry(item)"
+              @click="selectIndustry(item), $refs.item1.toggle()"
             >
               {{ item.name }}
             </span>
@@ -40,14 +40,16 @@
           <div class="ehb__filter-footer">
             <van-button
               type="default"
-              @click="industrySelection = brandSelection = {}"
+              @click="
+                (industrySelection = brandSelection = {}), $refs.item1.toggle()
+              "
               >重置</van-button
             >
           </div>
         </van-dropdown-item>
         <van-dropdown-item
           :title="brandSelection.name || '品牌'"
-          ref="item"
+          ref="item2"
           @open="change"
           @close="change"
         >
@@ -61,7 +63,7 @@
               ]"
               v-for="item in brandList"
               :key="item.id"
-              @click="selectBrand(item)"
+              @click="selectBrand(item), $refs.item2.toggle()"
             >
               {{ item.name }}
             </span>
@@ -69,7 +71,9 @@
           <div class="ehb__filter-footer">
             <van-button
               type="default"
-              @click="industrySelection = brandSelection = {}"
+              @click="
+                (industrySelection = brandSelection = {}), $refs.item2.toggle()
+              "
               >重置</van-button
             >
           </div>
