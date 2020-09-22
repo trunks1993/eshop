@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import classnames from 'classnames';
 import goods from '@/assets/images/goods.png';
 import { InputNumber, Tabs as TabsComp } from '@/components/r';
-import { getQueryVariable, getFloat } from '@/utils';
+import { getQueryVariable, getFloat, getChannel } from '@/utils';
 import {
   searchGoodsByBrandCode,
   getBrandListInSameCategory,
   getOrderId,
   pay,
   getOrderByOrderId,
+  shiluPay,
 } from '@/services/app';
 import { Toast, Modal } from 'antd-mobile';
 import _ from 'lodash';
@@ -37,7 +38,12 @@ export default (props) => {
   const [amount, setAmount] = useState(1);
   const [skuCaches, setSkuCaches] = useState({});
 
+  const [payUrl, setPayUrl] = useState('');
+  const [orderInfo, setOrderInfo] = useState('');
+
   const inputRef = React.createRef();
+
+  const formRef = useRef();
 
   useEffect(() => {
     // const goodsCode = getQueryVariable('goodsCode') || 0
@@ -96,6 +102,22 @@ export default (props) => {
     } catch (error) {}
   };
 
+  const _pay = async (orderId) => {
+    try {
+      if (getChannel() == 'PLAT3') {
+        //H5支付
+        shilu(orderId);
+      } else if (getChannel() == 'WECHAT' || getChannel() == 'PLAT3_WECHAT') {
+        //wx公众号支付
+        const [err, data, msg] = await pay({ orderId });
+        if (!err) {
+          wxpay(data);
+          getList(orderId);
+        } else Toast.fail(msg);
+      }
+    } catch (error) {}
+  };
+
   const validCallback = () => {
     if (!_.find(list, (item) => item.code === goodsSelect)?.code)
       return Toast.fail('请选择商品', 1);
@@ -115,13 +137,8 @@ export default (props) => {
 
       const { orderId } = data;
 
-      if (!err) {
-        [err, data, msg] = await pay({ orderId });
-        if (!err) {
-          getList(orderId);
-          wxpay(data);
-        } else Toast.fail(msg, 1);
-      } else Toast.fail(msg, 1);
+      if (!err) _pay(orderId);
+      else Toast.fail(msg, 1);
     } catch (error) {}
   };
 
@@ -149,6 +166,20 @@ export default (props) => {
         }
       }
     );
+  };
+
+  //wx-h5--支付
+  const shilu = async (orderId) => {
+    try {
+      const [err, data, msg] = await shiluPay({ orderId });
+      if (!err) {
+        //这里唤起了H5支付 通过form的action
+        setPayUrl(data.payUrl);
+        setOrderInfo(data.orderInfo);
+        Toast.loading();
+        formRef.current.submit();
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
   };
 
   const getList = async (orderId) => {
@@ -369,6 +400,16 @@ export default (props) => {
           </div>
         )}
       </Footer>
+
+      <form id="pay_form" action={payUrl} method="post" ref={formRef}>
+        <input
+          id="order_info"
+          type="text"
+          name="orderInfo"
+          value={orderInfo}
+          style={{ display: 'none' }}
+        />
+      </form>
     </>
   );
 };
