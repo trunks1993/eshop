@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { InputItem, Toast } from 'antd-mobile';
-import { getQueryVariable, getFloat } from '@/utils';
+import { getQueryVariable, getFloat, getChannel } from '@/utils';
 import tags from '@/assets/images/tags.png';
 import { Footer } from '@/components/r';
 import {
   searchGoodsByBrandCode,
   getOrderId,
   pay,
+  shiluPay,
   getOrderByOrderId,
 } from '@/services/app';
 import _ from 'lodash';
@@ -21,6 +22,11 @@ export default (props) => {
   const [rechargeAccount, setRechargeAccount] = useState();
 
   const [goodsSelect, setGoodsSelect] = useState({});
+
+  const [payUrl, setPayUrl] = useState('');
+  const [orderInfo, setOrderInfo] = useState('');
+
+  const formRef = useRef();
 
   useEffect(() => {
     initList();
@@ -68,13 +74,24 @@ export default (props) => {
 
       const { orderId } = data;
 
-      if (!err) {
-        [err, data, msg] = await pay({ orderId });
+      if (!err) _pay(orderId);
+      else Toast.fail(msg, 1);
+    } catch (error) {}
+  };
+
+  const _pay = async (orderId) => {
+    try {
+      if (getChannel() == 'PLAT3') {
+        //H5支付
+        shilu(orderId);
+      } else if (getChannel() == 'WECHAT' || getChannel() == 'PLAT3_WECHAT') {
+        //wx公众号支付
+        const [err, data, msg] = await pay({ orderId });
         if (!err) {
-          getList(orderId);
           wxpay(data);
-        } else Toast.fail(msg, 1);
-      } else Toast.fail(msg, 1);
+          getList(orderId);
+        } else Toast.fail(msg);
+      }
     } catch (error) {}
   };
 
@@ -102,6 +119,20 @@ export default (props) => {
         }
       }
     );
+  };
+
+  //wx-h5--支付
+  const shilu = async (orderId) => {
+    try {
+      const [err, data, msg] = await shiluPay({ orderId });
+      if (!err) {
+        //这里唤起了H5支付 通过form的action
+        setPayUrl(data.payUrl);
+        setOrderInfo(data.orderInfo);
+        Toast.loading();
+        formRef.current.submit();
+      } else Toast.fail(msg, 1);
+    } catch (error) {}
   };
 
   const getList = async (orderId) => {
@@ -243,6 +274,15 @@ export default (props) => {
           </div>
         )}
       </Footer>
+      <form id="pay_form" action={payUrl} method="post" ref={formRef}>
+        <input
+          id="order_info"
+          type="text"
+          name="orderInfo"
+          value={orderInfo}
+          style={{ display: 'none' }}
+        />
+      </form>
     </>
   );
 };

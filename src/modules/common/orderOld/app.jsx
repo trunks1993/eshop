@@ -282,7 +282,6 @@ export default (props) => {
         setPayUrl(data.payUrl);
         setOrderInfo(data.orderInfo);
         Toast.loading();
-        debugger;
         formRef.current.submit();
       } else Toast.fail(msg, 1);
     } catch (error) {
