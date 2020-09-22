@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-22 11:25:38
+ * @LastEditTime: 2020-09-22 15:26:46
 -->
 <template>
   <div class="redirect" v-show="!loading">
@@ -51,8 +51,8 @@ export default {
               data.productTypeCode === this.PRODUCT_TYPE_2 ||
               data.productTypeCode === this.PRODUCT_TYPE_3
             ) {
-              window.location.href = `/creditResult.html#/?orderId=${orderId}`; //当支付成功后  兑换码 卡密 短链接跳转到提取页
-            } else window.location.href = `/order.html#/`; //当支付成功后  直充跳转到订单页
+              window.location.href = `/order.html#/`; //当支付成功后  兑换码 卡密 短链接跳转到订单页
+            } else window.location.href = `/creditResult.html#/?orderId=${orderId}`; //当支付成功后  直充跳转到订单页
           } else if (data.payStatus == 'failed') {
             this.loading = false;
             this.$toast.clear();
