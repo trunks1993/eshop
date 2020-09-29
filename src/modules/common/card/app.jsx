@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import classnames from 'classnames';
 import goods from '@/assets/images/goods.png';
 import { InputNumber, Tabs as TabsComp } from '@/components/r';
@@ -7,14 +7,11 @@ import {
   searchGoodsByBrandCode,
   getBrandListInSameCategory,
   getOrderId,
-  pay,
-  getOrderByOrderId,
 } from '@/services/app';
 import { Toast, Modal } from 'antd-mobile';
 import _ from 'lodash';
 import { ProductTypes, TRANSTEMP, PRECISION } from '@/const';
 import { Footer } from '@/components/r';
-
 const data = [
   {
     title: '购买须知',
@@ -29,7 +26,6 @@ const data = [
 export default (props) => {
   const brandCode = getQueryVariable('brandCode');
 
-  const { history } = props;
   const [list, setList] = useState([]);
   const [brandList, setBrandList] = useState([]);
   const [active, setActive] = useState(brandCode);
@@ -38,12 +34,26 @@ export default (props) => {
   const [amount, setAmount] = useState(1);
   const [skuCaches, setSkuCaches] = useState({});
 
+  const [orderId, setOrderId] = useState('');
+
   const inputRef = React.createRef();
 
   useEffect(() => {
-    setGoodsSelect(0);
+    // const goodsCode = getQueryVariable('goodsCode') || 0
+    // setGoodsSelect(goodsCode);
     inputRef.current.setInputVal(1);
   }, [active]);
+
+  let i = 0;
+
+  useEffect(() => {
+    if (!list.length) return;
+
+    const goodsCode =
+      i === 0 ? getQueryVariable('goodsCode') || list[0].code : list[0].code;
+    setGoodsSelect(parseInt(goodsCode));
+    i++;
+  }, [list]);
 
   useEffect(() => {
     getBrandList(brandCode);
@@ -53,8 +63,13 @@ export default (props) => {
   const getBrandList = async (brandCode) => {
     try {
       const [err, data, msg] = await getBrandListInSameCategory(brandCode);
-      if (!err) setBrandList(data);
-      else Toast.fail(msg);
+      if (!err) {
+        // 将选中的对象置顶为第一个
+        const index = data.findIndex((item) => item.code == brandCode);
+        data.unshift(data.splice(index, 1)[0]);
+
+        setBrandList(data);
+      } else Toast.fail(msg);
     } catch (error) {}
   };
 
@@ -81,9 +96,10 @@ export default (props) => {
   };
 
   const validCallback = () => {
-    if (!list[goodsSelect]?.code) return Toast.fail('请选择商品', 1);
+    if (!_.find(list, (item) => item.code === goodsSelect)?.code)
+      return Toast.fail('请选择商品', 1);
     return {
-      goodsCode: list[goodsSelect]?.code,
+      goodsCode: _.find(list, (item) => item.code === goodsSelect)?.code,
       amount,
     };
   };
@@ -96,69 +112,17 @@ export default (props) => {
 
       let [err, data, msg] = await getOrderId(params);
 
-      const { orderId } = data;
-
-      if (!err) {
-        [err, data, msg] = await pay({ orderId });
-        if (!err) {
-          getList(orderId);
-          wxpay(data);
-        } else Toast.fail(msg, 1);
-      } else Toast.fail(msg, 1);
-    } catch (error) {}
-  };
-
-  const wxpay = ({
-    appId,
-    timestamp,
-    nonceStr,
-    signType,
-    paySign,
-    orderdetail,
-  }) => {
-    WeixinJSBridge.invoke(
-      'getBrandWCPayRequest',
-      {
-        appId, //公众号名称，由商户传入
-        timeStamp: timestamp, //时间戳，自1970年以来的秒数
-        nonceStr, //随机串
-        package: orderdetail,
-        signType, //微信签名方式：
-        paySign, //微信签名
-      },
-      (res) => {
-        if (res.err_msg == 'get_brand_wcpay_request:cancel') {
-          clearTimeout(timer);
-        }
-      }
-    );
-  };
-
-  const getList = async (orderId) => {
-    try {
-      const [err, data, msg] = await getOrderByOrderId({ orderId });
-      if (!err) {
-        if (data.payStatus === 1) {
-          clearTimeout(timer);
-          Toast.success('支付成功');
-          window.location.href = `/order.html`;
-        } else timer = setTimeout(() => getList(orderId), 1000);
-      } else Toast.fail(msg, 1);
-    } catch (error) {}
+      if (!err) setOrderId(data?.orderId);
+      else Toast.fail(msg, 1);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
     <>
       <div className="card-item">
         <div className="card-item__scroll-filter">
-          {/* 隐藏ios滚动条 */}
-          {/* <div
-            style={{
-              height: "86SUPX",
-              // paddingTop: "4SUPX",
-              overflowY: "hidden",
-            }}
-          > */}
           <ul>
             {_.map(brandList, (item, index) => (
               <li
@@ -192,9 +156,9 @@ export default (props) => {
               {_.map(list, (item, index) => (
                 <li
                   key={index}
-                  className={classnames({ active: goodsSelect === index })}
+                  className={classnames({ active: goodsSelect === item.code })}
                   onClick={() => {
-                    setGoodsSelect(index);
+                    setGoodsSelect(item.code);
                     inputRef.current.setInputVal(1);
                   }}
                 >
@@ -224,12 +188,20 @@ export default (props) => {
             <span>
               <span className="card-item__count-box-num-title">购买数量</span>
               <span className="card-item__count-box-num-subtitle">
-                最多可购买 {list[goodsSelect]?.singleBuyLimit} 张
+                最多可购买{' '}
+                {
+                  _.find(list, (item) => item.code === goodsSelect)
+                    ?.singleBuyLimit
+                }{' '}
+                张
               </span>
             </span>
             <InputNumber
               min={1}
-              max={list[goodsSelect]?.singleBuyLimit}
+              max={
+                _.find(list, (item) => item.code === goodsSelect)
+                  ?.singleBuyLimit
+              }
               defaultValue={1}
               onChange={(val) => setAmount(val)}
               ref={inputRef}
@@ -247,7 +219,7 @@ export default (props) => {
           <li className="card-item__view-item line">
             <span className="card-item__view-item-title">商品名称</span>
             <span className="card-item__view-item-sub">
-              {list[goodsSelect]?.name}
+              {_.find(list, (item) => item.code === goodsSelect)?.name}
             </span>
           </li>
           <li className="card-item__view-item line">
@@ -255,7 +227,9 @@ export default (props) => {
             <span className="card-item__view-item-price">
               <b>￥</b>
               {getFloat(
-                (list[goodsSelect]?.price * amount) / TRANSTEMP,
+                (_.find(list, (item) => item.code === goodsSelect)?.price *
+                  amount) /
+                  TRANSTEMP,
                 PRECISION
               )}
             </span>
@@ -263,7 +237,14 @@ export default (props) => {
           <li className="card-item__view-item">
             <span className="card-item__view-item-title">商品标签</span>
             <div className="card-item__view-item-block">
-              <span>{ProductTypes[list[goodsSelect]?.productTypeCode]}</span>
+              <span>
+                {
+                  ProductTypes[
+                    _.find(list, (item) => item.code === goodsSelect)
+                      ?.productTypeCode
+                  ]
+                }
+              </span>
             </div>
           </li>
         </ul>
@@ -283,7 +264,8 @@ export default (props) => {
               <div
                 dangerouslySetInnerHTML={{
                   __html:
-                    list[goodsSelect]?.purchaseNotes ||
+                    _.find(list, (item) => item.code === goodsSelect)
+                      ?.purchaseNotes ||
                     "<p style='text-align: center'>暂无数据</p>",
                 }}
               />
@@ -291,7 +273,8 @@ export default (props) => {
               <div
                 dangerouslySetInnerHTML={{
                   __html:
-                    list[goodsSelect]?.usageIllustration ||
+                    _.find(list, (item) => item.code === goodsSelect)
+                      ?.usageIllustration ||
                     "<p style='text-align: center'>暂无数据</p>",
                 }}
               />
@@ -317,15 +300,22 @@ export default (props) => {
             ]
           );
         }, 100)}
+        orderId={orderId}
+        successUrl={() => {
+          window.location.href = `/order.html`;
+        }}
       >
-        {list[goodsSelect]?.facePrice - list[goodsSelect]?.price > 0 && (
+        {_.find(list, (item) => item.code === goodsSelect)?.facePrice -
+          _.find(list, (item) => item.code === goodsSelect)?.price >
+          0 && (
           <div className="item-footer__btn-tags">
             立省
             {getFloat(
-              ((list[goodsSelect]?.facePrice - list[goodsSelect]?.price) *
+              ((_.find(list, (item) => item.code === goodsSelect)?.facePrice -
+                _.find(list, (item) => item.code === goodsSelect)?.price) *
                 amount) /
                 10000,
-              2
+              PRECISION
             )}
             元
           </div>

@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { InputItem, Toast, Modal } from 'antd-mobile';
-import { getChannel, getFloat } from '@/utils';
+import { getFloat } from '@/utils';
 import tags from '@/assets/images/tags.png';
 import { Footer } from '@/components/r';
 import IconUrl from '@/assets/images/lxHead.png';
-import {
-  getHomeShopList,
-  getOrderId,
-  pay,
-  getOrderByOrderId,
-  getPhoneAddress,
-} from '@/services/app';
+import { getHomeShopList, getOrderId, getPhoneAddress } from '@/services/app';
 import _ from 'lodash';
 import { TRANSTEMP, PRECISION } from '@/const';
 
-export default (props) => {
-  let timer = null;
-
+export default () => {
   const [list, setList] = useState([]);
   const [parent, setParent] = useState('');
 
@@ -24,6 +16,8 @@ export default (props) => {
   const [phoneAddressList, setPhoneAddressList] = useState({});
 
   const [goodsSelect, setGoodsSelect] = useState({});
+
+  const [orderId, setOrderId] = useState('');
 
   useEffect(() => {
     initList();
@@ -64,69 +58,8 @@ export default (props) => {
 
       let [err, data, msg] = await getOrderId(params);
 
-      const { orderId } = data;
-
-      if (!err) {
-        [err, data, msg] = await pay({ orderId });
-        if (!err) {
-          getList(orderId);
-          if (getChannel() == 'PLAT3') {
-            shilu(orderId);
-          } else if (
-            getChannel() == 'WECHAT' ||
-            getChannel() == 'PLAT3_WECHAT'
-          ) {
-            wxpay(data);
-          }
-        } else Toast.fail(msg, 1);
-      } else Toast.fail(msg, 1);
-    } catch (error) {}
-  };
-
-  const wxpay = ({
-    appId,
-    timestamp,
-    nonceStr,
-    signType,
-    paySign,
-    orderdetail,
-  }) => {
-    WeixinJSBridge.invoke(
-      'getBrandWCPayRequest',
-      {
-        appId, //公众号名称，由商户传入
-        timeStamp: timestamp, //时间戳，自1970年以来的秒数
-        nonceStr, //随机串
-        package: orderdetail,
-        signType, //微信签名方式：
-        paySign, //微信签名
-      },
-      (res) => {
-        if (res.err_msg == 'get_brand_wcpay_request:cancel') {
-          clearTimeout(timer);
-        }
-      }
-    );
-  };
-
-  //wx-h5--支付
-  const shilu = async ({ orderId }) => {
-    try {
-      const [err, data, msg] = await shiluPay({ orderId });
-      if (err) Toast.fail(msg, 1);
-    } catch (error) {}
-  };
-
-  const getList = async (orderId) => {
-    try {
-      const [err, data, msg] = await getOrderByOrderId({ orderId });
-      if (!err) {
-        if (data.payStatus === 1) {
-          clearTimeout(timer);
-          Toast.success('支付成功');
-          window.location.href = `/cdkey.html#/?orderId=${orderId}`;
-        } else timer = setTimeout(() => getList(orderId), 1000);
-      } else Toast.fail(msg, 1);
+      if (!err) setOrderId(data?.orderId);
+      else Toast.fail(msg, 1);
     } catch (error) {}
   };
 
@@ -207,6 +140,7 @@ export default (props) => {
           </div>
         </div>
       </div>
+
       <Footer
         btnText="立即充值"
         shop={shop}
@@ -225,6 +159,10 @@ export default (props) => {
             ]
           );
         }, 100)}
+        orderId={orderId}
+        successUrl={() => {
+          window.location.href = `/cdkey.html#/?orderId=${orderId}`;
+        }}
       />
     </>
   );

@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-09-08 11:06:11
- * @LastEditTime: 2020-09-12 17:13:07
+ * @LastEditTime: 2020-09-16 15:53:23
 -->
 <template>
   <div class="ehb">
@@ -17,7 +17,7 @@
       <van-dropdown-menu active-color="#ed7a00">
         <van-dropdown-item
           :title="industrySelection.name || '行业'"
-          ref="item"
+          ref="item1"
           @open="change"
           @close="change"
         >
@@ -32,7 +32,7 @@
               ]"
               v-for="item in industries"
               :key="item.id"
-              @click="selectIndustry(item)"
+              @click="selectIndustry(item), $refs.item1.toggle()"
             >
               {{ item.name }}
             </span>
@@ -40,14 +40,16 @@
           <div class="ehb__filter-footer">
             <van-button
               type="default"
-              @click="industrySelection = brandSelection = {}"
+              @click="
+                (industrySelection = brandSelection = {}), $refs.item1.toggle()
+              "
               >重置</van-button
             >
           </div>
         </van-dropdown-item>
         <van-dropdown-item
           :title="brandSelection.name || '品牌'"
-          ref="item"
+          ref="item2"
           @open="change"
           @close="change"
         >
@@ -61,7 +63,7 @@
               ]"
               v-for="item in brandList"
               :key="item.id"
-              @click="selectBrand(item)"
+              @click="selectBrand(item), $refs.item2.toggle()"
             >
               {{ item.name }}
             </span>
@@ -69,7 +71,9 @@
           <div class="ehb__filter-footer">
             <van-button
               type="default"
-              @click="industrySelection = brandSelection = {}"
+              @click="
+                (industrySelection = brandSelection = {}), $refs.item2.toggle()
+              "
               >重置</van-button
             >
           </div>
@@ -83,11 +87,7 @@
       @load="onLoad"
       v-show="list.length"
     >
-      <van-cell
-        v-for="item in list"
-        @click="toItem(item.bizType, item.brandCode)"
-        :key="item.code"
-      >
+      <van-cell v-for="item in list" @click="toItem(item)" :key="item.code">
         <div class="img-box">
           <img :src="'/file' + item.iconUrl" />
         </div>
@@ -116,14 +116,14 @@ import {
   getAdvList,
   getFilterBrand,
   getFilterIndustry,
-} from "@/services/app";
-import { TRANSTEMP } from "@/const";
-import { getFloat } from "@/utils";
+} from '@/services/app';
+import { TRANSTEMP } from '@/const';
+import { getFloat } from '@/utils';
 
-import empty from "@/assets/images/ehb-no-data.png";
+import empty from '@/assets/images/ehb-no-data.png';
 
 export default {
-  name: "ehb",
+  name: 'ehb',
   data() {
     return {
       loading: false,
@@ -215,11 +215,11 @@ export default {
       });
     },
     //跳转
-    toItem(bizType, brandCode) {
+    toItem({ bizType, brandCode, code }) {
       window.location.href =
         bizType === 2
-          ? `/credit.html#/?brandCode=${brandCode}`
-          : `/card.html#/?brandCode=${brandCode}`;
+          ? `/credit.html#/?brandCode=${brandCode}&goodsCode=${code}`
+          : `/card.html#/?brandCode=${brandCode}&goodsCode=${code}`;
     },
     //banner跳转
     toUrl(linkUrl) {

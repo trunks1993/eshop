@@ -1,10 +1,11 @@
 /*
  * @Date: 2020-07-01 17:41:31
- * @LastEditTime: 2020-09-12 15:37:07
+ * @LastEditTime: 2020-09-15 18:29:58
  */
 import request from '@/request';
 import { createHashHistory } from 'history';
 const history = createHashHistory();
+import { getChannel } from '@/utils';
 
 /**
  * 异常处理程序
@@ -15,7 +16,30 @@ const history = createHashHistory();
 //   return response;
 // };
 
-// request.extendOptions({ errorHandler });
+if (getChannel() == 'WECHAT') {
+  request.use(async (ctx, next) => {
+    await next();
+    const { res } = ctx;
+    if (res.code == -2) {
+      try {
+        const [err, data, msg] = await unLogin();
+        if (!err) window.location.href = data;
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  });
+}
+
+/**
+ * @name: 获取登录超时后的跳转URL
+ * @param {}
+ */
+export async function unLogin() {
+  return request('/wx/user/getTargetUrlTimeout', {
+    method: 'POST',
+  });
+}
 
 /**
  * @name: 获取首页商品目录及品牌列表
@@ -189,8 +213,8 @@ export async function getAdvList() {
 }
 
 /**
- * @name: 获取filter 品牌 
- * @param {type} 
+ * @name: 获取filter 品牌
+ * @param {type}
  */
 export async function getFilterBrand() {
   return request('/brand/searchBrandList', {
@@ -199,8 +223,8 @@ export async function getFilterBrand() {
 }
 
 /**
- * @name: 获取filter 行业 
- * @param {type} 
+ * @name: 获取filter 行业
+ * @param {type}
  */
 export async function getFilterIndustry() {
   return request('/category/searchCategoryList', {
@@ -214,6 +238,17 @@ export async function getFilterIndustry() {
  */
 export async function getProductList(data) {
   return request('/home/searchHomeMerchantGoodsList', {
+    method: 'POST',
+    data,
+  });
+}
+
+/**
+ * @name: 识路查询支付状态
+ * @param {}
+ */
+export async function getPayStatus(data) {
+  return request('/pay3/shilu/getPayStatus', {
     method: 'POST',
     data,
   });

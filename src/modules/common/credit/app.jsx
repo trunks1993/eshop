@@ -1,29 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { InputItem, Toast } from "antd-mobile";
-import { getQueryVariable, getFloat } from "@/utils";
-import tags from "@/assets/images/tags.png";
-import { Footer } from "@/components/r";
-import { searchGoodsByBrandCode, getOrderId, pay, getOrderByOrderId } from "@/services/app";
-import _ from "lodash";
-import { TRANSTEMP, PRECISION } from "@/const";
+import React, { useEffect, useState } from 'react';
+import { InputItem, Toast } from 'antd-mobile';
+import { getQueryVariable, getFloat } from '@/utils';
+import tags from '@/assets/images/tags.png';
+import { Footer } from '@/components/r';
+import { searchGoodsByBrandCode, getOrderId } from '@/services/app';
+import _ from 'lodash';
+import { TRANSTEMP, PRECISION } from '@/const';
 
 export default (props) => {
-  const brandCode = getQueryVariable("brandCode");
-  const { history } = props;
+  const brandCode = getQueryVariable('brandCode');
+  const goodsCode = getQueryVariable('goodsCode');
   const [list, setList] = useState([]);
-  const [parent, setParent] = useState("");
+  const [parent, setParent] = useState('');
 
   const [rechargeAccount, setRechargeAccount] = useState();
 
   const [goodsSelect, setGoodsSelect] = useState({});
 
+  const [orderId, setOrderId] = useState('');
+
   useEffect(() => {
     initList();
   }, []);
-
+  let i = 0;
   useEffect(() => {
     const skuList = list.filter((item) => item.productName === parent);
-    setGoodsSelect(skuList[0]);
+    const obj =
+      i === 0
+        ? _.find(list, (item) => item.code == goodsCode) || skuList[0]
+        : skuList[0];
+    setGoodsSelect(obj);
+    i++;
   }, [parent]);
 
   const initList = async () => {
@@ -31,16 +38,20 @@ export default (props) => {
       const [err, data, msg] = await searchGoodsByBrandCode({ brandCode });
       if (!err) {
         setList(data);
-        setParent(data[0].productName);
+
+        const parent = goodsCode
+          ? _.find(data, (item) => item.code == goodsCode).productName
+          : data[0].productName;
+        setParent(parent);
       } else Toast.fail(msg, 1);
     } catch (error) {}
   };
 
   const validCallback = () => {
-    if (!rechargeAccount) return Toast.fail("请输入需要充值的账号", 1);
+    if (!rechargeAccount) return Toast.fail('请输入需要充值的账号', 1);
     return {
       goodsCode: goodsSelect.code,
-      rechargeAccount: rechargeAccount.replace(/\s+/g, ""),
+      rechargeAccount: rechargeAccount.replace(/\s+/g, ''),
     };
   };
 
@@ -52,54 +63,8 @@ export default (props) => {
 
       let [err, data, msg] = await getOrderId(params);
 
-      const { orderId } = data;
-
-      if (!err) {
-        [err, data, msg] = await pay({ orderId });
-        if (!err) {
-          getList(orderId);
-          wxpay(data);
-        } else Toast.fail(msg, 1);
-      } else Toast.fail(msg, 1);
-    } catch (error) {}
-  };
-
-  const wxpay = ({
-    appId,
-    timestamp,
-    nonceStr,
-    signType,
-    paySign,
-    orderdetail,
-  }) => {
-    WeixinJSBridge.invoke(
-      "getBrandWCPayRequest",
-      {
-        appId, //公众号名称，由商户传入
-        timeStamp: timestamp, //时间戳，自1970年以来的秒数
-        nonceStr, //随机串
-        package: orderdetail,
-        signType, //微信签名方式：
-        paySign, //微信签名
-      },
-      (res) => {
-        if (res.err_msg == "get_brand_wcpay_request:cancel") {
-          clearTimeout(timer);
-        }
-      }
-    );
-  };
-
-  const getList = async (orderId) => {
-    try {
-      const [err, data, msg] = await getOrderByOrderId({ orderId });
-      if (!err) {
-        if (data.payStatus === 1) {
-          // clearTimeout(timer);
-          Toast.success("支付成功");
-          window.location.href = `/creditResult.html#/?orderId=${orderId}`;
-        } else timer = setTimeout(() => getList(orderId), 1000);
-      } else Toast.fail(msg, 1);
+      if (!err) setOrderId(data?.orderId);
+      else Toast.fail(msg, 1);
     } catch (error) {}
   };
 
@@ -118,6 +83,7 @@ export default (props) => {
               type="phone"
               placeholder="请输入需要充值的账号"
               onChange={(e) => setRechargeAccount(e)}
+              style={{ height: '120SUPX' }}
             />
 
             <div className="credit-item__count-content">
@@ -145,8 +111,8 @@ export default (props) => {
                   <li
                     className={
                       parent === item.productName
-                        ? "credit-item__sku-goods-item--active"
-                        : "credit-item__sku-goods-item"
+                        ? 'credit-item__sku-goods-item--active'
+                        : 'credit-item__sku-goods-item'
                     }
                     key={index}
                     onClick={() => setParent(item.productName)}
@@ -159,7 +125,7 @@ export default (props) => {
             </ul>
             <div
               className="credit-item__sku-title"
-              style={{ marginTop: "15SUPX" }}
+              style={{ marginTop: '15SUPX' }}
             >
               商品规格
             </div>
@@ -170,8 +136,8 @@ export default (props) => {
                   <li
                     className={
                       goodsSelect?.code === item.code
-                        ? "credit-item__sku-norms-item--active"
-                        : "credit-item__sku-norms-item"
+                        ? 'credit-item__sku-norms-item--active'
+                        : 'credit-item__sku-norms-item'
                     }
                     key={index}
                     onClick={() => setGoodsSelect(item)}
@@ -206,21 +172,25 @@ export default (props) => {
       <Footer
         btnText="立即充值"
         shop={shop}
-        redirectOrder={() => (window.location.href = "/order.html")}
+        redirectOrder={() => (window.location.href = '/order.html')}
         showKFModal={_.debounce(() => {
           Modal.alert(
             <div className="modalTop">
               咨询商品问题,请添加客服QQ(2045879978)
             </div>,
-            "",
+            '',
             [
               {
-                text: "我知道了",
+                text: '我知道了',
                 onPress: () => {},
               },
             ]
           );
         }, 100)}
+        orderId={orderId}
+        successUrl={() => {
+          window.location.href = `/creditResult.html#/?orderId=${orderId}`;
+        }}
       >
         {goodsSelect?.facePrice - goodsSelect?.price > 0 && (
           <div className="item-footer__btn-tags">

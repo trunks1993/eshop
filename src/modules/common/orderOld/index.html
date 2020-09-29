@@ -1,6 +1,6 @@
 <!--
  * @Date: 2020-05-29 11:53:44
- * @LastEditTime: 2020-09-14 10:38:35
+ * @LastEditTime: 2020-09-10 13:53:27
 -->
 <!DOCTYPE html>
 <html>
@@ -14,5 +14,9 @@
   </head>
   <body>
     <div id="app"></div>
+    <% htmlWebpackPlugin.options.cdnConfig.forEach(function(item){ if(item.js &&
+    !htmlWebpackPlugin.options.onlyCss){ %>
+    <script type="text/javascript" src="<%= item.js %>"></script>
+    <% }}) %>
   </body>
 </html>

@@ -1,9 +1,18 @@
 import React from 'react';
 import order from '@/assets/images/order.png';
 import service from '@/assets/images/service.png';
+import PayType from './payType';
 
 export default (props) => {
-  const { children, shop, redirectOrder, showKFModal, btnText } = props;
+  const {
+    children,
+    shop,
+    redirectOrder,
+    showKFModal,
+    btnText,
+    orderId,
+    successUrl,
+  } = props;
 
   return (
     <>
@@ -21,6 +30,7 @@ export default (props) => {
           {btnText}
         </div>
       </div>
+      <PayType orderId={orderId} successUrl={successUrl} />
     </>
   );
 };
